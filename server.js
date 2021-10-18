@@ -1,24 +1,22 @@
 var app = require('./app');
 var http = require('http');
 var path = require('path');
-var credentials = {key: privateKey, cert: certificate};
-var indexRoutes = require('./server/events/routes/index');
+
+var eventsRoutes = require('./server/events/routes/index');
 var genericRoutes = require('./server/generic/routes/index');
 var port = '8000';
 
 var server = http.createServer(app);
-var httpsServer = https.createServer(credentials, app);
+
 console.log(`[INFO] Node Red Started`)
-RED.init(httpsServer, settings)
-app.use(settings.httpAdminRoot, RED.httpAdmin)
-app.use(settings.httpNodeRoot, RED.httpNode)
-app.use('/twitter/', indexRoutes);
+
+app.use('/events/', eventsRoutes);
 app.use('/user/', genericRoutes);
 app.get('*', (req,res) =>{
   res.sendFile(path.join(__dirname+'/dist/index.html'));
 });
 
-//server.listen(port)
+
 
 app.use(function(req, res, next) {
   next(createError(404));
@@ -42,5 +40,5 @@ process.on('unhandledRejection', (reason, p) => {
 }).on('UnhandledPromiseRejectionWarning', err => {
   console.error(err);
 })
-
+server.listen(port)
 server.setTimeout(500000);
