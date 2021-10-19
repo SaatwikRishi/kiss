@@ -18,28 +18,24 @@ import axios from 'axios';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 
 
-const CreateCategory = memo((props) => {
+const CreateStudent = memo((props) => {
     const [form] = Form.useForm();
     
     /**
      * on form Finish
      */
     let formStore = {};
-    const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
-        let category_json = _(e.category_json).pickBy(val => val).map(val=>val).value();
+        let student_json = _(e.student_json).pickBy(val => val).map(val=>val).value();
         let formData = {
-            name: e.name,
-            description: e.description,
-            category_json: category_json
+            firstname: e.firstname,
+            lastname: e.lastname,
+            student_json: student_json
         };
-        
-        setloading(true);
-        await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
+        console.log(formData);
+        await axios.post(`/events/api/saveStudent`, { data: formData }).then(res => {
             console.log(res);
-        }).finally(() => {
-            setloading(false);
-        })
+        });
     }
 
     /**
@@ -61,8 +57,8 @@ const CreateCategory = memo((props) => {
     return <>
         <div className="_apifilter_subheader">
             <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Create Category </div>
-                <div className="_subTitle">create custom category fields  </div>
+                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Create Student </div>
+                <div className="_subTitle">create student profile  </div>
             </div>
             <div className="filters"></div>
         </div>
@@ -110,14 +106,14 @@ const CreateCategory = memo((props) => {
 
                 <Divider style={{ margin: '20px 0' }} />
                 <Space>
-                    <Button loading={loading} disabled={loading} icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
+                    <Button icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
                 </Space>
             </Form>
         </div>
 
     </>
 })
-export default CreateCategory;
+export default CreateStudent;
 
 /**
  * Sub form box

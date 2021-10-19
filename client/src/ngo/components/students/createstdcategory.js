@@ -18,28 +18,23 @@ import axios from 'axios';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 
 
-const CreateCategory = memo((props) => {
+const CreateStdCategory = memo((props) => {
     const [form] = Form.useForm();
     
     /**
      * on form Finish
      */
     let formStore = {};
-    const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
-        let category_json = _(e.category_json).pickBy(val => val).map(val=>val).value();
+        let studentcat_json = _(e.studentcat_json).pickBy(val => val).map(val=>val).value();
         let formData = {
             name: e.name,
-            description: e.description,
-            category_json: category_json
+            studentcat_json: studentcat_json
         };
-        
-        setloading(true);
-        await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
+        console.log(formData);
+        await axios.post(`/events/api/saveStudentCategory`, { data: formData }).then(res => {
             console.log(res);
-        }).finally(() => {
-            setloading(false);
-        })
+        });
     }
 
     /**
@@ -61,8 +56,8 @@ const CreateCategory = memo((props) => {
     return <>
         <div className="_apifilter_subheader">
             <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Create Category </div>
-                <div className="_subTitle">create custom category fields  </div>
+                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Create Student Category </div>
+                <div className="_subTitle">create default student profile fields  </div>
             </div>
             <div className="filters"></div>
         </div>
@@ -110,14 +105,14 @@ const CreateCategory = memo((props) => {
 
                 <Divider style={{ margin: '20px 0' }} />
                 <Space>
-                    <Button loading={loading} disabled={loading} icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
+                    <Button icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
                 </Space>
             </Form>
         </div>
 
     </>
 })
-export default CreateCategory;
+export default CreateStdCategory;
 
 /**
  * Sub form box
@@ -151,13 +146,13 @@ const DynamicFields = (props) =>{
     return <>
         <div className="category_box">
             <div className="category_item">
-                <Form.Item  hasFeedback={true} name= {['category_json', formIndex ,'name']} label="name" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item  hasFeedback={true} name= {['studentcat_json', formIndex ,'name']} label="name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" onChange={(e) => { fUpdateTrigger() }} />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item  hasFeedback={true} name= {['category_json', formIndex ,'input_type']} label="input type" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item  hasFeedback={true} name= {['studentcat_json', formIndex ,'input_type']} label="input type" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Select size="middle" onChange={(e) => { fUpdateTrigger() }} >
                         <Option value="text">text</Option>
                         <Option value="dropdown">dropdown</Option>
@@ -168,8 +163,8 @@ const DynamicFields = (props) =>{
                 </Form.Item>
             </div>
 
-            {form.getFieldValue(['category_json', formIndex, 'input_type']) == 'dropdown' && <FormDropdown {...{ fUpdateTrigger, formIndex }} />}
-            {form.getFieldValue(['category_json', formIndex, 'input_type']) == 'tags' && <FormTags {...{ fUpdateTrigger, formIndex }} />}
+            {form.getFieldValue(['studentcat_json', formIndex, 'input_type']) == 'dropdown' && <FormDropdown {...{ fUpdateTrigger, formIndex }} />}
+            {form.getFieldValue(['studentcat_json', formIndex, 'input_type']) == 'tags' && <FormTags {...{ fUpdateTrigger, formIndex }} />}
 
         </div>
     </>
@@ -183,7 +178,7 @@ const FormDropdown = (props) =>{
     
     return <>
         <div className="category_item">
-            <Form.Item  hasFeedback={true} name={['category_json', formIndex, 'dropdown']} label="dropdown values" rules={[{ required: true, message: 'Please fill!' }]}>
+            <Form.Item  hasFeedback={true} name={['studentcat_json', formIndex, 'dropdown']} label="dropdown values" rules={[{ required: true, message: 'Please fill!' }]}>
                 <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} > </Select>
             </Form.Item>
         </div>
@@ -198,7 +193,7 @@ const FormTags = (props) => {
 
     return <>
         <div className="category_item">
-            <Form.Item hasFeedback={true} name={['category_json', formIndex, 'tags']} label="tag values" rules={[{ required: true, message: 'Please fill!' }]}>
+            <Form.Item hasFeedback={true} name={['studentcat_json', formIndex, 'tags']} label="tag values" rules={[{ required: true, message: 'Please fill!' }]}>
                 <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} > </Select>
             </Form.Item>
         </div>
