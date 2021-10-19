@@ -25,6 +25,7 @@ const CreateCategory = memo((props) => {
      * on form Finish
      */
     let formStore = {};
+    const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
         let category_json = _(e.category_json).pickBy(val => val).map(val=>val).value();
         let formData = {
@@ -32,10 +33,13 @@ const CreateCategory = memo((props) => {
             description: e.description,
             category_json: category_json
         };
-        console.log(formData);
+        
+        setloading(true);
         await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
             console.log(res);
-        });
+        }).finally(() => {
+            setloading(false);
+        })
     }
 
     /**
@@ -72,7 +76,6 @@ const CreateCategory = memo((props) => {
                 initialValues={{
                     ...(() => {
                         return {
-                            fetch_type: "fact_ea_evnt",
                             ...formStore,
                         }
                     })(),
@@ -107,7 +110,7 @@ const CreateCategory = memo((props) => {
 
                 <Divider style={{ margin: '20px 0' }} />
                 <Space>
-                    <Button icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
+                    <Button loading={loading} disabled={loading} icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
                 </Space>
             </Form>
         </div>
