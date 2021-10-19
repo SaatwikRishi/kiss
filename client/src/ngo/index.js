@@ -10,11 +10,11 @@ import { DashboardOutlined } from '@ant-design/icons';
 import { updateUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
-import CreateCategory from "./components/dashboard";
+import CreateCategory from "./components/category/new";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
-    const location = useLocation()
+    const location = useLocation();
 
     /**
      * Scroll Top on Each Routing
