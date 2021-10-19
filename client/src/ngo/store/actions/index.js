@@ -104,3 +104,12 @@ export const getAllCategories = async () => {
     payload: response.data.result
   };
 }
+
+export const getAllStdCategories = async () => {
+  let response = await axios.get('/events/api/getAllStdCategories')
+
+  return {
+    type: 'GET_ALLSTDCATEGORIES',
+    payload: response.data.result
+  };
+}
