@@ -1,0 +1,17 @@
+/node_modules
+/.env
+/package-lock.json
+dist/
+server/mock/
+/mock/
+yarn-error.log
+yarn.lock
+server/certs/certifiate.cer
+server/certs/DigiCertCA2.cer
+.gitignore
+server/sso/*
+batch/models/combinedData.json
+batch/models/trainedData.nlp
+nlp/corpus/*
+model.nlp
+nodered/
