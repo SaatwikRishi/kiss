@@ -6,11 +6,12 @@ import '../assets/css/style.less';
 
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
-import { DashboardOutlined } from '@ant-design/icons';
+import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
 import { updateUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
+import CreateEvent from "./components/events/new";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
@@ -41,6 +42,7 @@ const Index = (props)=>{
                         <Layout className="layout_contentWrapper">
                             <Content>
                                 <Router>
+                                    <CreateEvent path="/events/new" />
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
                                 </Router>
@@ -70,9 +72,13 @@ const LayoutSidebar = (props) =>{
     return <>
         <div className={`main_sidebar ${expand? 'expand': ''}`} onMouseEnter={() => setexpand(true)} onMouseLeave={() => setexpand(false)}>
             <ul>
-                <li className={url == '/'? 'active' :'' } onClick={() => navigateTo('/')}>
-                    <DashboardOutlined />
-                    <div className="_title">Dashboard</div>
+                <li className={url == '/events/new' ? 'active' : ''} onClick={() => navigateTo('/events/new')}>
+                    <FormOutlined />
+                    <div className="_title">New Events</div>
+                </li>
+                <li className={url == '/category/new' ? 'active' : ''} onClick={() => navigateTo('/category/new')}>
+                    <ReconciliationOutlined />
+                    <div className="_title">New Category</div>
                 </li>
             </ul>
         </div>
