@@ -31,7 +31,7 @@ var eventsController = {
   getAllCategories: async (req, res) => {
     try {    
       let result = await req.db.query('SELECT * FROM tbl_categories ORDER BY name ASC','getAllCategories'); 
-      console.log(result);    
+      //console.log(result);    
       res.json({result})
     }
     catch (ex) {
