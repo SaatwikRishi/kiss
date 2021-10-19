@@ -10,7 +10,7 @@ import { DashboardOutlined } from '@ant-design/icons';
 import { updateUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
-import Dashboard from "./components/dashboard";
+import CreateCategory from "./components/dashboard";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
@@ -41,7 +41,8 @@ const Index = (props)=>{
                         <Layout className="layout_contentWrapper">
                             <Content>
                                 <Router>
-                                    <Dashboard path="/"/>
+                                    <CreateCategory path="/"/>
+                                    <CreateCategory path="/category/new"/>
                                 </Router>
                             </Content>
                         </Layout>

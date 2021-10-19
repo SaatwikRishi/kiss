@@ -18,21 +18,24 @@ import axios from 'axios';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 
 
-const Dashboard = memo((props) => {
+const CreateCategory = memo((props) => {
     const [form] = Form.useForm();
     
     /**
      * on form Finish
      */
     let formStore = {};
-    const onFinish = (e) =>{
+    const onFinish = async (e) =>{
         let category_json = _(e.category_json).pickBy(val => val).map(val=>val).value();
         let formData = {
-            title: e.title,
+            name: e.name,
             description: e.description,
             category_json: category_json
         };
         console.log(formData);
+        await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
+            console.log(res);
+        });
     }
 
     /**
@@ -111,7 +114,7 @@ const Dashboard = memo((props) => {
 
     </>
 })
-export default Dashboard;
+export default CreateCategory;
 
 /**
  * Sub form box
@@ -122,7 +125,7 @@ const BasicFields = (props) =>{
     return <>
         <div className="category_box_basic">
             <div className="category_item">
-                <Form.Item  hasFeedback={true} name= {'title'} label="title" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item  hasFeedback={true} name= {'name'} label="name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" onChange={(e) => { fUpdateTrigger() }} />
                 </Form.Item>
             </div>
@@ -156,6 +159,8 @@ const DynamicFields = (props) =>{
                         <Option value="text">text</Option>
                         <Option value="dropdown">dropdown</Option>
                         <Option value="tags">tags</Option>
+                        <Option value="upload">file upload</Option>
+                        <Option value="datepicker">datepicker</Option>
                     </Select>
                 </Form.Item>
             </div>
@@ -190,7 +195,7 @@ const FormTags = (props) => {
 
     return <>
         <div className="category_item">
-            <Form.Item hasFeedback={true} name={['category_json', formIndex, 'dropdown']} label="tag values" rules={[{ required: true, message: 'Please fill!' }]}>
+            <Form.Item hasFeedback={true} name={['category_json', formIndex, 'tags']} label="tag values" rules={[{ required: true, message: 'Please fill!' }]}>
                 <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} > </Select>
             </Form.Item>
         </div>
