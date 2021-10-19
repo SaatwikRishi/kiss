@@ -95,3 +95,12 @@ export const getDashboardData = async (date, country) => {
     country
   };
 }
+
+export const getAllCategories = async () => {
+  let response = await axios.get('/events/api/getAllCategories')
+
+  return {
+    type: 'GET_ALLCATEGORIES',
+    payload: response.data.result
+  };
+}
