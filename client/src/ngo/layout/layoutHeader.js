@@ -13,7 +13,7 @@ const LayoutHeader = (props) => {
             <div className="grid_two">
                 <div className="_left">
                     <div className="_logo">
-                        <img src={logo} /> Complaints
+                        <img src={logo} /> Project
                     </div>
                     <div className="_apifilter_header_search">
                         <CommonSearchTweets />
