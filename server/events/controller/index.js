@@ -42,7 +42,10 @@ var eventsController = {
     try {    
       let {data} = req.body;
       console.log(data);
+      let event_json = JSON.stringify(data.event_json);
       let category_json = JSON.stringify(data.category_json);
+      let start_date = ((data.end_date[0])?(data.end_date[0]):'');
+      let end_date = ((data.end_date[1])?(data.end_date[1]):'');
       let queries={
         category:((data.eventid)?`UPDATE tbl_categories SET event_name='${data.event_name}', event_desc='${data.event_desc}', start_date='${start_date}', end_date='${end_date}', apply_date='${data.apply_date}', catid='${data.catid}', category_json='${category_json}', event_json='${event_json}', document_url='${data.document_url}', tags='${data.tags}'  WHERE eventid='${data.eventid}'`:`INSERT INTO tbl_categories ( event_name, event_desc, start_date, end_date, apply_date, catid, category_json, event_json, document_url, tags ) VALUES ('${data.event_name}', '${data.event_desc}', '${start_date}', '${end_date}', '${data.apply_date}', '${data.catid}', '${category_json}', '${event_json}', '${data.document_url}', '${data.tags}')`),
       }  
