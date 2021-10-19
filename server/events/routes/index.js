@@ -10,6 +10,8 @@ router.post('/api/saveEvents',eventsController.saveEvents)
 router.get('/api/getAllEvents',eventsController.getAllEvents)
 router.get('/api/getCategory',eventsController.getCategory)
 router.get('/api/getEvent',eventsController.getEvent)
+router.post('/api/saveStudentCategory',eventsController.saveStudentCategory)
+router.get('/api/getAllStdCategories',eventsController.getAllStdCategories)
 
 
 module.exports = router;

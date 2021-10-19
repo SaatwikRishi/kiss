@@ -7,7 +7,7 @@ import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllCategories } from '../../store/actions';
+import { getAllStdCategories } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 
 const { Option, OptGroup } = Select;
@@ -18,10 +18,10 @@ const { Search } = Input;
 const ListCategory = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAllCategories());
+    dispatch(getAllStdCategories());
   },[]);
 
-  const categoryData = useSelector(state => state.category);
+  const categoryData = useSelector(state => state.stdcategory);
   const categorys = categoryData.list;
 
   const categoryDatas = [];
@@ -91,8 +91,8 @@ const ListCategory = (props) => {
   return <>
         <div className="_apifilter_subheader">
             <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Category List </div>
-                <div className="_subTitle">category list </div>
+                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Student Category List </div>
+                <div className="_subTitle">student category list </div>
             </div>
             <div className="filters"></div>
         </div>
@@ -107,7 +107,7 @@ const ListCategory = (props) => {
                 <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/category/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/students/createstdcategory/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
                 <Table 

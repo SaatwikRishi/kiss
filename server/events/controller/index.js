@@ -86,6 +86,32 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  saveStudentCategory: async (req, res) => {
+    try {    
+      let {data} = req.body;
+      console.log(data);
+      let studentcat_json = JSON.stringify(data.studentcat_json);
+      let queries={
+        category:((data.catid)?`UPDATE tbl_student_categories SET name='${data.name}', description='${data.description}', studentcat_json='${studentcat_json}'  WHERE catid='${data.catid}'`:`INSERT INTO tbl_student_categories ( name, description, studentcat_json ) VALUES ('${data.name}',  '${data.description}',  '${studentcat_json}')`),
+      }  
+      let result = await req.db.query(queries.category,'saveStudentCategory'); 
+      console.log(result);    
+      res.json({result})
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  getAllStdCategories: async (req, res) => {
+    try {    
+      let result = await req.db.query('SELECT * FROM tbl_student_categories ORDER BY name ASC','getAllStdCategories'); 
+      //console.log(result);    
+      res.json({result})
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
 }
 
 module.exports = eventsController;
