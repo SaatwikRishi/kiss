@@ -127,33 +127,3 @@ export const CommonChatDrawer = memo((props) => {
         </Drawer>
     </>
 })
-
-/**
- * RefreshTweeets
- */
-export const RefreshTweeets = memo((props) => {
-    const dispatch = useDispatch();
-    const dashboardData = useSelector(state => state.dashboard);
-    let date = dashboardData.date;
-
-    const [loading, setloading] = useState(false);
-    const refreshTweets = () =>{
-        setloading(true);
-        dispatch(getDashboardData(date)).then(res=>{
-            setloading(false);
-        });
-    }
-
-    return <>
-        {loading ? <Tooltip title="Processing">
-            <div className="refresh_tweets" >
-                <SyncOutlined spin />
-            </div>
-        </Tooltip>:
-        <Tooltip title="Refresh">
-            <div className="refresh_tweets" onClick={() => refreshTweets()}>
-                <ReloadOutlined />
-            </div>
-        </Tooltip>}
-    </>
-})

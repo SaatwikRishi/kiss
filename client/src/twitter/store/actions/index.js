@@ -95,10 +95,3 @@ export const getDashboardData = async (date, country) => {
     country
   };
 }
-export const getUtilityData = async () => {
-  let response = await axios.get(`/twitter/api/getUtilityData`)
-  return {
-    type: 'UPDATE_UTILITY_DATA',
-    payload: response.data.result
-  };
-}
