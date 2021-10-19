@@ -11,6 +11,7 @@ import { updateUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
+import ListCategory from "./components/category/list";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
@@ -43,6 +44,7 @@ const Index = (props)=>{
                                 <Router>
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
+                                    <ListCategory path="/category/list"/>
                                 </Router>
                             </Content>
                         </Layout>
