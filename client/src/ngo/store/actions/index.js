@@ -124,3 +124,22 @@ export const getAllStdCategories = async () => {
     payload: response.data.result
   };
 }
+
+export const getAllStudents = async () => {
+  let response = await axios.get('/events/api/getAllStudents')
+
+  return {
+    type: 'GET_ALLSTUDENTS',
+    payload: response.data.result
+  };
+}
+
+
+export const getAllEvents = async () => {
+  let response = await axios.get('/events/api/getAllEvents')
+
+  return {
+    type: 'GET_ALLEVENTS',
+    payload: response.data.result
+  };
+}
