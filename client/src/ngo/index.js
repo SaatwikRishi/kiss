@@ -49,9 +49,11 @@ const Index = (props)=>{
                             <Content>
                                 <Router>
                                     <CreateEvent path="/events/new" />
+                                    <CreateEvent path="/events/new/:id" />
                                     <ListEvents path="/events/list" />
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
+                                    <CreateCategory path="/category/new/:id" />
                                     <ListCategory path="/category/list"/>
                                     <CreateStdCategory path="/students/createstdcategory"/>
                                     <ListStdCategory path="/students/liststdcategory"/>
