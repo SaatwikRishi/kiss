@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
 import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, navigate } from '@reach/router';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -10,6 +12,7 @@ import {
     ArrowRightOutlined, LinkOutlined, UngroupOutlined, ShareAltOutlined,
     ApiOutlined, CalendarOutlined, RotateLeftOutlined,
 } from '@ant-design/icons';
+import { getAllCategories } from '../../store/actions';
 
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
@@ -19,16 +22,57 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 
 
 const CreateCategory = memo((props) => {
+    const dispatch = useDispatch();
     const [form] = Form.useForm();
+    useEffect(() => {
+        dispatch(getAllCategories());
+    },[]);
     
+    let formStore = {};  
+    /**
+     * Form Arr
+     */
+    const [categoryList, setcategoryList] = useState([0]);
+
+    const categoryData = useSelector(state => state.category);
+    const categorys = categoryData.list;
+    let catId = ((props.id!=undefined)?props.id:'');
+
+    let initialState = {
+        catid: catId,
+        name: '',
+        description: '',
+        category_json: ''
+    }
+    const [Inistate, setIniState] = useState(initialState)
+
+    let getCategory = {};
+    useEffect(
+        ()=>{
+            if(catId!='' &&  categorys!=undefined)
+            {    
+                getCategory = categorys.filter(function(item) {
+                return (item.catid==catId);
+            });
+            if(getCategory!=undefined)
+            {
+                setIniState({catid: catId, name: getCategory[0].name, description: getCategory[0].description, category_json: getCategory[0].category_json });
+                setcategoryList(JSON.parse(getCategory[0].category_json));
+            }
+            }
+        },[catId, categorys]
+    )
+    useEffect(() => form.resetFields(), [Inistate])
+
+    const [loading, setloading] = useState(false);
     /**
      * on form Finish
      */
-    let formStore = {};
-    const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
+        console.log(e);
         let category_json = _(e.category_json).pickBy(val => val).map(val=>val).value();
         let formData = {
+            catid: catId,
             name: e.name,
             description: e.description,
             category_json: category_json
@@ -36,7 +80,8 @@ const CreateCategory = memo((props) => {
         
         setloading(true);
         await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
-            console.log(res);
+            dispatch(getAllCategories());
+            navigate("/category/list")
         }).finally(() => {
             setloading(false);
         })
@@ -49,14 +94,11 @@ const CreateCategory = memo((props) => {
     const fUpdateTrigger = () => { setfValue(fValue + 1) }
 
     /**
-     * Form Arr
-     */
-    const [categoryList, setcategoryList] = useState([0]);
-
-    /**
      * remove CategoryList
      */
     const removeCategoryList = (val) => categoryList.length >1 && setcategoryList(_(categoryList).filter(value => value != val).value() );
+
+    console.log(categoryList);
 
     return <>
         <div className="_apifilter_subheader">
@@ -76,7 +118,7 @@ const CreateCategory = memo((props) => {
                 initialValues={{
                     ...(() => {
                         return {
-                            ...formStore,
+                            ...Inistate,
                         }
                     })(),
                 }}>
@@ -147,18 +189,19 @@ const BasicFields = (props) =>{
  */
 const DynamicFields = (props) =>{
     const { form, formIndex, fUpdateTrigger } = props;
+    console.log(formIndex);
 
     return <>
         <div className="category_box">
             <div className="category_item">
                 <Form.Item  hasFeedback={true} name= {['category_json', formIndex ,'name']} label="name" rules={[{ required: true, message: 'Please fill!' }]}>
-                    <Input size="middle" onChange={(e) => { fUpdateTrigger() }} />
+                    <Input size="middle" onChange={(e) => { fUpdateTrigger() }} defaultValue={formIndex.name}/>
                 </Form.Item>
             </div>
 
             <div className="category_item">
                 <Form.Item  hasFeedback={true} name= {['category_json', formIndex ,'input_type']} label="input type" rules={[{ required: true, message: 'Please fill!' }]}>
-                    <Select size="middle" onChange={(e) => { fUpdateTrigger() }} >
+                    <Select size="middle" onChange={(e) => { fUpdateTrigger() }}  defaultValue={formIndex.input_type}>
                         <Option value="text">text</Option>
                         <Option value="dropdown">dropdown</Option>
                         <Option value="tags">tags</Option>
@@ -167,9 +210,9 @@ const DynamicFields = (props) =>{
                     </Select>
                 </Form.Item>
             </div>
-
-            {form.getFieldValue(['category_json', formIndex, 'input_type']) == 'dropdown' && <FormDropdown {...{ fUpdateTrigger, formIndex }} />}
-            {form.getFieldValue(['category_json', formIndex, 'input_type']) == 'tags' && <FormTags {...{ fUpdateTrigger, formIndex }} />}
+            
+            {(form.getFieldValue(['category_json', formIndex, 'input_type']) || formIndex.input_type)  == 'dropdown' && <FormDropdown {...{ fUpdateTrigger, formIndex, form }} />}
+            {(form.getFieldValue(['category_json', formIndex, 'input_type']) || formIndex.input_type)  == 'tags' && <FormTags {...{ fUpdateTrigger, formIndex , form }} />}
 
         </div>
     </>
@@ -179,12 +222,12 @@ const DynamicFields = (props) =>{
  * dropdown Field
  */
 const FormDropdown = (props) =>{
-    const { fUpdateTrigger, formIndex } = props;
+    const { fUpdateTrigger, formIndex, form } = props;    
     
     return <>
         <div className="category_item">
             <Form.Item  hasFeedback={true} name={['category_json', formIndex, 'dropdown']} label="dropdown values" rules={[{ required: true, message: 'Please fill!' }]}>
-                <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} > </Select>
+                <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} defaultValue={formIndex.dropdown}> </Select>
             </Form.Item>
         </div>
     </>
@@ -194,12 +237,12 @@ const FormDropdown = (props) =>{
  * tag Field
  */
 const FormTags = (props) => {
-    const { fUpdateTrigger, formIndex } = props;
+    const { fUpdateTrigger, formIndex, form } = props;
 
     return <>
         <div className="category_item">
             <Form.Item hasFeedback={true} name={['category_json', formIndex, 'tags']} label="tag values" rules={[{ required: true, message: 'Please fill!' }]}>
-                <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} > </Select>
+                <Select mode="tags" allowClear size="middle" onChange={(e) => { fUpdateTrigger() }} defaultValue={formIndex.dropdown} > </Select>
             </Form.Item>
         </div>
     </>
