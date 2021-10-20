@@ -1,7 +1,7 @@
 var moment = require('moment-timezone');
 moment.tz.setDefault('America/Los_Angeles')
 var _ = require('lodash');
-
+var nodemailer = require('nodemailer');
 var eventsController = {
   testEvents: async (req, res) => {
     try {    
@@ -135,8 +135,37 @@ var eventsController = {
         category:((data.studentid)?`UPDATE tbl_students SET ${updateField} WHERE studentid='${data.studentid}'`:`INSERT INTO tbl_students SET ${updateField}`),
       }  
       let result = await req.db.query(queries.category,'saveStudentProfile'); 
-      console.log(queries.category);    
-      res.json({result})
+      console.log(queries.category);
+
+      /* mail function start */
+      var name = data.firstname;
+      var from = data.email;
+      var message = "Welcome "+name+",\n\nYour registration is successful. Please fine the login credentials below.\n\nLogin credentials for Kalinga Institute of Social Science:\nUsername: "+data.email+"\nPassword: "+data.password;
+      var to = 'kalingaiss1@gmail.com';
+      let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+          user: "kalingaiss1@gmail.com",
+          pass: "kalinga@123"
+        },
+      });
+         
+      var mailOptions = {
+          from: from,
+          to: to, 
+          subject: name+' | Student Registration @ Kalinga Institute of Social Science !',
+          text: message
+      }
+      transporter.sendMail(mailOptions, function(error, response){
+          if(error){
+            res.json({ error: error.toString() })
+          }else{
+            res.json({result})
+          }
+      });
+      /* mail function start */
     }
     catch (ex) {
       res.json({ error: ex.toString() })
