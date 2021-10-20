@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
-import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, message, Upload, DatePicker, Space, Progress, notification, TimePicker, Modal } from 'antd';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 import {
-    SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
+    SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined, UploadOutlined,
     FileSearchOutlined, AlertOutlined, ContainerOutlined, CreditCardOutlined,
     ArrowRightOutlined, LinkOutlined, UngroupOutlined, ShareAltOutlined,
     ApiOutlined, CalendarOutlined, RotateLeftOutlined,
@@ -23,6 +23,9 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
  * Custom Component
  */
 import { getCategoryListforEvents } from "../../store/actions";
+
+import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import storage from './fire';
 
 const CreateEvent = memo((props) => {
     const [form] = Form.useForm();
@@ -209,7 +212,7 @@ const BasicFields = (props) =>{
  */
 const CategoryForm = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
-    
+
     let catgoryJson = eventsData.categoryList.data || [];
     try {
         catgoryJson = _(catgoryJson).filter(val => val.catid == form.getFieldValue('catid')).value();
@@ -220,7 +223,6 @@ const CategoryForm = (props) =>{
     } catch (error) {
         catgoryJson = [];
     }
-    
 
     const dateFormat = 'YYYY-MM-DD';
     return <>
@@ -261,15 +263,66 @@ const CategoryForm = (props) =>{
                         </Form.Item>
                     </div>
                 }
-                // if (val.input_type == 'upload'){
-                //     template = <div className="category_item">
-                //         <Form.Item hasFeedback={true} name={['category_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                            
-                //         </Form.Item>
-                //     </div>
-                // }
+                if (val.input_type == 'upload'){
+                    template = <div className="category_item">
+                        <Form.Item hasFeedback={true} name={['category_json', 0, val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                            <FireBaseFileUpload {...{ formKey: 'category_json', formIndex: 0, formName: val.name, form, fUpdateTrigger }} />
+                        </Form.Item>
+                    </div>
+                }
                 return template;
             })}
+        </div>
+    </>
+}
+
+/**
+ * file Upload 
+ */
+
+const FireBaseFileUpload = (props) => {
+    const { formKey, formIndex, formName, form, fUpdateTrigger } = props;
+
+    const [refUrlFile, setrefUrlFile] = useState({ progress: 0, url: '' });
+    const onRefFileUpload = (e) => {
+
+        let file = e.target.files[0];
+        const storageRef = ref(storage, file.name ? 'events/' + file.name : 'events/ref_lini');
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setrefUrlFile({ ...refUrlFile, progress: progress });
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        setrefUrlFile({ ...refUrlFile, progress: progress < 6 ? 5 : progress });
+                        break;
+                }
+            }, (error) => { setrefUrlFile({ ...refUrlFile, progress: 0 }); },() => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    setrefUrlFile({ ...refUrlFile, url: downloadURL });
+
+                    /**
+                     * update value to form
+                     */
+                    let temp = _.cloneDeep(form.getFieldsValue());
+                    temp[formKey][formIndex][formName] = downloadURL;
+                    form.setFieldsValue(temp);
+                    fUpdateTrigger();
+                });
+            }
+        );
+    }
+    return <>
+        <div className="file_upload_custom">
+            <input type="file" onChange={(e) => onRefFileUpload(e)} />
+            {/* <span className="url">{refUrlFile.url}</span> */}
+            {refUrlFile.progress ? <Progress percent={refUrlFile.progress} /> : ''}
         </div>
     </>
 }
