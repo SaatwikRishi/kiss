@@ -1,0 +1,114 @@
+let records = {
+    calinfo: {}, // Parent Table
+    channelSummary: {}, // from table
+    repeated: [], // from table
+    sampleReport: [], // from table
+    
+    dailyReports: [],  // impacts + contacts
+
+        var dailyReports = _.map(impacts, (val, key) => {
+            var findcontacts = _.filter(contacts, { 'date': val.date }) //_.findIndex(contacts, ['date', val.date]);
+            findcontacts = findcontacts.length > 0 ? findcontacts[0] : {}
+            return {
+                ...val,
+                contacts: findcontacts.contacts || 0,
+                uniq_contacts: findcontacts.uniq_contacts || 0
+            };
+        });
+        
+    statistics: {}
+        let result = {
+            impacts: _.sumBy(data, (rec) => rec.impacts),
+            uniqImpacts: _.sumBy(data, (rec) => rec.uniq_impacts),
+            contacts: _.sumBy(data, (rec) => rec.contacts),
+            uniqContacts: _.sumBy(data, (rec) => rec.uniq_contacts),
+            dollerImpacts: 0,
+            silentSufferers: 0
+        }
+        result.dollerImpacts = result.contacts * 4.5;
+        result.silentSufferers = result.uniqImpacts - result.uniqContacts;
+}
+
+
+calinfo:
+
+    Query: `select * from  cal_job_request where 1=1 ${props.where || ' '}`,
+
+    Form Parent Table:
+
+        props = {
+            field: 'ACCOUNT_NUMBER',
+            jobRefID: jobRefID,
+            startDate: parent.start_ts,
+            endDate: parent.end_ts
+        }
+
+        impacts: req.db.query(reports.calReports.impacts),
+            Querys: `impacts: `SELECT date_format(convert_tz(from_unixtime(EVENT_TS),'UTC','US/Pacific'),'%Y-%m-%d') 'date', count(1) 'impacts', count(distinct(${props.field})) 'uniq_impacts' FROM cal_job_response  WHERE JOB_REF_ID='${props.jobRefID}' group by 1`,
+
+        contacts: req.db.query(reports.calReports.contacts),
+
+            Querys: `SELECT date_format(convert_tz(from_unixtime(CAL.EVENT_TS),'UTC','US/Pacific'),'%Y-%m-%d') 'date', count(distinct(case when ( page_name in ('pda:voice','pda:email')) then pcd.tid end)) + count(distinct(case when ( page_name in ('pda:livechat')) then CONCAT(interaction_id,",",internal_user) end)) 'contacts' , count(distinct(PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'})) 'uniq_contacts' FROM cal_job_response CAL JOIN PRCT_CNTCT_DTLS PCD ON CAL.${props.field} = PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'} WHERE PCD.CREATE_TS BETWEEN CAL.EVENT_TS and CAL.EVENT_TS+24*60*60 AND CAL.EVENT_TS BETWEEN ${props.startDate} and ${props.endDate} AND PCD.CREATE_TS BETWEEN ${props.startDate} and ${props.endDate}+24*60*60 AND CAL.JOB_REF_ID='${props.jobRefID}'  GROUP BY 1`,
+
+        repeated: req.db.query(reports.calReports.repeatedContacts),
+            
+            Query: `SELECT PCD.${ props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER' } 'account_number', count(distinct(case when(page_name in ('pda:voice', 'pda:email')) then pcd.tid end)) + count(distinct(case when(page_name in ('pda:livechat')) then CONCAT(interaction_id, ",", internal_user) end)) 'contacts' FROM cal_job_response CAL JOIN PRCT_CNTCT_DTLS PCD ON CAL.${ props.field } = PCD.${ props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER' } WHERE PCD.CREATE_TS BETWEEN CAL.EVENT_TS and CAL.EVENT_TS + 24 * 60 * 60 AND CAL.EVENT_TS BETWEEN ${ props.startDate } and ${ props.endDate } AND PCD.CREATE_TS BETWEEN ${ props.startDate } and ${ props.endDate } +24 * 60 * 60 AND CAL.JOB_REF_ID = '${props.jobRefID}'  GROUP BY 1 having  contacts > 1`,
+
+        channelSummary: req.db.query(reports.calReports.channelSummary),
+
+            Query: `select count(distinct(case when(page_name in ('pda:voice')) then pcd.tid end)) 'voice_cnt', count(distinct(case when(page_name in ('pda:email')) then pcd.tid end)) 'email_count', count(distinct(case when(page_name in ('pda:livechat')) then CONCAT(interaction_id, internal_user) end)) 'chat_count' FROM cal_job_response CAL JOIN PRCT_CNTCT_DTLS PCD ON CAL.${ props.field }= PCD.${ props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER' } WHERE PCD.CREATE_TS BETWEEN CAL.EVENT_TS and CAL.EVENT_TS + 24 * 60 * 60 AND CAL.EVENT_TS BETWEEN ${ props.startDate } and ${ props.endDate } AND PCD.CREATE_TS BETWEEN ${ props.startDate } and ${ props.endDate } +24 * 60 * 60 AND CAL.JOB_REF_ID = '${props.jobRefID}'`,
+
+
+        sampleReport: req.db.query(reports.calReports.sampleReport)
+
+            Query: `SELECT * FROM cal_job_response WHERE JOB_REF_ID = '${props.jobRefID}' LIMIT 0, 5000`,
+
+
+
+
+Update Matrics:
+
+        if (metricsID.length) {
+            var props = {
+                tid: metricsID[0].tid,
+                impacts: payload.statistics.impacts || 0,
+                uniq_impacts: payload.statistics.uniq_impacts || 0,
+                contacts: payload.statistics.contacts || 0,
+                uniq_contacts: payload.statistics.uniq_contacts || 0,
+                statistics: JSON.stringify(payload.statistics).replace(/'/g, "\\'").replace(/"/g, '\\"') || '{}',
+                daily_report: JSON.stringify(payload.dailyReports).replace(/'/g, "\\'").replace(/"/g, '\\"') || '[]',
+                repeated_contacts: JSON.stringify(payload.repeated).replace(/'/g, "\\'").replace(/"/g, '\\"') || '[]',
+                channel: JSON.stringify(payload.channelSummary).replace(/'/g, "\\'").replace(/"/g, '\\"') || '[]',
+                sample: JSON.stringify(payload.sampleReport).replace(/'/g, "\\'").replace(/"/g, '\\"') || '[]',
+                updated: moment().format('YYYY-MM-DD HH:mm:ss'),
+            }
+            var query = queries(props)
+            let query1 = query.metrics.update
+            let datas = await req.db.query(query1);
+            if (datas.error) {
+                result.message = datas.error;
+            } else {
+                result.data = datas;
+            }
+        }
+
+
+
+
+calReports: {
+    impacts: `SELECT date_format(convert_tz(from_unixtime(EVENT_TS),'UTC','US/Pacific'),'%Y-%m-%d') 'date', count(1) 'impacts', count(distinct(${props.field})) 'uniq_impacts' FROM cal_job_response  WHERE JOB_REF_ID='${props.jobRefID}' group by 1`,
+
+    contacts: `SELECT date_format(convert_tz(from_unixtime(CAL.EVENT_TS),'UTC','US/Pacific'),'%Y-%m-%d') 'date', count(distinct(case when ( page_name in ('pda:voice','pda:email')) then pcd.tid end)) + count(distinct(case when ( page_name in ('pda:livechat')) then CONCAT(interaction_id,",",internal_user) end)) 'contacts' , count(distinct(PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'})) 'uniq_contacts' FROM cal_job_response CAL JOIN PRCT_CNTCT_DTLS PCD ON CAL.${props.field} = PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'} WHERE PCD.CREATE_TS BETWEEN CAL.EVENT_TS and CAL.EVENT_TS+24*60*60 AND CAL.EVENT_TS BETWEEN ${props.startDate} and ${props.endDate} AND PCD.CREATE_TS BETWEEN ${props.startDate} and ${props.endDate}+24*60*60 AND CAL.JOB_REF_ID='${props.jobRefID}'  GROUP BY 1`,
+
+    repeatedContacts: `SELECT PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'} 'account_number', count(distinct(case when ( page_name in ('pda:voice','pda:email')) then pcd.tid end)) + count(distinct(case when ( page_name in ('pda:livechat')) then CONCAT(interaction_id,",",internal_user) end)) 'contacts' FROM cal_job_response CAL JOIN PRCT_CNTCT_DTLS PCD ON CAL.${props.field} = PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'} WHERE PCD.CREATE_TS BETWEEN CAL.EVENT_TS and CAL.EVENT_TS+24*60*60 AND CAL.EVENT_TS BETWEEN ${props.startDate} and ${props.endDate} AND PCD.CREATE_TS BETWEEN ${props.startDate} and ${props.endDate}+24*60*60 AND CAL.JOB_REF_ID='${props.jobRefID}'  GROUP BY 1 having  contacts > 1`,
+
+    contactsInfo: `select ${props.field} 'account_number', case_id,interaction_id,internal_user,qual,teammate_queue,ucid,event_ts_pst from prct_cntct_dtls where ${props.field}='${props.accountNo}' and create_ts between ${props.startDate} and ${props.endDate}+24*60*60`,
+
+    channelSummary: `select count(distinct(case when ( page_name in ('pda:voice')) then pcd.tid end)) 'voice_cnt', count(distinct(case when ( page_name in ('pda:email')) then pcd.tid end)) 'email_count', count(distinct(case when ( page_name in ('pda:livechat')) then CONCAT(interaction_id,internal_user) end)) 'chat_count' FROM cal_job_response CAL JOIN PRCT_CNTCT_DTLS PCD ON CAL.${props.field}= PCD.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'} WHERE PCD.CREATE_TS BETWEEN CAL.EVENT_TS and CAL.EVENT_TS+24*60*60 AND CAL.EVENT_TS BETWEEN ${props.startDate} and ${props.endDate} AND PCD.CREATE_TS BETWEEN ${props.startDate} and ${props.endDate}+24*60*60 AND CAL.JOB_REF_ID='${props.jobRefID}'`,
+
+    channelDetails: `select 'account_number', page_name,date_format(convert_tz(from_unixtime(cal.event_ts),'utc','us/pacific'),'%y-%m-%d') 'date', pcd.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'},case_id,interaction_id,internal_user,qual,teammate_queue,ucid from cal_job_response cal join prct_cntct_dtls pcd on cal.${props.field}= pcd.${props.field === 'ENCRYPTED_ACCOUNT_NUMBER' ? 'ENCRYPT_ACCOUNT_NUMBER' : 'ACCOUNT_NUMBER'} where pcd.create_ts between cal.event_ts and cal.event_ts+24*60*60 and cal.event_ts between ${props.startDate} and ${props.endDate} and pcd.create_ts between ${props.startDate} and ${props.endDate}+24*60*60 AND CAL.JOB_REF_ID='${props.jobRefID}'` ,
+
+    ticketDetails: `SELECT parent.start_ts, parent.end_ts, parent.csts_id, parent.jira_id,parent.is_encrypted, parent.user_id, parent.priority, parent.issue_type, parent.top_contact, parent.issue_status, parent.vpname, parent.issue_name, parent.issue_description, child.cal_job_request_id,child.cal_job_id, child.req_pay_load, child.STATUS, child.COMPLETE_PERC from cal_job_tracking child join cal_job_request parent on child.cal_job_request_id = parent.tid where parent.job_ref_id='${props.jobRefID}'`,
+
+    sampleReport: `SELECT * FROM cal_job_response WHERE JOB_REF_ID='${props.jobRefID}' LIMIT 0, 5000`,
+},
