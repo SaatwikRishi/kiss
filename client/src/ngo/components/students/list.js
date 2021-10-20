@@ -7,7 +7,7 @@ import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllStdCategories } from '../../store/actions';
+import { getAllStudents } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 
@@ -16,13 +16,13 @@ const { Text } = Typography;
 const { Column } = Table;
 const { Search } = Input;
 
-const ListCategory = (props) => {
+const ListStudents = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAllStdCategories());
+    dispatch(getAllStudents());
   },[]);
 
-  const categoryData = useSelector(state => state.stdcategory);
+  const categoryData = useSelector(state => state.students);
   const categorys = categoryData.list;
 
   const categoryDatas = [];
@@ -30,9 +30,9 @@ const ListCategory = (props) => {
     for (let i = 0; i < categorys.length; i++) {
       categoryDatas.push({
         key: (i + 1),
-        stdcatid: categorys[i].stdcatid,
-        name: categorys[i].name,
-        description: categorys[i].description,
+        studentid: categorys[i].studentid,
+        firstname: categorys[i].firstname,
+        lastname: categorys[i].lastname,
       });
     }
   }
@@ -55,21 +55,21 @@ const ListCategory = (props) => {
  
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: 'First Name',
+      dataIndex: 'firstname',
       width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'firstname'),
       render: (text, record) => {
         return (<>
-          <Link to={`/students/createstdcategory/${record.stdcatid}`}>{text}</Link>
+          <Link to={`/students/create/${record.studentid}`}>{text}</Link>
         </>)
       }
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
+      title: 'Last Name',
+      dataIndex: 'lastname',
       width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'description'),
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'lastname'),
     },
     {
       title: 'Action',
@@ -93,8 +93,8 @@ const ListCategory = (props) => {
   return <>
         <div className="_apifilter_subheader">
             <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Student Category List </div>
-                <div className="_subTitle">student category list </div>
+                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Students List </div>
+                <div className="_subTitle">students list </div>
             </div>
             <div className="filters"></div>
         </div>
@@ -109,7 +109,7 @@ const ListCategory = (props) => {
                 <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/students/createstdcategory/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/students/create/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
                 <Table 
@@ -127,4 +127,4 @@ const ListCategory = (props) => {
   </>
 };
 
-export default ListCategory;
+export default ListStudents;

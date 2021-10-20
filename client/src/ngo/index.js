@@ -12,9 +12,12 @@ import { updateUser } from './store/actions';
 import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
 import CreateEvent from "./components/events/new";
+import ListEvents from "./components/events/list";
 import ListCategory from "./components/category/list";
 import CreateStdCategory from "./components/students/createstdcategory";
 import ListStdCategory from "./components/students/liststdcategory";
+import CreateStdProfile from "./components/students/create";
+import ListStudents from "./components/students/list";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
@@ -46,11 +49,14 @@ const Index = (props)=>{
                             <Content>
                                 <Router>
                                     <CreateEvent path="/events/new" />
+                                    <ListEvents path="/events/list" />
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
                                     <ListCategory path="/category/list"/>
                                     <CreateStdCategory path="/students/createstdcategory"/>
                                     <ListStdCategory path="/students/liststdcategory"/>
+                                    <CreateStdProfile path="/students/create"/>
+                                    <ListStudents path="/students/list"/>
                                 </Router>
                             </Content>
                         </Layout>

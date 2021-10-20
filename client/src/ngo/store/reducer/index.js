@@ -6,6 +6,7 @@ import eventsReducer from "./eventsReducer"
 import dashboardReducer from "./dashboardReducer";
 import categoryReducer from "./categoryReducer";
 import stdcategoryReducer from "./stdcategoryReducer";
+import studentReducer from "./studentReducer";
 
 
 const rootReducer = combineReducers({
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
     dashboard:dashboardReducer,
     category:categoryReducer,
     stdcategory:stdcategoryReducer,
+    students:studentReducer,
 });
 
 export default rootReducer; 

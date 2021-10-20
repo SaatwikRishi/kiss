@@ -9,6 +9,7 @@ import axios from 'axios';
 import moment from 'moment-timezone'
 import { getAllCategories } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
+let lib = require('../../libs/index')
 
 const { Option, OptGroup } = Select;
 const { Text } = Typography;
@@ -29,6 +30,7 @@ const ListCategory = (props) => {
     for (let i = 0; i < categorys.length; i++) {
       categoryDatas.push({
         key: (i + 1),
+        catid: categorys[i].catid,
         name: categorys[i].name,
         description: categorys[i].description,
       });
