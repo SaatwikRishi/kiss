@@ -49,7 +49,18 @@ axios.interceptors.response.use(
   }
 );
 
-
+/**
+ * Get getCategory
+ */
+export const getCategoryList = async (date, country) => {
+  let response = await axios.get(`/twitter/api/getDashboardData?date=${date}&country=${country}`)
+  return {
+    type: 'UPDATE_DASHBOARD',
+    payload: response.data.result,
+    date,
+    country
+  };
+}
 
 
 /**
@@ -75,11 +86,11 @@ export const updateUser = async () => {
 /**
  * Update Events
  */
-export const updateEvent = async (event) => {
-  let response = await axios.post(`/twitter/api/updateEvent`, { data: event })
+export const getCategoryListforEvents = async (event) => {
+  let response = await axios.get(`/events/api/getAllCategories`)
   return {
-    type: 'UPDATE_EVENT',
-    payload: null,
+    type: 'EVENTS_CATEGORY_LIST',
+    payload: response.data.result,
   };
 }
 

@@ -7,9 +7,6 @@ var genericRoutes = require('./server/generic/routes/index');
 var port = '8000';
 
 var server = http.createServer(app);
-
-console.log(`[INFO] Node Red Started`)
-
 app.use('/events/', eventsRoutes);
 app.use('/user/', genericRoutes);
 app.get('*', (req,res) =>{
