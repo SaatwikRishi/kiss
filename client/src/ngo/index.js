@@ -49,7 +49,7 @@ const Index = (props)=>{
                             <Content>
                                 <Router>
                                     <CreateEvent path="/events/new" />
-                                    <CreateEvent path="/events/new/:id" />
+                                    <CreateEvent path="/events/new/:eventId" />
                                     <ListEvents path="/events/list" />
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
@@ -86,13 +86,13 @@ const LayoutSidebar = (props) =>{
     return <>
         <div className={`main_sidebar ${expand? 'expand': ''}`} onMouseEnter={() => setexpand(true)} onMouseLeave={() => setexpand(false)}>
             <ul>
-                <li className={url == '/events/new' ? 'active' : ''} onClick={() => navigateTo('/events/new')}>
+                <li className={url == '/admin/events/list' ? 'active' : ''} onClick={() => navigateTo('/admin/events/list')}>
                     <FormOutlined />
-                    <div className="_title">New Events</div>
+                    <div className="_title">Events</div>
                 </li>
-                <li className={url == '/category/new' ? 'active' : ''} onClick={() => navigateTo('/category/new')}>
+                <li className={url == '/admin/category/list' ? 'active' : ''} onClick={() => navigateTo('/admin/category/list')}>
                     <ReconciliationOutlined />
-                    <div className="_title">New Category</div>
+                    <div className="_title">Category</div>
                 </li>
             </ul>
         </div>
