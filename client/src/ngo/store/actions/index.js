@@ -139,7 +139,7 @@ export const getAllEvents = async () => {
   let response = await axios.get('/events/api/getAllEvents')
 
   return {
-    type: 'GET_ALLEVENTS',
+    type: 'EVENTS_LIST',
     payload: response.data.result
   };
 }
