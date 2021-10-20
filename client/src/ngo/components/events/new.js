@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
-import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, Upload, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 import {
-    SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
+    SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined, UploadOutlined,
     FileSearchOutlined, AlertOutlined, ContainerOutlined, CreditCardOutlined,
     ArrowRightOutlined, LinkOutlined, UngroupOutlined, ShareAltOutlined,
     ApiOutlined, CalendarOutlined, RotateLeftOutlined,
@@ -209,7 +209,7 @@ const BasicFields = (props) =>{
  */
 const CategoryForm = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
-    
+
     let catgoryJson = eventsData.categoryList.data || [];
     try {
         catgoryJson = _(catgoryJson).filter(val => val.catid == form.getFieldValue('catid')).value();
@@ -220,7 +220,28 @@ const CategoryForm = (props) =>{
     } catch (error) {
         catgoryJson = [];
     }
-    
+
+    /**
+     * File upload
+     */
+    const propsFileUpload = {
+        name: 'file',
+        action: 'gs://raspberrypi-a43ed.appspot.com/attachment',
+        headers: {
+            authorization: 'authorization-text',
+        },
+        onChange(info) {
+            console.log(info);
+            if (info.file.status !== 'uploading') {
+                console.log(info.file, info.fileList);
+            }
+            if (info.file.status === 'done') {
+                message.success(`${info.file.name} file uploaded successfully`);
+            } else if (info.file.status === 'error') {
+                message.error(`${info.file.name} file upload failed.`);
+            }
+        },
+    };
 
     const dateFormat = 'YYYY-MM-DD';
     return <>
@@ -261,13 +282,15 @@ const CategoryForm = (props) =>{
                         </Form.Item>
                     </div>
                 }
-                // if (val.input_type == 'upload'){
-                //     template = <div className="category_item">
-                //         <Form.Item hasFeedback={true} name={['category_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                            
-                //         </Form.Item>
-                //     </div>
-                // }
+                if (val.input_type == 'upload'){
+                    template = <div className="category_item">
+                        <Form.Item hasFeedback={true} name={['category_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                            <Upload {...propsFileUpload}>
+                                <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                            </Upload>
+                        </Form.Item>
+                    </div>
+                }
                 return template;
             })}
         </div>
