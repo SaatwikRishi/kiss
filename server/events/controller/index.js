@@ -18,7 +18,7 @@ var eventsController = {
       console.log(data);
       let category_json = JSON.stringify(data.category_json);
       let queries={
-        category:((data.catid)?`UPDATE tbl_categories SET name='${data.name}', description='${data.description}', category_json='${category_json}'  WHERE catid='${data.catid}'`:`INSERT INTO tbl_categories ( name, description, category_json ) VALUES ('${data.name}',  '${data.description}',  '${category_json}')`),
+        category:((data.catid!='')?`UPDATE tbl_categories SET name='${data.name}', description='${data.description}', category_json='${category_json}'  WHERE catid='${data.catid}'`:`INSERT INTO tbl_categories ( name, description, category_json ) VALUES ('${data.name}',  '${data.description}',  '${category_json}')`),
       }  
       let result = await req.db.query(queries.category,'saveCategory'); 
       console.log(result);    
@@ -118,13 +118,27 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
-  
-  testFile: async (req, res) => {
+  saveStudentProfile: async (req, res) => {
     try {    
-      console.log(req);
-      let result = { body: req.body, files: req.files };
-      
-      res.json({ result })
+      let {data} = req.body;
+      console.log(data);
+      let student_json = JSON.stringify(data.category_json);
+      let queries={
+        category:((data.studentid)?`UPDATE tbl_students SET firstname='${data.firstname}', lastname='${data.lastname}', stdcatid='${data.stdcatid}', student_json='${student_json}'  WHERE studentid='${data.studentid}'`:`INSERT INTO tbl_students ( firstname, lastname, stdcatid, student_json ) VALUES ('${data.firstname}',  '${data.lastname}',  '${data.stdcatid}',  '${student_json}')`),
+      }  
+      let result = await req.db.query(queries.category,'saveStudentProfile'); 
+      console.log(result);    
+      res.json({result})
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  getAllStudents: async (req, res) => {
+    try {    
+      let result = await req.db.query('SELECT * FROM tbl_students ORDER BY firstname ASC','getAllStudents'); 
+      //console.log(result);    
+      res.json({result})
     }
     catch (ex) {
       res.json({ error: ex.toString() })

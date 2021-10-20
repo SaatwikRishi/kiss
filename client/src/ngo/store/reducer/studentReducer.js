@@ -6,7 +6,7 @@ let userState = {
 
 export default function (state = userState, action) {
 
-    if (action.type === 'GET_ALLSTDCATEGORIES') {
+    if (action.type === 'GET_ALLSTUDENTS') {
         const data = action.payload;
         return {
             ...state,

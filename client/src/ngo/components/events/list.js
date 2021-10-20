@@ -7,7 +7,7 @@ import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllCategories } from '../../store/actions';
+import { getAllEvents } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 
@@ -16,13 +16,13 @@ const { Text } = Typography;
 const { Column } = Table;
 const { Search } = Input;
 
-const ListCategory = (props) => {
+const ListEvents = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAllCategories());
+    dispatch(getAllEvents());
   },[]);
 
-  const categoryData = useSelector(state => state.category);
+  const categoryData = useSelector(state => state.events);
   const categorys = categoryData.list;
 
   const categoryDatas = [];
@@ -30,9 +30,9 @@ const ListCategory = (props) => {
     for (let i = 0; i < categorys.length; i++) {
       categoryDatas.push({
         key: (i + 1),
-        catid: categorys[i].catid,
-        name: categorys[i].name,
-        description: categorys[i].description,
+        eventid: categorys[i].eventid,
+        event_name: categorys[i].event_name,
+        end_date: categorys[i].end_date,
       });
     }
   }
@@ -55,21 +55,21 @@ const ListCategory = (props) => {
  
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: 'Event Name',
+      dataIndex: 'event_name',
       width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'event_name'),
       render: (text, record) => {
         return (<>
-          <Link to={`/category/new/${record.catid}`}>{text}</Link>
+          <Link to={`/events/new/${record.eventid}`}>{text}</Link>
         </>)
       }
     },
     {
-      title: 'Description',
-      dataIndex: 'description',
+      title: 'Event Date',
+      dataIndex: 'end_date',
       width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'description'),
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
     },
     {
       title: 'Action',
@@ -79,7 +79,7 @@ const ListCategory = (props) => {
         return (
           <>
           <Typography.Link title="Edit">
-            <Link to={`/category/new/${record.catid}`}><EditOutlined /></Link>
+          <Link to={`/events/new/${record.eventid}`}><EditOutlined /></Link>
           </Typography.Link>
           <Popconfirm title="Sure to delete?">
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
@@ -93,8 +93,8 @@ const ListCategory = (props) => {
   return <>
         <div className="_apifilter_subheader">
             <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Category List </div>
-                <div className="_subTitle">category list </div>
+                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Events List </div>
+                <div className="_subTitle">events list </div>
             </div>
             <div className="filters"></div>
         </div>
@@ -109,7 +109,7 @@ const ListCategory = (props) => {
                 <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/category/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/events/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
                 <Table 
@@ -127,4 +127,4 @@ const ListCategory = (props) => {
   </>
 };
 
-export default ListCategory;
+export default ListEvents;
