@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 
-import { Breadcrumb, Layout, Spin } from 'antd';
+import { Breadcrumb, Card, Layout, Spin, Row, Col, Calendar, Divider } from 'antd';
 const { Content } = Layout;
 import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
 import { updateUser } from '../../ngo/store/actions';
@@ -38,6 +38,42 @@ const Index = (props) => {
                         <a href="">Dashboard</a>
                     </Breadcrumb.Item>
                 </Breadcrumb>
+            </section>
+            <Divider />
+            <section style={{marginTop:20}}>
+                <Row gutter={[16,16]}>
+                    <Col span={16}>
+                        <Card>
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                            <Card.Grid width={25}>
+                                <h2><ReconciliationOutlined /> Events</h2>
+                            </Card.Grid>                            
+                        </Card>
+                    </Col>
+                    <Col span={8}>
+                        <Calendar  fullscreen={false} />
+                    </Col>
+                </Row>
             </section>
         </Content>
 
