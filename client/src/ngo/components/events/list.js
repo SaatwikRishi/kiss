@@ -79,7 +79,7 @@ const ListEvents = (props) => {
         return (
           <>
           <Typography.Link title="Edit">
-            <EditOutlined />
+          <Link to={`/events/new/${record.eventid}`}><EditOutlined /></Link>
           </Typography.Link>
           <Popconfirm title="Sure to delete?">
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>

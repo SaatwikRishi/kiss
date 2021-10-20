@@ -18,7 +18,7 @@ var eventsController = {
       console.log(data);
       let category_json = JSON.stringify(data.category_json);
       let queries={
-        category:((data.catid)?`UPDATE tbl_categories SET name='${data.name}', description='${data.description}', category_json='${category_json}'  WHERE catid='${data.catid}'`:`INSERT INTO tbl_categories ( name, description, category_json ) VALUES ('${data.name}',  '${data.description}',  '${category_json}')`),
+        category:((data.catid!='')?`UPDATE tbl_categories SET name='${data.name}', description='${data.description}', category_json='${category_json}'  WHERE catid='${data.catid}'`:`INSERT INTO tbl_categories ( name, description, category_json ) VALUES ('${data.name}',  '${data.description}',  '${category_json}')`),
       }  
       let result = await req.db.query(queries.category,'saveCategory'); 
       console.log(result);    
