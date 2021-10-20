@@ -95,10 +95,13 @@ var eventsController = {
   saveStudentCategory: async (req, res) => {
     try {    
       let {data} = req.body;
-      console.log(data);
-      let studentcat_json = JSON.stringify(data.studentcat_json);
+      let updateField = '';
+      Object.keys(data).forEach(key => {  
+        updateField += `${key} = '${(key=='studentcat_json')?JSON.stringify(data[key]):data[key]}', `
+      });
+      updateField = updateField.substr(0, updateField.length-2);
       let queries={
-        category:((data.catid)?`UPDATE tbl_student_categories SET name='${data.name}', description='${data.description}', studentcat_json='${studentcat_json}'  WHERE catid='${data.catid}'`:`INSERT INTO tbl_student_categories ( name, description, studentcat_json ) VALUES ('${data.name}',  '${data.description}',  '${studentcat_json}')`),
+        category:((data.stdcatid)?`UPDATE tbl_student_categories SET ${updateField}  WHERE stdcatid='${data.stdcatid}'`:`INSERT INTO tbl_student_categories SET ${updateField}`),
       }  
       let result = await req.db.query(queries.category,'saveStudentCategory'); 
       console.log(result);    
@@ -121,13 +124,18 @@ var eventsController = {
   saveStudentProfile: async (req, res) => {
     try {    
       let {data} = req.body;
-      console.log(data);
-      let student_json = JSON.stringify(data.category_json);
+      //console.log(data);
+
+      let updateField = '';
+      Object.keys(data).forEach(key => {  
+        updateField += `${key} = '${(key=='student_json')?JSON.stringify(data[key]):data[key]}', `
+      });
+      updateField = updateField.substr(0, updateField.length-2);
       let queries={
-        category:((data.studentid)?`UPDATE tbl_students SET firstname='${data.firstname}', lastname='${data.lastname}', stdcatid='${data.stdcatid}', student_json='${student_json}'  WHERE studentid='${data.studentid}'`:`INSERT INTO tbl_students ( firstname, lastname, stdcatid, student_json ) VALUES ('${data.firstname}',  '${data.lastname}',  '${data.stdcatid}',  '${student_json}')`),
+        category:((data.studentid)?`UPDATE tbl_students SET ${updateField} WHERE studentid='${data.studentid}'`:`INSERT INTO tbl_students SET ${updateField}`),
       }  
       let result = await req.db.query(queries.category,'saveStudentProfile'); 
-      console.log(result);    
+      console.log(queries.category);    
       res.json({result})
     }
     catch (ex) {
