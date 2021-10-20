@@ -15,6 +15,7 @@ const { Header, Content, Footer, } = Layout;
 const composeEnhancers = typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__() : compose;
 const store = createStore(reducers, compose(applyMiddleware(promise), composeEnhancers))
 const NGO = React.lazy(() => import('./ngo/index'))
+const Portal = React.lazy(() => import('./portal/index'))
 
 
 const LayoutScreen = (props) => {
@@ -23,7 +24,8 @@ const LayoutScreen = (props) => {
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={() => { }}>
       <Provider store={store}>
         <Router>
-          <NGO path="/*" />
+          <NGO path="/admin/*" />
+          <Portal path="/*" />
         </Router>
       </Provider>
     </ErrorBoundary>
