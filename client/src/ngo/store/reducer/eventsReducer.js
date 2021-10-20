@@ -13,12 +13,14 @@ export default function (state = userState, action) {
             }
         }
     }
-    if (action.type === 'GET_ALLEVENTS') {
+    if (action.type === 'EVENTS_LIST') {
         const data = action.payload;
         return {
             ...state,
-            loading: true,
-            list: data
+            eventList: {
+                loading: false,
+                data: data
+            }
         }
     }
     return state;

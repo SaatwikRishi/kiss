@@ -1,9 +1,11 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector, navigate } from 'react-redux';
 import { Link } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm  } from 'antd';
-import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
-    FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm } from 'antd';
+import {
+  SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
+  FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined
+} from '@ant-design/icons';
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
@@ -20,11 +22,11 @@ const ListEvents = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getAllEvents());
-  },[]);
+  }, []);
 
   const categoryData = useSelector(state => state.events);
-  const categorys = categoryData.list;
-
+  let categorys = categoryData.eventList ? categoryData.eventList : {};
+  categorys = categorys.data ? categorys.data : [];
   const categoryDatas = [];
   if (categorys != undefined) {
     for (let i = 0; i < categorys.length; i++) {
@@ -36,23 +38,23 @@ const ListEvents = (props) => {
       });
     }
   }
-  const [InitialDatas, setInitialDatas] = useState(categoryDatas); 
-  const [Searched, setSearched] = useState(0); 
-  
-  const search=(value)=>{
-      let searchRec = categoryDatas.filter(o =>
-          Object.keys(o).some(k =>
-              String(o[k])
-                  .toLowerCase()
-                  .includes(value.toLowerCase())
-          )
-      );
-      setSearched(1);
-      setInitialDatas(value ? searchRec : categoryDatas);
+  const [InitialDatas, setInitialDatas] = useState(categoryDatas);
+  const [Searched, setSearched] = useState(0);
+
+  const search = (value) => {
+    let searchRec = categoryDatas.filter(o =>
+      Object.keys(o).some(k =>
+        String(o[k])
+          .toLowerCase()
+          .includes(value.toLowerCase())
+      )
+    );
+    setSearched(1);
+    setInitialDatas(value ? searchRec : categoryDatas);
   }
 
-  const tableDatas = (InitialDatas.length>0)?InitialDatas:categoryDatas;
- 
+  const tableDatas = (InitialDatas.length > 0) ? InitialDatas : categoryDatas;
+
   const columns = [
     {
       title: 'Event Name',
@@ -61,7 +63,7 @@ const ListEvents = (props) => {
       sorter: (a, b) => lib.NumberStringSort(a, b, 'event_name'),
       render: (text, record) => {
         return (<>
-          <Link to={`/events/new/${record.eventid}`}>{text}</Link>
+          <Link to={`/admin/events/new/${record.eventid}`}>{text}</Link>
         </>)
       }
     },
@@ -78,12 +80,12 @@ const ListEvents = (props) => {
       render: (_, record) => {
         return (
           <>
-          <Typography.Link title="Edit">
-          <Link to={`/events/new/${record.eventid}`}><EditOutlined /></Link>
-          </Typography.Link>
-          <Popconfirm title="Sure to delete?">
-            <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
-          </Popconfirm>
+            <Typography.Link title="Edit">
+              <Link to={`/admin/events/new/${record.eventid}`}><EditOutlined /></Link>
+            </Typography.Link>
+            <Popconfirm title="Sure to delete?">
+              <a title="Delete" style={{ padding: "0px 10px" }}><DeleteOutlined /></a>
+            </Popconfirm>
           </>
         );
       },
@@ -91,39 +93,39 @@ const ListEvents = (props) => {
   ];
 
   return <>
-        <div className="_apifilter_subheader">
-            <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Events List </div>
-                <div className="_subTitle">events list </div>
-            </div>
-            <div className="filters"></div>
-        </div>
-        <Divider style={{ margin: '20px 0' }} />
-        {categoryDatas.length>0 ?
-            <div className="_admin_body">
-            <Row className="rowclass">
-                <Col span={17}>
-                
-                </Col>
-                <Col span={6}>
-                <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
-                </Col>
-                <Col span={1}>
-                <Link to={`/events/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
-                </Col>
-                <Col span={24}>
-                <Table 
-                bordered
-                dataSource={tableDatas}
-                columns={columns}     
-                />
-                </Col>
-            </Row>
-            </div> :
-            <div className="_center_loader" style={{ display: 'grid', height: '100vh', width: '100vw', justifyContent: 'space-evenly', alignItems: 'center', }}>
-                <img src={loading} style={{ width: 800, height: 600, border: 'solid 2px #ccc', borderRadius: 10 }} />
-            </div>
-        }
+    <div className="_apifilter_subheader">
+      <div className="_details">
+        <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Events List </div>
+        <div className="_subTitle">events list </div>
+      </div>
+      <div className="filters"></div>
+    </div>
+    <Divider style={{ margin: '20px 0' }} />
+    {categoryDatas.length > 0 ?
+      <div className="_admin_body">
+        <Row className="rowclass">
+          <Col span={17}>
+
+          </Col>
+          <Col span={6}>
+            <Search size='middle' placeholder="Search" allowClear onSearch={(e) => search(e)} enterButton style={{ float: 'right', margin: '5px 25px' }} />
+          </Col>
+          <Col span={1}>
+            <Link to={`/admin/events/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>
+          </Col>
+          <Col span={24}>
+            <Table
+              bordered
+              dataSource={tableDatas}
+              columns={columns}
+            />
+          </Col>
+        </Row>
+      </div> :
+      <div className="_center_loader" style={{ display: 'grid', height: '100vh', width: '100vw', justifyContent: 'space-evenly', alignItems: 'center', }}>
+        <img src={loading} style={{ width: 800, height: 600, border: 'solid 2px #ccc', borderRadius: 10 }} />
+      </div>
+    }
   </>
 };
 
