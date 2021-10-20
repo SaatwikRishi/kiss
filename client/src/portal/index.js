@@ -7,6 +7,8 @@ const { Content } = Layout;
 import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
 import { updateUser } from '../ngo/store/actions';
 import IndexPage from "./component/index";
+import LoginPage from "./component/login";
+import ProfilePage from "./component/profile";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import PortalBanner from "./layout/portalbanner";
@@ -44,6 +46,8 @@ const Index = (props)=>{
                             <Content>
                                 <Router>
                                     <IndexPage path="/" />                                  
+                                    <LoginPage path="/login" />                                 
+                                    <ProfilePage path="/profile" />                                  
                                 </Router>
                             </Content>
                         </Layout>

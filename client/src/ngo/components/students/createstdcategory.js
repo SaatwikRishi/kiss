@@ -28,7 +28,6 @@ const CreateStdCategory = memo((props) => {
     const onFinish = async (e) =>{
         let studentcat_json = _(e.studentcat_json).pickBy(val => val).map(val=>val).value();
         let formData = {
-            name: e.name,
             studentcat_json: studentcat_json
         };
         console.log(formData);
@@ -77,7 +76,6 @@ const CreateStdCategory = memo((props) => {
                 }}>
                 
                 <div className="category_list">
-                    <BasicFields {...{ form, fUpdateTrigger }} />
 
                     <div className="category_dynamic_fields_header">
                         <div className="category_dynamic_title">
