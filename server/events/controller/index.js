@@ -118,6 +118,18 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  
+  testFile: async (req, res) => {
+    try {    
+      console.log(req);
+      let result = { body: req.body, files: req.files };
+      
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
 }
 
 module.exports = eventsController;
