@@ -32,34 +32,34 @@ const PortalHeader = (props) => {
         }
     }
     return <>
-        <div className="center_layout whitebg">
-            <Row align="middle" justify="space-between">
-                <Col span={18}>
-                    <Header className="layout_header">
-                        <div className="center_layout">
+        <div className="" style={{background: '#fff'}}>
+            <div className="main-content">
+                <Row align="middle" justify="space-between">
+                    <Col span={12}>
+                        <Header className="layout_header">
                             <div className="_left">
                                 <div className="portal_logo">
                                     <img src={logo} />
                                 </div>
                             </div>
-                        </div>
-                    </Header>
-                </Col>
-                <Col span={6}>
-                    <Menu  mode="horizontal">
-                        <Menu.Item icon={<SettingOutlined />} onClick={() => checkLogin(auth)}>My Profile</Menu.Item>
-                        <Menu.Item>
-                            <Avatar.Group size="large">
-                                <Avatar size="large" src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
-                                <div className="userinfo"><span className="username">{user.name}</span></div>
-                            </Avatar.Group>
-                        </Menu.Item>
-                    </Menu>
-                </Col>
-            </Row>
+                        </Header>
+                    </Col>
+                    <Col span={12}>
+                        <Menu mode="horizontal" style={{ float: "right"}}>
+                            <Menu.Item icon={<SettingOutlined />} onClick={() => checkLogin(auth)}>My Profile</Menu.Item>
+                            <Menu.Item>
+                                <Avatar.Group size="large">
+                                    <Avatar size="large" src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
+                                    <div className="userinfo"><span className="username">{user.name}</span></div>
+                                </Avatar.Group>
+                            </Menu.Item>
+                        </Menu>
+                    </Col>
+                </Row>
+            </div>
         </div>
         <div className="menu_placeholder">
-            <div className="center_layout">
+            <div className="main-content">
                 <Menu theme="dark" onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
                     <Menu.Item key="mail" icon={<HomeOutlined />}>Home</Menu.Item>
                     <Menu.Item key="app" disabled icon={<AppstoreOutlined />}>

@@ -45,7 +45,7 @@ const Index = (props)=>{
                     <LayoutHeader />
                     <section className="layout_section">
                         <LayoutSidebar />
-                        <Layout className="layout_contentWrapper">
+                        <Layout className="layout_contentWrapper" style={{ padding: '10px 50px'}}>
                             <Content>
                                 <Router>
                                     <CreateEvent path="/events/new" />

@@ -27,7 +27,7 @@ const Index = (props) => {
     }, []);
 
     return <>
-        <Content>
+        <Content style={{ padding: 20}}>
             <section>
                 <Breadcrumb className="bredcrum_style1">
                     <Breadcrumb.Item>KISS</Breadcrumb.Item>
