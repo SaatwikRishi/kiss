@@ -308,6 +308,22 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  saveStudentEventForm: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let updateField = `eventid = '${data.eventid}', studentid = '${data.studentid}', created_date = '${(data.created_date) ? moment(data.created_date).format('YYYY-MM_DD') : ''}', form_json = '${(data.form_json) ? JSON.stringify(data.form_json) : ''}' `
+      let queries = {
+        category: `INSERT INTO tbl_student_forms SET ${updateField}`,
+      }
+      let result = await req.db.query(queries.category, 'saveStudentEventForm');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
   sleep: async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
