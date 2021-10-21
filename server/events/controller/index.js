@@ -167,41 +167,44 @@ var eventsController = {
       let result = await req.db.query(queries.category, 'saveStudentProfile');
       console.log(queries.category);
 
-      /* mail function start */
-      var from = process.env.user;
-      var subjectcontent = process.env.subject.replace('<name>', data.firstname);
-      var msgcontent1 = process.env.message1.replace('<name>', data.firstname);
-      var msgcontent2 = process.env.message2;
-      var msgcontent3 = process.env.message3;
-      var msgcontent4 = process.env.message4.replace('<user>', data.email);
-      var msgcontent5 = process.env.message5.replace('<pass>', data.password);
-      var message = msgcontent1 + '\n\n' + msgcontent2 + '\n\n' + msgcontent3 + '\n\n' + msgcontent4 + '\n' + msgcontent5;
-      var to = data.email;
-      let transporter = nodemailer.createTransport({
-        host: process.env.host,
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.user,
-          pass: process.env.pass
-        },
-      });
-
-      var mailOptions = {
-        from: from,
-        to: to,
-        subject: subjectcontent,
-        text: message,
-        html: message
-      }
-      transporter.sendMail(mailOptions, function (error, response) {
-        if (error) {
-          res.json({ error: error.toString() })
-        } else {
-          res.json({ result })
+      if(!data.studentid)
+      {
+        /* mail function start */
+        var from = process.env.user;
+        var subjectcontent = process.env.subject.replace('<name>',data.firstname);
+        var msgcontent1 = process.env.message1.replace('<name>',data.firstname);
+        var msgcontent2 = process.env.message2;
+        var msgcontent3 = process.env.message3;
+        var msgcontent4 = process.env.message4.replace('<user>',data.email);
+        var msgcontent5 = process.env.message5.replace('<pass>',data.password);
+        var message = msgcontent1+'\n\n'+msgcontent2+'\n\n'+msgcontent3+'\n\n'+msgcontent4+'\n'+msgcontent5;
+        var to = data.email;
+        let transporter = nodemailer.createTransport({
+          host: process.env.host,
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.user,
+            pass: process.env.pass
+          },
+        });
+          
+        var mailOptions = {
+            from: from,
+            to: to, 
+            subject: subjectcontent,
+            text: message,
+            html: message
         }
-      });
-      /* mail function start */
+        transporter.sendMail(mailOptions, function(error, response){
+            if(error){
+              res.json({ error: error.toString() })
+            }else{
+              res.json({result})
+            }
+        });
+        /* mail function start */
+      }      
     }
     catch (ex) {
       res.json({ error: ex.toString() })

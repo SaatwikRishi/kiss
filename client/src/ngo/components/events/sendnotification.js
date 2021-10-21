@@ -10,6 +10,8 @@ import axios from 'axios';
 
 let lib = require('../../libs/index')
 import { getAllStudents } from '../../store/actions';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const { Column } = Table
 const { Content } = Layout;
@@ -19,6 +21,8 @@ const { TextArea } = Input;
 const Notification = (props) => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
+    const [EditorValid, setEditorValid] = useState(true);
+    const [EditorVal, setEditorVal] = useState('');
     const { categorys, record, studentsList } = props.data;
     const [NotificationData, setNotificationData] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -35,7 +39,10 @@ const Notification = (props) => {
 
     const onFinish = (e, categorys, record, studentsList) => {
         console.log(e);
-        let formData = _(e).pickBy(val => val).value();
+        let formData = {
+            title: e.title,
+            message: EditorVal
+        };
         setloading(true);
         let students = studentsList.list;
         let getEvent = {};
@@ -86,6 +93,7 @@ const Notification = (props) => {
                 title="Send Notification"
                 visible={isModalVisible} 
                 footer={null} 
+                width={800}
             >
                 <div className="category_creation" style={{ minHeight: '50vh'}}>
                     <Form className="initial_form" layout="vertical"
@@ -100,8 +108,8 @@ const Notification = (props) => {
                                 </div>
 
                                 <div className="category_item">
-                                    <Form.Item hasFeedback={true} name={'message'} label="message" rules={[{ required: true, message: 'Please fill!' }]}>
-                                        <TextArea rows={3} />
+                                    <Form.Item hasFeedback={true} name={'message'} label="message" rules={[{ required: EditorValid, message: 'Please fill!' }]}>
+                                        <TextEditor setEditorValid={setEditorValid} setEditorVal={setEditorVal} />
                                     </Form.Item>
                                 </div>
                             </div>
@@ -118,3 +126,50 @@ const Notification = (props) => {
 };
 
 export default Notification;
+
+const TextEditor = (props) =>{
+    console.log(props);
+    const OnChange = (value) => {
+      let editorval = ((value.trim()=='' || value=='<p><br></p>')?true:false)
+      props.setEditorValid(editorval)
+      props.setEditorVal(value)
+    }
+  
+    const modules = {
+      toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [
+          { list: 'ordered' },
+          { list: 'bullet' },
+          { indent: '-1' },
+          { indent: '+1' },
+        ],
+        ['link', 'code'],
+        ['clean'],
+      ],
+    };
+    
+    const formats = [
+      'header',
+      'bold',
+      'italic',
+      'underline',
+      'strike',
+      'blockquote',
+      'list',
+      'bullet',
+      'indent',
+      'link',
+      'code',
+    ];
+    
+    return <>
+        <ReactQuill
+          theme="snow"
+          modules={modules}
+          formats={formats}
+          onChange={OnChange}
+        />
+      </>
+  };
