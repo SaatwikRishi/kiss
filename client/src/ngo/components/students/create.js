@@ -61,7 +61,7 @@ const CreateStdProfile = memo((props) => {
     /**
      * on form Finish
      */
-    let formStore = {};
+    let formStore = { password: Math.random().toString(36).slice(2) };
     const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
         console.log(e);
