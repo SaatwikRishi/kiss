@@ -13,6 +13,7 @@ import { getAllEvents, getAllStudents } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 import SendNotification from './sendnotification';
+moment.tz.setDefault('Asia/Kolkata')
 
 const { Option, OptGroup } = Select;
 const { Text } = Typography;
@@ -38,7 +39,10 @@ const ListEvents = (props) => {
         key: (i + 1),
         eventid: categorys[i].eventid,
         event_name: categorys[i].event_name,
-        end_date: categorys[i].end_date,
+        end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+moment(categorys[i].end_date).format('YYYY-MM-DD'),
+        apply_date: ((categorys[i].apply_date)?moment(categorys[i].apply_date).format('YYYY-MM-DD'):''),
+        document_url: categorys[i].document_url,
+        tags: categorys[i].tags,
       });
     }
   }
@@ -79,7 +83,7 @@ const ListEvents = (props) => {
     {
       title: 'Event Name',
       dataIndex: 'event_name',
-      width: '40%',
+      width: '30%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'event_name'),
       render: (text, record) => {
         return (<>
@@ -90,8 +94,20 @@ const ListEvents = (props) => {
     {
       title: 'Event Date',
       dataIndex: 'end_date',
-      width: '40%',
+      width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
+    },
+    {
+      title: 'Last Date',
+      dataIndex: 'apply_date',
+      width: '10%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'apply_date'),
+    },
+    {
+      title: 'Tags',
+      dataIndex: 'tags',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'tags'),
     },
     {
       title: 'Action',
