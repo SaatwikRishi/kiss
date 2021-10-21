@@ -15,7 +15,7 @@ import {
 
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
-moment.tz.setDefault('America/Los_Angeles');
+moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
@@ -24,7 +24,7 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 /**
  * Custom Component
  */
-import { getCategoryListforEvents, getAllEvents } from "../../store/actions";
+import { getCategoryListforEvents, getAllEvents, getAllTags } from "../../store/actions";
 
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import storage from './fire';
@@ -34,6 +34,7 @@ const CreateEvent = (props) => {
     const [form] = Form.useForm();
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.events);
+    const user = useSelector(state => state.user);
 
     /**
      * state Variables
@@ -48,6 +49,7 @@ const CreateEvent = (props) => {
      */
     useEffect(() => {
         dispatch(getAllEvents());
+        dispatch(getAllTags());
     }, []);
     useEffect(() => {
         if (!eventsStore.categoryList) {
@@ -153,7 +155,7 @@ const CreateEvent = (props) => {
         console.log(e);
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
-        await axios.post(`/events/api/saveEvents`, { data: formData }).then(res => {
+        await axios.post(`/events/api/saveEvents`, { data: { ...formData, created_by: user.username, created_date: moment().format('YYYY-MM-DD'), eventid: eventId }}).then(res => {
             console.log(res);
             message.success("Event Created Successfully");
         }).finally(() => {
@@ -328,11 +330,11 @@ const CategoryForm = (props) =>{
                         </Form.Item>
                     </div>
                 }
-                if (val.input_type == 'tags'){
+                if (val.input_type == 'tags' && val.tags){
                     template = <div className="category_item">
                         <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             <Select mode="tags" size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
-                                {val.dropdown.map(val=> <Option value={val}>{val}</Option> )}
+                                {val.tags.map(val=> <Option value={val}>{val}</Option> )}
                             </Select>
                         </Form.Item>
                     </div>

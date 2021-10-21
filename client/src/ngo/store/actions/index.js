@@ -95,6 +95,18 @@ export const getCategoryListforEvents = async (event) => {
 }
 
 /**
+ * Get all Tag List
+ */
+export const getAllTags = async () => {
+  let response = await axios.get('/events/api/getAllTags')
+
+  return {
+    type: 'EVENTS_TAG_LIST',
+    payload: response.data.result
+  };
+}
+
+/**
  * Get DashboardData
  */
 export const getDashboardData = async (date, country) => {

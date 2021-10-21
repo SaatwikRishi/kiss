@@ -16,7 +16,7 @@ import { getAllCategories } from '../../store/actions';
 
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
-moment.tz.setDefault('America/Los_Angeles');
+moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 

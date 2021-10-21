@@ -1,5 +1,5 @@
 var moment = require('moment-timezone');
-moment.tz.setDefault('America/Los_Angeles')
+moment.tz.setDefault('Asia/Kolkata');
 var _ = require('lodash');
 var nodemailer = require('nodemailer');
 var eventsController = {
