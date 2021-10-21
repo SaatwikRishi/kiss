@@ -146,12 +146,20 @@ export const getAllStudents = async () => {
   };
 }
 
-
 export const getAllEvents = async () => {
   let response = await axios.get('/events/api/getAllEvents')
 
   return {
     type: 'EVENTS_LIST',
+    payload: response.data.result
+  };
+}
+
+export const getAllTags = async () => {
+  let response = await axios.get('/events/api/getAllTags')
+
+  return {
+    type: 'TAGS_LIST',
     payload: response.data.result
   };
 }

@@ -13,6 +13,8 @@ import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
 import CreateEvent from "./components/events/new";
 import ListEvents from "./components/events/list";
+import CreateTag from "./components/events/createtag";
+import ListTags from "./components/events/listtags";
 import ListCategory from "./components/category/list";
 import CreateStdCategory from "./components/students/createstdcategory";
 import ListStdCategory from "./components/students/liststdcategory";
@@ -51,6 +53,9 @@ const Index = (props)=>{
                                     <CreateEvent path="/events/new" />
                                     <CreateEvent path="/events/new/:eventId" />
                                     <ListEvents path="/events/list" />
+                                    <CreateTag path="/events/createtag" />
+                                    <CreateTag path="/events/createtag/:id" />
+                                    <ListTags path="/events/listtags" />
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
                                     <CreateCategory path="/category/new/:id" />
