@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 import { initializeApp } from '@firebase/app';
-import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
+import { getAuth, signInWithPopup, GoogleAuthProvider, sendSignInLinkToEmail } from "firebase/auth";
 import { Breadcrumb, Card, Layout, Spin, Row, Col, Divider, Button } from 'antd';
 const { Content } = Layout;
 import { GoogleOutlined } from '@ant-design/icons';
@@ -17,42 +17,48 @@ const LoginPage = (props) => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
 
-
-    console.log({ auth, provider })
     const signInWithGoogle = async () => {
-
-
         signInWithPopup(auth, provider).then((result) => {
-            console.log({ result })
-            // This gives you a Google Access Token. You can use it to access the Google API.
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
-            // The signed-in user info.
             const user = result.user;
-            // ...
         }).catch((error) => {
-            console.error({ error })
-            // Handle Errors here.
             const errorCode = error.code;
             const errorMessage = error.message;
-            // The email of the user's account used.
-            const email = error.email;
-            // The AuthCredential type that was used.
             const credential = GoogleAuthProvider.credentialFromError(error);
             console.error({ credential })
-            // ...
         });
+    };
 
-
-
+    const signInWithEmailLink =() => {
+   
+        const actionCodeSettings = {
+            // URL you want to redirect back to. The domain (www.example.com) for this
+            // URL must be in the authorized domains list in the Firebase Console.
+            url: 'http://localhost',
+            // This must be true.
+            handleCodeInApp: true,            
+            
+          };
+        sendSignInLinkToEmail(auth, 'khizaras@gmail.com',actionCodeSettings).then(() => {
+            console.log("sent email")
+        }).catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            console.error({error})
+        });
     };
     return <>
         <Content>
 
             <section style={{ marginTop: 50, textAlign: 'center', fontSize: 30 }}>
-                <div style={{ fontSize: 30 }}>
-                    <Button size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
-                </div>
+                <Row>
+                    <Col span={24}>
+                        <div style={{ fontSize: 30 }}>
+                            <Button size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
+                        </div>
+                    </Col>                  
+                </Row>
             </section>
         </Content>
 
