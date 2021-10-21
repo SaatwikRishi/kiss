@@ -1,14 +1,16 @@
 var app = require('./app');
 var http = require('http');
 var path = require('path');
-
+var createError=require('create-error');
 var eventsRoutes = require('./server/events/routes/index');
 var genericRoutes = require('./server/generic/routes/index');
+var portalRoutes = require('./server/portal/routes/index');
 var port = '8000';
 
 var server = http.createServer(app);
 app.use('/events/', eventsRoutes);
 app.use('/user/', genericRoutes);
+app.use('/', portalRoutes);
 app.get('*', (req,res) =>{
   res.sendFile(path.join(__dirname+'/dist/index.html'));
 });

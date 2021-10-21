@@ -66,20 +66,11 @@ export const getCategoryList = async (date, country) => {
 /**
  * Update User Infomation
  */
-export const updateUser = async () => {
+export const updateUser = async (payload) => {
 
-  let response = await axios.get('/user/getUser')
-  if (response.data.result.redirect) {
-    if (response.data.result.environment == 'production') {
-      window.location.href = 'https://ssoqa.paypalcorp.com/idp/startSSO.ping?PartnerSpId=socailappsqa&TargetResource=https://socialapps.qa.paypal.com/twitter/';
-    }
-    else {
-      window.location.href = 'https://ssodev.paypalcorp.com/idp/startSSO.ping?PartnerSpId=socailappsdev&TargetResource=https://proactive-apps.pp-devcos-smarttools.us-central1.gcp.dev.paypalinc.com/saml/acs';
-    }   
-  }
   return {
     type: 'UPDATE_USER',
-    payload: response.data.result
+    payload: payload
   };
 }
 

@@ -4,19 +4,40 @@ import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 import { initializeApp } from '@firebase/app';
-import { getAuth, signInWithPopup, GoogleAuthProvider, sendSignInLinkToEmail } from "firebase/auth";
-import { Breadcrumb, Card, Layout, Spin, Row, Col, Divider, Button } from 'antd';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { Alert, Card, Layout, Spin, Row, Col, Divider, Checkbox, Input, Button, Form } from 'antd';
 const { Content } = Layout;
 import { GoogleOutlined } from '@ant-design/icons';
 import { updateUser } from '../../ngo/store/actions';
-
+import axios from 'axios';
 
 
 
 const LoginPage = (props) => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
-
+    const dispatch = useDispatch();
+    const [state, setState] = useState({ hasError: false, message: null })
+    const onFinish = (values) => {
+        setState({ ...state, hasError: false, message: null })
+        axios.post('/api/login', values).then((resp) => {
+            if (resp.data.result && resp.data.result.status === 'active') {
+                let user = updateUser(resp.data.result)              
+                dispatch(user)
+                if (!resp.data.result.isProfileUpdate){
+                    navigate("/updateProfile")
+                }else{
+                    navigate("/")
+                }
+            }             
+            else {
+                setState({ ...state, hasError: true, message: resp.data.result.status })
+            }
+        })
+    };
+    const onFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    }
     const signInWithGoogle = async () => {
         signInWithPopup(auth, provider).then((result) => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -30,40 +51,50 @@ const LoginPage = (props) => {
         });
     };
 
-    const signInWithEmailLink =() => {
-   
-        const actionCodeSettings = {
-            // URL you want to redirect back to. The domain (www.example.com) for this
-            // URL must be in the authorized domains list in the Firebase Console.
-            url: 'http://localhost',
-            // This must be true.
-            handleCodeInApp: true,            
-            
-          };
-        sendSignInLinkToEmail(auth, 'khizaras@gmail.com',actionCodeSettings).then(() => {
-            console.log("sent email")
-        }).catch((error) => {
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error({error})
-        });
-    };
     return <>
         <Content>
+            <section style={{ marginTop: 50, fontSize: 30 }}>
+                <Row align="middle" justify="center">
+                    <Col span={10} >
+                        <div className="loginbox">
+                            <Card bordered title="Login / Sign Up">
+                                <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
+                                    <Form.Item label="E-Mail" name="email" rules={[{ required: true, message: 'Please input your username!' }]}>
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Please input your password!' }]} >
+                                        <Input.Password />
+                                    </Form.Item>
+                                    {state.hasError &&
+                                        <Form.Item>
+                                            <Alert message="Login Failure" description={state.message} type="error" closable />
+                                        </Form.Item>
+                                    }
+                                    <Form.Item name="remember" valuePropName="checked" >
+                                        <Checkbox>Remember me</Checkbox>
+                                    </Form.Item>
+                                    <Form.Item >
+                                        <Button type="primary" htmlType="submit">Login</Button>
+                                    </Form.Item>
 
-            <section style={{ marginTop: 50, textAlign: 'center', fontSize: 30 }}>
-                <Row>
-                    <Col span={24}>
-                        <div style={{ fontSize: 30 }}>
-                            <Button size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
+                                </Form>
+                            </Card>
                         </div>
-                    </Col>                  
+                        <div style={{ fontSize: 30 }}>
+                            <Button block  type="primary" size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
+                        </div>
+                    </Col>
                 </Row>
             </section>
         </Content>
 
     </>
 }
+
+
+
+
+/* 
 
 const signInWithEmailAndPassword = async (email, password) => {
     try {
@@ -96,6 +127,6 @@ const sendPasswordResetEmail = async (email) => {
         console.error(err);
         alert(err.message);
     }
-};
+}; */
 
 export default LoginPage;

@@ -2,7 +2,7 @@ var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Kolkata')
 var _ = require('lodash');
 var nodemailer = require('nodemailer');
-
+var loginModel = require('../../portal/model/login')
 var crypto = require("crypto");
 var algorithm = "aes-192-cbc"; //algorithm to use
 var passwordkey = "PASSWORD";
@@ -156,10 +156,7 @@ var eventsController = {
       let updateField = '';
       Object.keys(data).forEach(key => {  
         if(key=='password' && data[key]){
-          const iv = crypto.randomBytes(16); // generate different ciphertext everytime
-          const cipher = crypto.createCipheriv(algorithm, passkey, iv);
-          var encrypted = cipher.update(data[key], 'utf8', 'hex') + cipher.final('hex'); // encrypted text
-          updateField += `${key} = '${encrypted}', `
+          updateField += `${key} = '${loginModel.encrypt(data[key])}', `        
         }
         else{
           updateField += `${key} = '${(key=='student_json')?JSON.stringify(data[key]):data[key]}', `
@@ -256,6 +253,7 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+
 }
 
 module.exports = eventsController;
