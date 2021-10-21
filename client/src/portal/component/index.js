@@ -2,29 +2,74 @@ import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
-
-import { Breadcrumb, Card, Layout, Spin, Row, Col, Calendar, Divider } from 'antd';
+import { Breadcrumb, Card, Layout, Spin, Row, Col, Calendar, Divider, Space, message } from 'antd';
 const { Content } = Layout;
-import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
-import { updateUser } from '../../ngo/store/actions';
+import { ReconciliationOutlined, FormOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
+/**
+ * Actions
+ */
+import { updateUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
 
 const Index = (props) => {
     const dispatch = useDispatch();
     const location = useLocation();
+    const eventsStore = useSelector(state => state.events);
 
     /** 
-     * Scroll Top on Each Routing
-     * user Tracking  . . .
+     * Scroll to Top
      */
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
 
-    const [loading, setloading] = useState(false);
     useEffect(() => {
         dispatch(updateUser());
+        dispatch(getAllEvents());
+        dispatch(getCategoryListforEvents());
     }, []);
+
+
+    /**
+     * getForm data  from Store
+     */
+    const getEventStoreData = () => {
+        let mainObj = eventsStore ? eventsStore : {}
+        let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
+
+        let eventList = mainObj.eventList ? mainObj.eventList : {};
+
+        return {
+            categoryList: {
+                loading: true,
+                data: [],
+                ...categoryList
+            },
+            eventList: {
+                loading: true,
+                data: [],
+                ...eventList
+            }
+        }
+    }
+    let eventsData = getEventStoreData();
+
+    /**
+     * Loading message
+     */
+    useEffect(() => {
+        eventsData.eventList.loading && message.success("Loading . . .");
+    }, [eventsData.eventList.loading])
+
+    /**
+     * category List and Events count
+     */
+    let categoryList = _(eventsData.eventList.data).groupBy('catid').value()
+    categoryList = _(categoryList).map((val, key)=>{
+        let name = _(eventsData.categoryList.data).filter(v => v.catid == key).value();
+        name = name.length ? name[0].name : 'Others';
+        return { categoryName: name, data: val }
+    }).value()
 
     return <>
         <Content style={{ padding: 20}}>
@@ -43,55 +88,26 @@ const Index = (props) => {
                 <Row gutter={[16,16]}>
                     <Col span={16}>
                         <div className="category_card">
-                            <div className="category_box">
-                                <div className="category_title"> health Care </div>
-                                <div className="category_des"> Hendrerit assumenda nec modi exercitation iusto mollis hymenaeos per cupiditate cum ipsum? Repellat orci enim, hendrerit!  </div>
-                                <div className="category_events">Events: <span className="count">22</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> police officer </div>
-                                <div className="category_des"> diam, doloremque vero sociosqu, urna, ipsam maxime nostrum eget, nostrum occaecat nisl sollicitudin eum est ultrices  </div>
-                                <div className="category_events">Events: <span className="count">345</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> engineering </div>
-                                <div className="category_des"> Non ac sociis. Imperdiet laudantium nullam sem sunt lectus et! Irure? Auctor! Proident maecenas tristique elementum, itaque pariatur  </div>
-                                <div className="category_events">Events: <span className="count">100</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> social media </div>
-                                <div className="category_des"> tortor iaculis nascetur, ad pellentesque varius facere aliquet metus? Nesciunt mus, vitae, aliquip! Dicta proin? Dui platea fugiat  </div>
-                                <div className="category_events">Events: <span className="count">352</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> health Care </div>
-                                <div className="category_des"> Hendrerit assumenda nec modi exercitation iusto mollis hymenaeos per cupiditate cum ipsum? Repellat orci enim, hendrerit!  </div>
-                                <div className="category_events">Events: <span className="count">85</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> it department </div>
-                                <div className="category_des"> Sollicitudin ante nisl amet iaculis ultrices proin mollitia facere irure, recusandae inceptos, ullam curabitur aliquet nunc!  </div>
-                                <div className="category_events">Events: <span className="count">13</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> social media </div>
-                                <div className="category_des"> Hendrerit assumenda nec modi exercitation iusto mollis hymenaeos per cupiditate cum ipsum? Repellat orci enim, hendrerit!  </div>
-                                <div className="category_events">Events: <span className="count">345</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> health Care </div>
-                                <div className="category_des"> diam, doloremque vero sociosqu, urna, ipsam maxime nostrum eget, nostrum occaecat nisl sollicitudin eum est ultrices  </div>
-                                <div className="category_events">Events: <span className="count">865</span></div>
-                            </div>
-                            <div className="category_box">
-                                <div className="category_title"> medicine </div>
-                                <div className="category_des"> Non ac sociis. Imperdiet laudantium nullam sem sunt lectus et! Irure? Auctor! Proident maecenas tristique elementum, itaque pariatur  </div>
-                                <div className="category_events">Events: <span className="count">446</span></div>
-                            </div>
+                            {categoryList.map(val=><>
+                                <div className="category_box">
+                                    <div className="category_title"> {val.categoryName}</div>
+                                    <div className="category_event_list">
+                                        {_(val.data).orderBy('start_date').reverse().take(5).value().map(event=><>
+                                            <div className="category_event_box" onClick={() => navigate(`/event/${event.eventid}`) }>
+                                                <div className="category_event_name">{event.event_name}</div>
+                                                <Space>
+                                                    <div className="category_event_start"><ClockCircleOutlined /> Date: <span className="date">{event.start_date && moment(event.start_date).format('YYYY-MM-DD')}</span></div>
+                                                    <div className="category_event_start"> -- &nbsp;<span className="date">{event.end_date && moment(event.end_date).format('YYYY-MM-DD')}</span></div>
+                                                </Space>
+                                            </div>
+                                        </>)}
+                                    </div>
+                                </div>
+                            </>)}
                         </div>
                     </Col>
                     <Col span={8}>
-                        <Calendar className="calender_box"  fullscreen={false} />
+                        <Calendar className="calender_box" onSelect={() => { navigate(`/event`) }} fullscreen={false} />
                     </Col>
                 </Row>
             </section>

@@ -50,6 +50,7 @@ const Index = (props)=>{
                                     <IndexPage path="/" />                                  
                                     <LoginPage path="/login" />                                 
                                     <ProfilePage path="/profile" />                                  
+                                    <EventDetails path="/event" />
                                     <EventDetails path="/event/:eventId" />
                                 </Router>
                             </Content>
