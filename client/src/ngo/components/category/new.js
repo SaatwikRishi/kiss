@@ -42,7 +42,7 @@ const CreateCategory = memo((props) => {
         let mainObj = categoryStore ? categoryStore : {}
         return {
             categoryList: {
-                loading: mainObj.loaded == true ? true: false,
+                loading: mainObj.loading == true ? false: true,
                 data: mainObj.list ? mainObj.list :[],
             }
         }
@@ -59,14 +59,11 @@ const CreateCategory = memo((props) => {
         if (catId !=null && categoryData.categoryList.loading == false) {
             eventEditObj = _(categoryData.categoryList.data).filter(val => val.catid == parseInt(catId) ).value();
             eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
-
-            console.log(eventEditObj);
             if (Object.keys(eventEditObj).length == 0) {
                 message.warning(`No records fount for this ID : ${catId}`);
                 // navigate('/admin/category/list');
             } else {
                 eventEditObj = _(eventEditObj).pickBy(val => val).value();
-                console.log(eventEditObj);
 
                 let formInit = {
                     ...eventEditObj,
