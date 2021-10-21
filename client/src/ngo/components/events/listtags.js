@@ -7,7 +7,7 @@ import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllCategories } from '../../store/actions';
+import { getAllTags } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 
@@ -19,28 +19,27 @@ const { Search } = Input;
 const ListCategory = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAllCategories());
+    dispatch(getAllTags());
   },[]);
 
-  const categoryData = useSelector(state => state.category);
-  const categorys = categoryData.list;
+  const tagData = useSelector(state => state.tags);
+  const tags = tagData.list;
 
-  const categoryDatas = [];
-  if (categorys != undefined) {
-    for (let i = 0; i < categorys.length; i++) {
-      categoryDatas.push({
+  const tagDatas = [];
+  if (tags != undefined) {
+    for (let i = 0; i < tags.length; i++) {
+      tagDatas.push({
         key: (i + 1),
-        catid: categorys[i].catid,
-        name: categorys[i].name,
-        description: categorys[i].description,
+        tagid: tags[i].tagid,
+        tag: tags[i].tag,
       });
     }
   }
-  const [InitialDatas, setInitialDatas] = useState(categoryDatas); 
+  const [InitialDatas, setInitialDatas] = useState(tagDatas); 
   const [Searched, setSearched] = useState(0); 
   
   const search=(value)=>{
-      let searchRec = categoryDatas.filter(o =>
+      let searchRec = tagDatas.filter(o =>
           Object.keys(o).some(k =>
               String(o[k])
                   .toLowerCase()
@@ -48,28 +47,22 @@ const ListCategory = (props) => {
           )
       );
       setSearched(1);
-      setInitialDatas(value ? searchRec : categoryDatas);
+      setInitialDatas(value ? searchRec : tagDatas);
   }
 
-  const tableDatas = (InitialDatas.length>0)?InitialDatas:categoryDatas;
+  const tableDatas = (InitialDatas.length>0)?InitialDatas:tagDatas;
  
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
+      title: 'Tag',
+      dataIndex: 'tag',
+      width: '80%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'tag'),
       render: (text, record) => {
         return (<>
-          <Link to={`/admin/category/new/${record.catid}`}>{text}</Link>
+          <Link to={`/admin/events/createtag/${record.tagid}`}>{text}</Link>
         </>)
       }
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'description'),
     },
     {
       title: 'Action',
@@ -79,7 +72,7 @@ const ListCategory = (props) => {
         return (
           <>
           <Typography.Link title="Edit">
-            <Link to={`/admin/category/new/${record.catid}`}><EditOutlined /></Link>
+            <Link to={`/admin/events/createtag/${record.tagid}`}><EditOutlined /></Link>
           </Typography.Link>
           <Popconfirm title="Sure to delete?">
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
@@ -93,13 +86,13 @@ const ListCategory = (props) => {
   return <>
         <div className="_apifilter_subheader">
             <div className="_details">
-                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Category List </div>
-                <div className="_subTitle">category list </div>
+                <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Tag List </div>
+                <div className="_subTitle">tags list </div>
             </div>
             <div className="filters"></div>
         </div>
         <Divider style={{ margin: '20px 0' }} />
-        {categoryDatas.length>0 ?
+        {tagDatas.length>0 ?
             <div className="_admin_body">
             <Row className="rowclass">
                 <Col span={17}>
@@ -109,7 +102,7 @@ const ListCategory = (props) => {
                 <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/admin/category/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/admin/events/createtag/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
                 <Table 

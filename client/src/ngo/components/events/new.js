@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
-import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, message, Upload, DatePicker, Space, Progress, notification, TimePicker, Modal } from 'antd';
+import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, 
+    message, Upload, DatePicker, Space, Progress, notification, TimePicker, Modal } from 'antd';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
 const { RangePicker } = DatePicker;
 import {
-    SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined, UploadOutlined,
+    SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined, UploadOutlined, Tooltip,
     FileSearchOutlined, AlertOutlined, ContainerOutlined, CreditCardOutlined,
     ArrowRightOutlined, LinkOutlined, UngroupOutlined, ShareAltOutlined,
     ApiOutlined, CalendarOutlined, RotateLeftOutlined,
@@ -17,50 +18,132 @@ import moment from 'moment-timezone';
 moment.tz.setDefault('America/Los_Angeles');
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
+import { Router, Link, navigate, useLocation } from '@reach/router';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 
 /**
  * Custom Component
  */
-import { getCategoryListforEvents } from "../../store/actions";
+import { getCategoryListforEvents, getAllEvents } from "../../store/actions";
 
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import storage from './fire';
 
-const CreateEvent = memo((props) => {
+const CreateEvent = (props) => {
+    const { eventId } = props;
     const [form] = Form.useForm();
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.events);
 
+    /**
+     * state Variables
+     * fValue rerender State
+     */
+    const [fValue, setfValue] = useState(1);
+    const fUpdateTrigger = () => { setfValue(fValue + 1) }
+    const [dynamicFieldList, setdynamicFieldList] = useState([0]);
 
     /**
-     * get Category list from Event store
+     * get All events Category list from Event store
      */
     useEffect(() => {
-        if (!eventsStore.categoryList){
+        dispatch(getAllEvents());
+    }, []);
+    useEffect(() => {
+        if (!eventsStore.categoryList) {
             dispatch(getCategoryListforEvents());
-        } else if (eventsStore.categoryList.loading){
+        } else if (eventsStore.categoryList.loading) {
             dispatch(getCategoryListforEvents());
         }
-    },[])
+    }, [])
 
     /**
      * getForm data  from Store
      */
     const getEventStoreData = () => {
-        let mainObj = eventsStore ? eventsStore: {}
-        mainObj = mainObj.categoryList ? mainObj.categoryList : {};
+        let mainObj = eventsStore ? eventsStore : {}
+        let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
+
+        let eventList = mainObj.eventList ? mainObj.eventList : {};
+
         return {
             categoryList: {
                 loading: true,
                 data: [],
-                ...mainObj
+                ...categoryList
             },
+            eventList:{
+                loading: true,
+                data:[],
+                ...eventList
+            }
         }
     }
     let eventsData = getEventStoreData();
 
-    
+    /**
+     * based on eventId check edit mode or not
+     * if setForm data
+     */
+    let eventEditObj = {};
+    useEffect(() => {
+        if (eventId && eventsData.eventList.loading == false) {
+            eventEditObj = _(eventsData.eventList.data).filter(val => val.eventid == eventId).value();
+            eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
+            if (Object.keys(eventEditObj).length == 0) {
+                message.warning(`No records fount for this ID : ${eventId}`);
+                navigate('/admin/events/list');
+            } else {
+                eventEditObj = _(eventEditObj).pickBy(val => val).value();
+                let formInit = {
+                    ...eventEditObj,
+                    ...(() => {
+                        if (eventEditObj.apply_date) {
+                            return { apply_date: moment(eventEditObj.apply_date) }
+                        }
+                    })(),
+                    ...(() => {
+                        if (eventEditObj.start_date && eventEditObj.end_date) {
+                            return { end_date: [moment(eventEditObj.start_date), moment(eventEditObj.end_date)] }
+                        }
+                    })(),
+                    ...(() => {
+                        if (eventEditObj.category_json) {
+                            try {
+                                let category_json = JSON.parse(eventEditObj.category_json);
+                                category_json = category_json ? category_json : null;
+                                if (Array.isArray(category_json)) {
+                                    category_json = _.map(category_json, obj => {
+                                        var temp = {}; _.forOwn(obj, function (value, key) {
+                                            temp[key] = moment(value, true).isValid() ? moment(value) : value
+                                        });
+                                        return temp;
+                                    })
+                                    return { category_json: category_json }
+                                }
+                            } catch (error) { }
+                        }
+                    })(),
+                    ...(() => {
+                        if (eventEditObj.event_json) {
+                            try {
+                                let event_json = JSON.parse(eventEditObj.event_json);
+                                event_json = event_json && event_json.length ? event_json : null;
+                                if (event_json) {
+                                    return { event_json: event_json }
+                                }
+                            } catch (error) { }
+                        }
+                    })(),
+                };
+                formInit.event_json && formInit.event_json.length && setdynamicFieldList(Array.from({ length: formInit.event_json.length }, (val, key) => key));
+                form.setFieldsValue(formInit);
+            }
+        } else { }
+    }, [eventsData.eventList.data])
+
+
+
     /**
      * on form Finish
      */
@@ -72,26 +155,16 @@ const CreateEvent = memo((props) => {
         setloading(true);
         await axios.post(`/events/api/saveEvents`, { data: formData }).then(res => {
             console.log(res);
+            message.success("Event Created Successfully");
         }).finally(() => {
             setloading(false);
         })
     }
 
     /**
-     * form Update for all change
-     */
-    const [fValue, setfValue] = useState(1);
-    const fUpdateTrigger = () => { setfValue(fValue + 1) }
-
-    /**
-     * Form Arr
-     */
-    const [categoryList, setcategoryList] = useState([0]);
-
-    /**
      * remove CategoryList
      */
-    const removeCategoryList = (val) => categoryList.length >1 && setcategoryList(_(categoryList).filter(value => value != val).value() );
+    const removeCategoryList = (val) => dynamicFieldList.length > 1 && setdynamicFieldList(_(dynamicFieldList).filter(value => value != val).value() );
 
     return <>
         <div className="_apifilter_subheader">
@@ -126,34 +199,36 @@ const CreateEvent = memo((props) => {
                             Dynamic Form fields
                         </div>
                         <div className="category_dynamic_button">
-                            <Button icon={<PlusOutlined />} size="large" type="dashed" className="add_dynamicFields_button"
-                                onClick={() => {
-                                    let next = categoryList.length ? categoryList[categoryList.length - 1] + 1 : 1;
-                                    setcategoryList([...categoryList, next])
-                                }}> Add </Button>
+                            <p style={{ color: '#1890ff', marginBottom: 0, fontSize: '1.1em', cursor: 'pointer' }} onClick={() => {
+                                let next = dynamicFieldList.length ? dynamicFieldList[dynamicFieldList.length - 1] + 1 : 1;
+                                setdynamicFieldList([...dynamicFieldList, next])
+                            }}>+ Add Row </p>
                         </div>
                     </div>
-
-                    {categoryList.map((formIndex, key) => <>
-                        <div className="category_box_wrapper">
-                            <div className="category_menu">
-                                <div className="category_count"><span>{key + 1}</span></div>
-                                {key != 0 && <div className="category_remove" onClick={() => { removeCategoryList(formIndex)}}><DeleteOutlined /></div>}
+                    
+                    <div>
+                        {dynamicFieldList.map((formIndex, key) => <>
+                            <div className="category_box_wrapper">
+                                <div className="category_menu">
+                                    <div className="category_count"><span>{key + 1}</span></div>
+                                    {key != 0 && <div className="category_remove" onClick={() => { removeCategoryList(formIndex)}}><DeleteOutlined /></div>}
+                                </div>
+                                <DynamicFields {...{ form, formIndex, fUpdateTrigger }} />
                             </div>
-                            <DynamicFields {...{ form, formIndex, fUpdateTrigger }} />
-                        </div>
-                    </>)}
+                        </>)}
+                    </div>
                 </div>
 
                 <Divider style={{ margin: '20px 0' }} />
                 <Space>
                     <Button loading={loading} disabled={loading} icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Save Form </Button>
                 </Space>
+                <br /><br /><br />
             </Form>
         </div>
 
     </>
-})
+}
 export default CreateEvent;
 
 /**
@@ -164,7 +239,7 @@ const BasicFields = (props) =>{
     const dateFormat = 'YYYY-MM-DD';
     
     return <>
-        <div className="category_box_basic">
+        <div className="category_box_basic bgwhite20">
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'event_name'} label="event name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
@@ -187,14 +262,14 @@ const BasicFields = (props) =>{
                 </div>
                 
                 <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: false, message: 'Please fill!' }]}>
-                        <RangePicker size="middle" format={dateFormat} style={{width: '100%'}} />
+                    <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: true, message: 'Please fill!' }]}>
+                        <RangePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={val => moment(val).isBefore(moment.now())} />
                     </Form.Item>
                 </div>
             
                 <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: false, message: 'Please fill!' }]}>
-                        <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                    <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: true, message: 'Please fill!' }]}>
+                        <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isBefore(moment.now())} />
                     </Form.Item>
                 </div>
                 <div className="category_item">
@@ -214,21 +289,27 @@ const CategoryForm = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
 
     let catgoryJson = eventsData.categoryList.data || [];
+    let title = '';
     try {
         catgoryJson = _(catgoryJson).filter(val => val.catid == form.getFieldValue('catid')).value();
         catgoryJson = catgoryJson.length ? catgoryJson[0]: {};
+        title = catgoryJson.name ? catgoryJson.name: '';
         catgoryJson = JSON.parse(catgoryJson.category_json);
         catgoryJson = catgoryJson ? catgoryJson : [];
-        console.log(catgoryJson);
     } catch (error) {
         catgoryJson = [];
     }
 
     const dateFormat = 'YYYY-MM-DD';
     return <>
-        <Divider style={{ margin: '20px 0' }} />
-        <div className="category_box_basic" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gridGap: 25 }}>
-
+        {/* <Divider style={{ margin: '20px 0' }} /> */}
+        <div className="category_dynamic_fields_header">
+            <div className="category_dynamic_title">
+                {title ? 'Category : ' + title: ''}
+            </div>
+            <div className="category_dynamic_button"></div>
+        </div>
+        <div className="category_box_basic bgwhite20" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gridGap: 25}}>
             {catgoryJson.map(val=>{
                 let template = '';
                 if (val.input_type == 'text'){
@@ -259,7 +340,7 @@ const CategoryForm = (props) =>{
                 if (val.input_type == 'datepicker'){
                     template = <div className="category_item">
                         <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                            <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                            <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
                         </Form.Item>
                     </div>
                 }
@@ -283,7 +364,7 @@ const CategoryForm = (props) =>{
 const FireBaseFileUpload = (props) => {
     const { formKey, formIndex, formName, form, fUpdateTrigger } = props;
 
-    const [refUrlFile, setrefUrlFile] = useState({ progress: 0, url: '' });
+    const [refUrlFile, setrefUrlFile] = useState({ progress: 0, url: form.getFieldValue([formKey, formIndex, formName]) });
     const onRefFileUpload = (e) => {
 
         let file = e.target.files[0];
@@ -320,8 +401,8 @@ const FireBaseFileUpload = (props) => {
     }
     return <>
         <div className="file_upload_custom">
-            <input type="file" onChange={(e) => onRefFileUpload(e)} />
-            {/* <span className="url">{refUrlFile.url}</span> */}
+            <Input type="file" size="middle" onChange={(e) => onRefFileUpload(e)} />
+            <a style={{ fontSize: 12, fontWeight: 300, color: '#009688'}} href={refUrlFile.url} target="_blank" title={refUrlFile.url} className="url">{refUrlFile.url}</a>
             {refUrlFile.progress ? <Progress percent={refUrlFile.progress} /> : ''}
         </div>
     </>

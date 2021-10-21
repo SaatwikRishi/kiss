@@ -8,9 +8,12 @@ import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
 import { updateUser } from '../ngo/store/actions';
 import IndexPage from "./component/index";
 import LoginPage from "./component/login";
+import ProfilePage from "./component/profile";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import PortalBanner from "./layout/portalbanner";
+
+import EventDetails from "./component/events/eventDetails";
 
 import '../assets/css/portal.less' 
 
@@ -39,13 +42,15 @@ const Index = (props)=>{
                 </div> */}
                 <Layout>
                     <PortalHeader />
-                    <PortalBanner />
-                    <section className="layout_section center_layout">                        
+                    {/* <PortalBanner /> */}
+                    <section className="main-content">
                         <Layout className="layout_contentWrapper">
                             <Content>
                                 <Router>
                                     <IndexPage path="/" />                                  
-                                    <LoginPage path="/login" />                                  
+                                    <LoginPage path="/login" />                                 
+                                    <ProfilePage path="/profile" />                                  
+                                    <EventDetails path="/event/:eventId" />
                                 </Router>
                             </Content>
                         </Layout>

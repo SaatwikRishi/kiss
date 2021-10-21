@@ -61,7 +61,7 @@ const ListCategory = (props) => {
       sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
       render: (text, record) => {
         return (<>
-          <Link to={`/students/createstdcategory/${record.stdcatid}`}>{text}</Link>
+          <Link to={`/admin/students/createstdcategory/${record.stdcatid}`}>{text}</Link>
         </>)
       }
     },
@@ -79,7 +79,7 @@ const ListCategory = (props) => {
         return (
           <>
           <Typography.Link title="Edit">
-            <EditOutlined />
+          <Link to={`/admin/students/createstdcategory/${record.stdcatid}`}><EditOutlined /></Link>
           </Typography.Link>
           <Popconfirm title="Sure to delete?">
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
@@ -99,31 +99,28 @@ const ListCategory = (props) => {
             <div className="filters"></div>
         </div>
         <Divider style={{ margin: '20px 0' }} />
-        {categoryDatas.length>0 ?
-            <div className="_admin_body">
-            <Row className="rowclass">
-                <Col span={17}>
-                
-                </Col>
-                <Col span={6}>
-                <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
-                </Col>
-                <Col span={1}>
-                <Link to={`/students/createstdcategory/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
-                </Col>
-                <Col span={24}>
-                <Table 
-                bordered
-                dataSource={tableDatas}
-                columns={columns}     
-                />
-                </Col>
-            </Row>
-            </div> :
-            <div className="_center_loader" style={{ display: 'grid', height: '100vh', width: '100vw', justifyContent: 'space-evenly', alignItems: 'center', }}>
-                <img src={loading} style={{ width: 800, height: 600, border: 'solid 2px #ccc', borderRadius: 10 }} />
-            </div>
-        }
+        <div className="_admin_body">
+        <Row className="rowclass">
+            <Col span={17}>
+            
+            </Col>
+            <Col span={6}>
+            <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
+            </Col>
+            <Col span={1}>
+            {categoryDatas.length==0 ?                  
+                <Link to={`/admin/students/createstdcategory/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link> : ''
+            }           
+            </Col>
+            <Col span={24}>
+            <Table 
+            bordered
+            dataSource={tableDatas}
+            columns={columns}     
+            />
+            </Col>
+        </Row>
+        </div>
   </>
 };
 

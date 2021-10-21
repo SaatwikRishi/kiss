@@ -61,7 +61,7 @@ const CreateStdProfile = memo((props) => {
     /**
      * on form Finish
      */
-    let formStore = {};
+    let formStore = { password: Math.random().toString(36).slice(2) };
     const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
         console.log(e);
@@ -116,7 +116,7 @@ const CreateStdProfile = memo((props) => {
                 <div className="category_list">
                     <BasicFields {...{ form, fUpdateTrigger, eventsData }} />
 
-                    {form.getFieldValue('stdcatid') && <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />}
+                    <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />
                 </div>
 
                 <Divider style={{ margin: '20px 0' }} />
@@ -147,18 +147,35 @@ const BasicFields = (props) =>{
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: false, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'stdcatid'} label="student category" rules={[{ required: true, message: 'Please fill!' }]}>
-                    <Select size="middle" onChange={(e) => { fUpdateTrigger() }} >
-                        {eventsData.list.map(val => <Option value={val.stdcatid}>{val.name}</Option>)}
-                    </Select>
+                <Form.Item hasFeedback={true} name={'email'} label="email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                    <Input size="middle" />
                 </Form.Item>
             </div>
+
+            <div className="category_item">
+                <Form.Item hasFeedback={true} name={'password'} label="password" rules={[{ required: true, message: 'Please fill!' }]}>
+                    <Input.Password size="middle" />
+                </Form.Item>
+            </div>
+
+            <div className="category_item">
+                <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>
+                    <Input size="middle" />
+                </Form.Item>
+            </div>
+
+            <div className="category_item">
+                <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
+                    <Input size="middle" />
+                </Form.Item>
+            </div>
+
         </div>
     </>
 }
@@ -168,10 +185,11 @@ const BasicFields = (props) =>{
  */
 const CategoryForm = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
+    console.log(eventsData);
     
     let catgoryJson = eventsData.list || [];
     try {
-        catgoryJson = _(catgoryJson).filter(val => val.stdcatid == form.getFieldValue('stdcatid')).value();
+        //catgoryJson = _(catgoryJson).filter(val => val.stdcatid == form.getFieldValue('stdcatid')).value();
         catgoryJson = catgoryJson.length ? catgoryJson[0]: {};
         catgoryJson = JSON.parse(catgoryJson.studentcat_json);
         catgoryJson = catgoryJson ? catgoryJson : [];
@@ -190,14 +208,14 @@ const CategoryForm = (props) =>{
                 let template = '';
                 if (val.input_type == 'text'){
                     template = <div className="category_item">
-                        <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                        <Form.Item hasFeedback={true} name={['student_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             <Input size="middle" style={{ width: '100%' }}/>
                         </Form.Item>
                     </div>
                 }
                 if (val.input_type == 'dropdown'){
                     template = <div className="category_item">
-                        <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                        <Form.Item hasFeedback={true} name={['student_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             <Select size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
                                 {val.dropdown.map(val=> <Option value={val}>{val}</Option> )}
                             </Select>
@@ -206,7 +224,7 @@ const CategoryForm = (props) =>{
                 }
                 if (val.input_type == 'tags'){
                     template = <div className="category_item">
-                        <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                        <Form.Item hasFeedback={true} name={['student_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             <Select mode="tags" size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
                                 {val.dropdown.map(val=> <Option value={val}>{val}</Option> )}
                             </Select>
@@ -215,14 +233,14 @@ const CategoryForm = (props) =>{
                 }
                 if (val.input_type == 'datepicker'){
                     template = <div className="category_item">
-                        <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                        <Form.Item hasFeedback={true} name={['student_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
                         </Form.Item>
                     </div>
                 }
                 // if (val.input_type == 'upload'){
                 //     template = <div className="category_item">
-                //         <Form.Item hasFeedback={true} name={['category_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                //         <Form.Item hasFeedback={true} name={['student_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             
                 //         </Form.Item>
                 //     </div>

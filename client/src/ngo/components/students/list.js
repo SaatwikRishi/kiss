@@ -33,6 +33,8 @@ const ListStudents = (props) => {
         studentid: categorys[i].studentid,
         firstname: categorys[i].firstname,
         lastname: categorys[i].lastname,
+        email: categorys[i].email,
+        regno: categorys[i].regno,
       });
     }
   }
@@ -57,19 +59,31 @@ const ListStudents = (props) => {
     {
       title: 'First Name',
       dataIndex: 'firstname',
-      width: '40%',
+      width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'firstname'),
       render: (text, record) => {
         return (<>
-          <Link to={`/students/create/${record.studentid}`}>{text}</Link>
+          <Link to={`/admin/students/create/${record.studentid}`}>{text}</Link>
         </>)
       }
     },
     {
       title: 'Last Name',
       dataIndex: 'lastname',
-      width: '40%',
+      width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'lastname'),
+    },    
+    {
+      title: 'Email',
+      dataIndex: 'email',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'email'),
+    },    
+    {
+      title: 'Registration Number',
+      dataIndex: 'regno',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'regno'),
     },
     {
       title: 'Action',
@@ -99,31 +113,26 @@ const ListStudents = (props) => {
             <div className="filters"></div>
         </div>
         <Divider style={{ margin: '20px 0' }} />
-        {categoryDatas.length>0 ?
-            <div className="_admin_body">
-            <Row className="rowclass">
-                <Col span={17}>
-                
-                </Col>
-                <Col span={6}>
-                <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
-                </Col>
-                <Col span={1}>
-                <Link to={`/students/create/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
-                </Col>
-                <Col span={24}>
-                <Table 
-                bordered
-                dataSource={tableDatas}
-                columns={columns}     
-                />
-                </Col>
-            </Row>
-            </div> :
-            <div className="_center_loader" style={{ display: 'grid', height: '100vh', width: '100vw', justifyContent: 'space-evenly', alignItems: 'center', }}>
-                <img src={loading} style={{ width: 800, height: 600, border: 'solid 2px #ccc', borderRadius: 10 }} />
-            </div>
-        }
+        <div className="_admin_body">
+        <Row className="rowclass">
+            <Col span={17}>
+            
+            </Col>
+            <Col span={6}>
+            <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
+            </Col>
+            <Col span={1}>
+            <Link to={`/admin/students/create/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+            </Col>
+            <Col span={24}>
+            <Table 
+            bordered
+            dataSource={tableDatas}
+            columns={columns}     
+            />
+            </Col>
+        </Row>
+        </div>
   </>
 };
 
