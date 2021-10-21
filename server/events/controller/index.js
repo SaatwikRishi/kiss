@@ -1,7 +1,13 @@
 var moment = require('moment-timezone');
-moment.tz.setDefault('America/Los_Angeles')
+moment.tz.setDefault('Asia/Kolkata')
 var _ = require('lodash');
 var nodemailer = require('nodemailer');
+
+var crypto = require("crypto");
+var algorithm = "aes-192-cbc"; //algorithm to use
+var passwordkey = "PASSWORD";
+const passkey = crypto.scryptSync(passwordkey, 'salt', 24); //create key
+
 var eventsController = {
   testEvents: async (req, res) => {
     try {    
@@ -112,6 +118,8 @@ var eventsController = {
     }
   },
   getAllStdCategories: async (req, res) => {
+    var text= "this is the text to be encrypted"; //text to be encrypted
+
     try {    
       let result = await req.db.query('SELECT * FROM tbl_student_categories ORDER BY name ASC','getAllStdCategories'); 
       //console.log(result);    
@@ -124,11 +132,19 @@ var eventsController = {
   saveStudentProfile: async (req, res) => {
     try {    
       let {data} = req.body;
-      //console.log(data);
+      console.log(process.env.name);
 
       let updateField = '';
       Object.keys(data).forEach(key => {  
-        updateField += `${key} = '${(key=='student_json')?JSON.stringify(data[key]):data[key]}', `
+        if(key=='password' && data[key]){
+          const iv = crypto.randomBytes(16); // generate different ciphertext everytime
+          const cipher = crypto.createCipheriv(algorithm, passkey, iv);
+          var encrypted = cipher.update(data[key], 'utf8', 'hex') + cipher.final('hex'); // encrypted text
+          updateField += `${key} = '${encrypted}', `
+        }
+        else{
+          updateField += `${key} = '${(key=='student_json')?JSON.stringify(data[key]):data[key]}', `
+        }
       });
       updateField = updateField.substr(0, updateField.length-2);
       let queries={
@@ -138,25 +154,31 @@ var eventsController = {
       console.log(queries.category);
 
       /* mail function start */
-      var name = data.firstname;
-      var from = data.email;
-      var message = "Welcome "+name+",\n\nYour registration is successful. Please fine the login credentials below.\n\nLogin credentials for Kalinga Institute of Social Science:\nUsername: "+data.email+"\nPassword: "+data.password;
-      var to = 'kalingaiss1@gmail.com';
+      var from = process.env.user;
+      var subjectcontent = process.env.subject.replace('<name>',data.firstname);
+      var msgcontent1 = process.env.message1.replace('<name>',data.firstname);
+      var msgcontent2 = process.env.message2;
+      var msgcontent3 = process.env.message3;
+      var msgcontent4 = process.env.message4.replace('<user>',data.email);
+      var msgcontent5 = process.env.message5.replace('<pass>',data.password);
+      var message = msgcontent1+'\n\n'+msgcontent2+'\n\n'+msgcontent3+'\n\n'+msgcontent4+'\n'+msgcontent5;
+      var to = data.email;
       let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
+        host: process.env.host,
         port: 587,
-        secure: false, // true for 465, false for other ports
+        secure: false,
         auth: {
-          user: "kalingaiss1@gmail.com",
-          pass: "kalinga@123"
+          user: process.env.user,
+          pass: process.env.pass
         },
       });
          
       var mailOptions = {
           from: from,
           to: to, 
-          subject: name+' | Student Registration @ Kalinga Institute of Social Science !',
-          text: message
+          subject: subjectcontent,
+          text: message,
+          html: message
       }
       transporter.sendMail(mailOptions, function(error, response){
           if(error){
