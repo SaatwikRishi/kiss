@@ -15,25 +15,33 @@ import {
 
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
-moment.tz.setDefault('America/Los_Angeles');
+moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 
 /**
+ * Editor Textarea
+ */
+import { Editor } from "react-draft-wysiwyg";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
+/**
  * Custom Component
  */
-import { getCategoryListforEvents, getAllEvents } from "../../store/actions";
+import { getCategoryListforEvents, getAllEvents, getAllTags } from "../../store/actions";
 
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import storage from './fire';
 
+
 const CreateEvent = (props) => {
-    const { eventId } = props;
+    const { eventId = null } = props;
     const [form] = Form.useForm();
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.events);
+    const user = useSelector(state => state.user);
 
     /**
      * state Variables
@@ -48,6 +56,7 @@ const CreateEvent = (props) => {
      */
     useEffect(() => {
         dispatch(getAllEvents());
+        dispatch(getAllTags());
     }, []);
     useEffect(() => {
         if (!eventsStore.categoryList) {
@@ -62,9 +71,10 @@ const CreateEvent = (props) => {
      */
     const getEventStoreData = () => {
         let mainObj = eventsStore ? eventsStore : {}
+        
         let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
-
         let eventList = mainObj.eventList ? mainObj.eventList : {};
+        let tagList = mainObj.tagList ? mainObj.tagList : {};
 
         return {
             categoryList: {
@@ -76,6 +86,11 @@ const CreateEvent = (props) => {
                 loading: true,
                 data:[],
                 ...eventList
+            },
+            tagList:{
+                loading: true,
+                data:[],
+                ...tagList
             }
         }
     }
@@ -95,8 +110,15 @@ const CreateEvent = (props) => {
                 navigate('/admin/events/list');
             } else {
                 eventEditObj = _(eventEditObj).pickBy(val => val).value();
+                console.log(eventEditObj);
+
                 let formInit = {
                     ...eventEditObj,
+                    ...(() => {
+                        if (eventEditObj.tags) {
+                            return { tags: eventEditObj.tags.split(",") }
+                        }
+                    })(),
                     ...(() => {
                         if (eventEditObj.apply_date) {
                             return { apply_date: moment(eventEditObj.apply_date) }
@@ -153,9 +175,18 @@ const CreateEvent = (props) => {
         console.log(e);
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
-        await axios.post(`/events/api/saveEvents`, { data: formData }).then(res => {
+        await axios.post(`/events/api/saveEvents`, { data: { 
+            ...formData, 
+            created_by: user.username, 
+            created_date: moment().format('YYYY-MM-DD'), 
+            ...(() => {
+                return eventId !=null ? { eventid: parseInt(eventId) } : {}
+            })(),
+        }}).then(res => {
             console.log(res);
             message.success("Event Created Successfully");
+            dispatch(getAllEvents());
+            navigate("/admin/events/list")
         }).finally(() => {
             setloading(false);
         })
@@ -164,7 +195,7 @@ const CreateEvent = (props) => {
     /**
      * remove CategoryList
      */
-    const removeCategoryList = (val) => dynamicFieldList.length > 1 && setdynamicFieldList(_(dynamicFieldList).filter(value => value != val).value() );
+    const removeCategoryList = (val) => setdynamicFieldList(_(dynamicFieldList).filter(value => value != val).value() );
 
     return <>
         <div className="_apifilter_subheader">
@@ -211,7 +242,7 @@ const CreateEvent = (props) => {
                             <div className="category_box_wrapper">
                                 <div className="category_menu">
                                     <div className="category_count"><span>{key + 1}</span></div>
-                                    {key != 0 && <div className="category_remove" onClick={() => { removeCategoryList(formIndex)}}><DeleteOutlined /></div>}
+                                    <div className="category_remove" onClick={() => { removeCategoryList(formIndex)}}><DeleteOutlined /></div>
                                 </div>
                                 <DynamicFields {...{ form, formIndex, fUpdateTrigger }} />
                             </div>
@@ -237,7 +268,16 @@ export default CreateEvent;
 const BasicFields = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
     const dateFormat = 'YYYY-MM-DD';
-    
+
+    // const [editValue, seteditValue] = useState(form.getFieldValue('event_desc'));
+    // const onEditorStateChange = (e) =>{
+    //     form.setFieldsValue({
+    //         ...form.getFieldsValue(),
+    //         event_desc: e
+    //     });
+    //     console.log(e);
+    //     seteditValue(e);
+    // }
     return <>
         <div className="category_box_basic bgwhite20">
             <div className="category_item">
@@ -246,17 +286,38 @@ const BasicFields = (props) =>{
                 </Form.Item>
             </div>
 
+            {/* <div className="category_item">
+                <Form.Item hasFeedback={true} name={'event_desc'} label="event description" rules={[{ required: false, message: 'Please fill!' }]}>
+                    <Editor
+                        editorState={editValue}
+                        toolbarClassName="toolbarClassName"
+                        wrapperClassName="customtextareaEditor"
+                        editorClassName="editorClassName"
+                        onEditorStateChange={onEditorStateChange}
+                    />
+                    <TextArea rows={0} style={{ display: 'none'}} />
+                </Form.Item>
+            </div> */}
+            
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'event_desc'} label="event description" rules={[{ required: false, message: 'Please fill!' }]}>
                     <TextArea rows={3} />
                 </Form.Item>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gridGap: 25}}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gridGap: '10px 25px', marginTop: 20}}>
                 <div className="category_item">
                     <Form.Item hasFeedback={true} name={'catid'} label="select category" rules={[{ required: true, message: 'Please fill!' }]}>
                         <Select size="middle" onChange={(e) => { fUpdateTrigger() }} >
                             {eventsData.categoryList.data.map(val => <Option value={val.catid}>{val.name}</Option>)}
+                        </Select>
+                    </Form.Item>
+                </div>
+
+                <div className="category_item">
+                    <Form.Item hasFeedback={true} name={'tags'} label="select Tags" rules={[{ required: true, message: 'Please fill!' }]}>
+                        <Select mode="tags" size="middle" onChange={(e) => {  }} >
+                            {eventsData.tagList.data.map(val => <Option value={val.tag}>{val.tag}</Option>)}
                         </Select>
                     </Form.Item>
                 </div>
@@ -275,6 +336,11 @@ const BasicFields = (props) =>{
                 <div className="category_item">
                     <Form.Item hasFeedback={true} name={'document_url'} label="document url" rules={[{ required: false, message: 'Please fill!' }]}>
                         <Input size="middle" style={{ width: '100%' }}/>
+                    </Form.Item>
+                </div>
+                <div className="category_item">
+                    <Form.Item hasFeedback={true} name={'gallery'} label="Event Image" rules={[{ required: false, message: 'Please fill!' }]}>
+                        <FireBaseGalleryFileUpload {...{ formName: 'gallery', form, fUpdateTrigger }} />
                     </Form.Item>
                 </div>
             </div>
@@ -328,11 +394,11 @@ const CategoryForm = (props) =>{
                         </Form.Item>
                     </div>
                 }
-                if (val.input_type == 'tags'){
+                if (val.input_type == 'tags' && val.tags){
                     template = <div className="category_item">
                         <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
                             <Select mode="tags" size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
-                                {val.dropdown.map(val=> <Option value={val}>{val}</Option> )}
+                                {val.tags.map(val=> <Option value={val}>{val}</Option> )}
                             </Select>
                         </Form.Item>
                     </div>
@@ -358,9 +424,58 @@ const CategoryForm = (props) =>{
 }
 
 /**
+ * Galerry file Upload 
+ */
+const FireBaseGalleryFileUpload = (props) => {
+    const { formName, form, fUpdateTrigger } = props;
+
+    const [refUrlFile, setrefUrlFile] = useState({ progress: 0, url: form.getFieldValue(formName) });
+    const onRefFileUpload = (e) => {
+
+        let file = e.target.files[0];
+        const storageRef = ref(storage, file.name ? 'events/' + file.name : 'events/ref_lini');
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setrefUrlFile({ ...refUrlFile, progress: progress });
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        setrefUrlFile({ ...refUrlFile, progress: progress < 6 ? 5 : progress });
+                        break;
+                }
+            }, (error) => { setrefUrlFile({ ...refUrlFile, progress: 0 }); },() => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    setrefUrlFile({ ...refUrlFile, url: downloadURL });
+
+                    /**
+                     * update value to form
+                     */
+                    let temp = _.cloneDeep(form.getFieldsValue());
+                    temp[formName] = downloadURL;
+                    form.setFieldsValue(temp);
+                    fUpdateTrigger();
+                });
+            }
+        );
+    }
+    return <>
+        <div className="file_upload_custom">
+            <Input type="file" size="middle" onChange={(e) => onRefFileUpload(e)} />
+            <a style={{ fontSize: 12, fontWeight: 300, color: '#009688'}} href={form.getFieldValue(formName)} target="_blank" title={form.getFieldValue(formName)} className="url">{form.getFieldValue(formName)}</a>
+            {refUrlFile.progress ? <Progress percent={refUrlFile.progress} /> : ''}
+        </div>
+    </>
+}
+
+/**
  * file Upload 
  */
-
 const FireBaseFileUpload = (props) => {
     const { formKey, formIndex, formName, form, fUpdateTrigger } = props;
 

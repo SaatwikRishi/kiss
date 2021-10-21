@@ -61,13 +61,14 @@ const PortalHeader = (props) => {
         <div className="menu_placeholder">
             <div className="main-content">
                 <Menu theme="dark" onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
-                    <Menu.Item key="mail" icon={<HomeOutlined />}>Home</Menu.Item>
-                    <Menu.Item key="app" disabled icon={<AppstoreOutlined />}>
-                        Navigation Two
+                    <Menu.Item key="mail" icon={<HomeOutlined />}>
+                        <a href="/" rel="noopener noreferrer">
+                            Home
+                        </a>
                     </Menu.Item>
                     <Menu.Item key="alipay">
-                        <a href="https://ant.design" target="_blank" rel="noopener noreferrer">
-                            Navigation Four - Link
+                        <a href="/event" rel="noopener noreferrer">
+                            Events List
                         </a>
                     </Menu.Item>
                 </Menu>

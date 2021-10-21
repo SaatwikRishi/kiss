@@ -13,6 +13,16 @@ export default function (state = userState, action) {
             }
         }
     }
+    if (action.type === 'EVENTS_TAG_LIST') {
+        const data = action.payload;
+        return {
+            ...state,
+            tagList: {
+                loading: false,
+                data: data
+            }
+        }
+    }
     if (action.type === 'EVENTS_LIST') {
         const data = action.payload;
         return {
