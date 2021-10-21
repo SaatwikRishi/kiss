@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
-import _ from 'lodash';
 
 import { Breadcrumb, Card, Layout, Spin, Row, Col, Calendar, Divider, Badge  } from 'antd';
 const { Content } = Layout;
 import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
+import _, { remove } from 'lodash'
+import moment from 'moment-timezone';
+moment.tz.setDefault('America/Los_Angeles');
+var momentRange = require('moment-range');
+momentRange.extendMoment(moment);
 
+import axios from 'axios';
 
 /**
  * Actions 
@@ -69,17 +74,23 @@ const EventDetails = (props) => {
     }, [eventsData.eventList.data])
 
     const getListData = (value)=> {
-        let listData;
-        console.log(moment(value).format('YYYY-MM-DD'));
-        switch (value.date()) {
-            case 8:
-                listData = [
-                    { type: 'warning', content: 'This is warning event.' },
-                    { type: 'success', content: 'This is usual event.' },
-                ];
-                break;
-            default:
-        }
+        let today = moment(value).format('YYYY-MM-DD');
+
+        let listData = _(eventsData.eventList.data).filter(val=>{
+            if (val.start_date && val.end_date){
+                let cnt=  moment(today).isBetween(moment(val.start_date, 'YYYY-MM-DD'), moment(val.end_date, 'YYYY-MM-DD')) || moment(today).isSame(moment(val.start_date)) ;
+                console.log({
+                    today: today,
+                    start_date: val.start_date,
+                    ans: moment(today).isSame(val.start_date)
+                });
+                return cnt;
+            }
+        }).map(val=>{
+            return { type: 'success', content: val.event_name };
+        }).value();
+        console.log(listData);
+
         return listData || [];
     }
 
@@ -103,7 +114,7 @@ const EventDetails = (props) => {
     return <>
         <div className="events_details_wrapper main-content">
             <div className="events_details_calender">
-                <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
+                {eventsData.eventList.loading == false && <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />}
             </div>
         </div>
 

@@ -263,13 +263,13 @@ const BasicFields = (props) =>{
                 
                 <div className="category_item">
                     <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: true, message: 'Please fill!' }]}>
-                        <RangePicker format={dateFormat} size="middle" style={{width: '100%'}} />
+                        <RangePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={val => moment(val).isBefore(moment.now())} />
                     </Form.Item>
                 </div>
             
                 <div className="category_item">
                     <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: true, message: 'Please fill!' }]}>
-                        <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                        <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isBefore(moment.now())} />
                     </Form.Item>
                 </div>
                 <div className="category_item">
