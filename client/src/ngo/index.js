@@ -58,7 +58,7 @@ const Index = (props)=>{
                                     <ListTags path="/events/listtags" />
                                     <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
-                                    <CreateCategory path="/category/new/:id" />
+                                    <CreateCategory path="/category/new/:catId" />
                                     <ListCategory path="/category/list"/>
                                     <CreateStdCategory path="/students/createstdcategory"/>
                                     <ListStdCategory path="/students/liststdcategory"/>

@@ -61,20 +61,14 @@
 
 .category_card {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     grid-gap: 10px;
-
-    .category_box:nth-child(even) {
-        background: #f0f5fc;
-    }
 
     .category_box {
         padding: 15px 15px 10px 15px;
-        background: #fcfcfc;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        border: 1px dashed #dfdfdf;
+        background: #ffffff;
+        border: 1px solid #f0f2f5;
+        cursor: pointer;
 
         .category_title {
             text-transform: capitalize;
@@ -94,6 +88,38 @@
             .count {
                 font-weight: 400;
             }
+        }
+    }
+
+    .category_event_list {
+        margin-top: 10px;
+        cursor: pointer;
+    }
+
+    .category_event_box {
+        background: #ebfbee;
+        padding: 7px 20px;
+        border-left: 2px solid #33603f;
+        margin-bottom: 4px;
+
+        .category_event_name {
+            margin-bottom: 5px;
+        }
+
+        span.date {
+            font-weight: 400;
+        }
+
+        .category_event_start {
+            font-size: 12px;
+            font-weight: 200;
+            text-transform: capitalize;
+        }
+
+        .category_event_end {
+            font-size: 12px;
+            font-weight: 200;
+            text-transform: capitalize;
         }
     }
 }
@@ -189,13 +215,12 @@
     margin: 0px;
 
     .success {
-        background: #0d62bd12;
+        background: #87d068;
         padding: 2px 2px;
         border-radius: 5px;
-        // border: 1px solid #3a923e40;
 
         span.ant-badge-status-text {
-            color: #0d62bd;
+            color: #fff;
         }
     }
 
@@ -295,6 +320,9 @@
                 font-size: 1.2em;
                 font-weight: 300;
                 text-transform: capitalize;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
         }
     }
@@ -308,5 +336,18 @@
 .event_details_for {
     label {
         text-transform: capitalize;
+    }
+}
+
+.layout_portal .menu_placeholder {
+    background: linear-gradient(269deg, #009688f2, #009688);
+
+    ul.ant-menu-overflow.ant-menu.ant-menu-root.ant-menu-horizontal.ant-menu-dark {
+        background: linear-gradient(269deg, #00968852, #009688);
+        color: #fff !important;
+    }
+
+    span.ant-menu-title-content {
+        color: #bae1c5 !important;
     }
 }

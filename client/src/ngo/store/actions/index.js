@@ -154,12 +154,3 @@ export const getAllEvents = async () => {
     payload: response.data.result
   };
 }
-
-export const getAllTags = async () => {
-  let response = await axios.get('/events/api/getAllTags')
-
-  return {
-    type: 'TAGS_LIST',
-    payload: response.data.result
-  };
-}

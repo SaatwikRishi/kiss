@@ -5,7 +5,7 @@ import { Router, Link, navigate, useLocation } from '@reach/router';
 import { Breadcrumb, Card, Layout, Spin, Input,
     Row, Col, Calendar, Divider, Badge, message, Space, Tag, Form  } from 'antd';
 import {
-    Tabs, Select, Popover, Button,
+    Tabs, Select, Popover, Button, Tooltip,
     Upload, DatePicker, Progress, notification, TimePicker, Modal
 } from 'antd';
 const { confirm } = Modal;
@@ -84,14 +84,27 @@ const EventDetails = (props) => {
     }, [eventsData.eventList.loading])
 
     /**
-     * based on eventId check edit mode or not
-     * if setForm data
+     * Selected Date Events
+     */
+    const [selectedEvent, setselectedEvent] = useState(null);
+    const getSelectedDate = (info) => {
+        console.log(info);
+        setselectedEvent(info);
+        setTimeout(() => { document.getElementById('scroll_to_details').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+    }
+
+    /**
+     * based on eventId show event details
      */
     let eventEditObj = {};
     useEffect(() => {
         if (eventId && eventsData.eventList.loading == false) {
             eventEditObj = _(eventsData.eventList.data).filter(val => val.eventid == eventId).value();
             eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
+            if(Object.keys(eventEditObj).length){
+                setselectedEvent(eventEditObj);
+                setTimeout(() => { document.getElementById('scroll_to_details').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+            }
         } else { }
     }, [eventsData.eventList.data])
 
@@ -127,17 +140,6 @@ const EventDetails = (props) => {
         </>;
     }
 
-    /**
-     * Selected Date Events
-     */
-    const [selectedEvent, setselectedEvent] = useState(null);
-    const getSelectedDate = (info) =>{
-        console.log(info);
-        setselectedEvent(info);
-        setTimeout(() => { document.getElementById('scroll_to_details').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
-    }
-
-
     return <>
         <div className="events_details_wrapper main-content">
             <div className="events_details_calender">
@@ -162,18 +164,29 @@ const EventInfo = (props) =>{
     try {
         categoryInfo = JSON.parse(info.category_json);
         categoryInfo = categoryInfo ? categoryInfo: [];
+        
         event_json = JSON.parse(info.event_json);
         event_json = event_json ? event_json : []
-    } catch (error) {}
+    } catch (error) {
+        
+    }
     
+    const colors = ['#f50', '#2db7f5', '#87d068', '#108ee9'];
+    const getHtml = (val) =>{
+        if (val.includes('http://') || val.includes('https://') || val.includes('www.')) {
+            return <a href={val} target="_blank">{val}</a>;
+        } else if (moment(val, true).isValid()) {
+            return moment(val).format('YYYY-MM-DD');
+        }else{
+            return val;
+        }
+    }
+
     return <>
         <div className="event_details_wrapper">
             <div className="event_title">{info.event_name? info.event_name: '---'}</div>
             <Space>
-                <Tag color="#f50">#f50</Tag>
-                <Tag color="#2db7f5">#2db7f5</Tag>
-                <Tag color="#87d068">#87d068</Tag>
-                <Tag color="#108ee9">#108ee9</Tag>
+                {info.tags && _(info.tags.split(',')).map(val => val).value().map(val => <Tag color={_.sample(colors)}>{val}</Tag>)}
             </Space>
             <div className="des_box">
                 <div className="des_box_list">
@@ -210,7 +223,9 @@ const EventInfo = (props) =>{
                     return Object.keys(val).map(key=><>
                         <div className="event_otherInfo_box">
                             <div className="otherInfo_title">{key}</div>
-                            <div className="otherInfo_des">{val[key] ? val[key] : '---'}</div>
+                            <div className="otherInfo_des">
+                                <Tooltip title={val[key] ? val[key] : '---'}>{val[key] ? getHtml(val[key]) : '---'}</Tooltip>
+                            </div>
                         </div>
                     </>)
                 })}

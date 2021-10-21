@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
-import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal, message } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, navigate } from '@reach/router';
 const { confirm } = Modal;
@@ -22,66 +22,94 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 
 
 const CreateCategory = memo((props) => {
+    const { catId = null } = props;
     const dispatch = useDispatch();
     const [form] = Form.useForm();
     useEffect(() => {
         dispatch(getAllCategories());
     },[]);
     
-    let formStore = {};  
     /**
-     * Form Arr
+     * dynamic category array for form
      */
     const [categoryList, setcategoryList] = useState([0]);
 
-    const categoryData = useSelector(state => state.category);
-    const categorys = categoryData.list;
-    let catId = ((props.id!=undefined)?props.id:'');
-
-    let initialState = {
-        catid: catId,
-        name: '',
-        description: '',
-        category_json: ''
+    /**
+     * getForm data  from Store
+     */
+    const categoryStore = useSelector(state => state.category);
+    const getEventStoreData = () => {
+        let mainObj = categoryStore ? categoryStore : {}
+        return {
+            categoryList: {
+                loading: mainObj.loaded == true ? true: false,
+                data: mainObj.list ? mainObj.list :[],
+            }
+        }
     }
-    const [Inistate, setIniState] = useState(initialState)
+    let categoryData = getEventStoreData();
 
-    let getCategory = {};
-    useEffect(
-        ()=>{
-            if(catId!='' &&  categorys!=undefined)
-            {    
-                getCategory = categorys.filter(function(item) {
-                return (item.catid==catId);
-            });
-            if(getCategory!=undefined)
-            {
-                setIniState({catid: catId, name: getCategory[0].name, description: getCategory[0].description, category_json: getCategory[0].category_json });
-                setcategoryList(JSON.parse(getCategory[0].category_json));
-            }
-            }
-        },[catId, categorys]
-    )
-    useEffect(() => form.resetFields(), [Inistate])
+    /**
+     * based on catId check edit mode or not
+     * if setForm data
+     */
+    let eventEditObj = {};
+    useEffect(() => {
+        console.log(catId); 
+        if (catId !=null && categoryData.categoryList.loading == false) {
+            eventEditObj = _(categoryData.categoryList.data).filter(val => val.catid == parseInt(catId) ).value();
+            eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
 
-    const [loading, setloading] = useState(false);
+            console.log(eventEditObj);
+            if (Object.keys(eventEditObj).length == 0) {
+                message.warning(`No records fount for this ID : ${catId}`);
+                // navigate('/admin/category/list');
+            } else {
+                eventEditObj = _(eventEditObj).pickBy(val => val).value();
+                console.log(eventEditObj);
+
+                let formInit = {
+                    ...eventEditObj,
+                    ...(() => {
+                        if (eventEditObj.category_json) {
+                            try {
+                                let category_json = JSON.parse(eventEditObj.category_json);
+                                category_json = category_json && category_json.length ? category_json : null;
+                                if (category_json) {
+                                    return { category_json: category_json }
+                                }
+                            } catch (error) { }
+                        }
+                    })(),
+                };
+                formInit.category_json && formInit.category_json.length && setcategoryList(Array.from({ length: formInit.category_json.length }, (val, key) => key));
+                form.setFieldsValue(formInit);
+            }
+        } else { }
+    }, [categoryData.categoryList.data])
+
+
     /**
      * on form Finish
      */
+    const [loading, setloading] = useState(false);
     const onFinish = async (e) =>{
         console.log(e);
         let category_json = _(e.category_json).pickBy(val => val).map(val=>val).value();
         let formData = {
-            catid: catId,
             name: e.name,
             description: e.description,
-            category_json: category_json
+            category_json: category_json,
+            ...(()=>{
+                return catId!=null ? { catid: parseInt(catId) }: {}
+            })()
         };
         
         setloading(true);
         await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
             dispatch(getAllCategories());
-            navigate("/category/list")
+            message.success("Category Created Successfully");
+            navigate("/admin/category/list")
         }).finally(() => {
             setloading(false);
         })
@@ -90,15 +118,14 @@ const CreateCategory = memo((props) => {
     /**
      * form Update for all change
      */
+    let formStore = {};
     const [fValue, setfValue] = useState(1);
     const fUpdateTrigger = () => { setfValue(fValue + 1) }
 
     /**
      * remove CategoryList
      */
-    const removeCategoryList = (val) => categoryList.length >1 && setcategoryList(_(categoryList).filter(value => value != val).value() );
-
-    console.log(categoryList);
+    const removeCategoryList = (val) =>  setcategoryList(_(categoryList).filter(value => value != val).value() );
 
     return <>
         <div className="_apifilter_subheader">
@@ -117,9 +144,7 @@ const CreateCategory = memo((props) => {
                 onFinish={(e) => onFinish(e)}
                 initialValues={{
                     ...(() => {
-                        return {
-                            ...Inistate,
-                        }
+                        return {...formStore}
                     })(),
                 }}>
                 
@@ -189,8 +214,6 @@ const BasicFields = (props) =>{
  */
 const DynamicFields = (props) =>{
     const { form, formIndex, fUpdateTrigger } = props;
-    console.log(formIndex);
-
     return <>
         <div className="category_box">
             <div className="category_item">
