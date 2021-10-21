@@ -104,7 +104,7 @@ const CreateCategory = memo((props) => {
         <div className="_apifilter_subheader">
             <div className="_details">
                 <div className="_title"> <SafetyCertificateTwoTone twoToneColor="#52c41a" /> Create Category </div>
-                <div className="_subTitle">create custom category fields  </div>
+                <div className="_subTitle">create category with necessary information</div>
             </div>
             <div className="filters"></div>
         </div>

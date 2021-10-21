@@ -61,7 +61,7 @@ const ListCategory = (props) => {
       sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
       render: (text, record) => {
         return (<>
-          <Link to={`/category/new/${record.catid}`}>{text}</Link>
+          <Link to={`/admin/category/new/${record.catid}`}>{text}</Link>
         </>)
       }
     },
@@ -79,7 +79,7 @@ const ListCategory = (props) => {
         return (
           <>
           <Typography.Link title="Edit">
-            <Link to={`/category/new/${record.catid}`}><EditOutlined /></Link>
+            <Link to={`/admin/category/new/${record.catid}`}><EditOutlined /></Link>
           </Typography.Link>
           <Popconfirm title="Sure to delete?">
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
@@ -109,7 +109,7 @@ const ListCategory = (props) => {
                 <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/category/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/admin/category/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
                 <Table 

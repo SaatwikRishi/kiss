@@ -155,6 +155,7 @@ const CreateEvent = (props) => {
         setloading(true);
         await axios.post(`/events/api/saveEvents`, { data: formData }).then(res => {
             console.log(res);
+            message.success("Event Created Successfully");
         }).finally(() => {
             setloading(false);
         })
@@ -261,13 +262,13 @@ const BasicFields = (props) =>{
                 </div>
                 
                 <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: false, message: 'Please fill!' }]}>
+                    <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: true, message: 'Please fill!' }]}>
                         <RangePicker format={dateFormat} size="middle" style={{width: '100%'}} />
                     </Form.Item>
                 </div>
             
                 <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: false, message: 'Please fill!' }]}>
+                    <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: true, message: 'Please fill!' }]}>
                         <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
                     </Form.Item>
                 </div>
