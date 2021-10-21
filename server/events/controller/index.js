@@ -108,8 +108,8 @@ var eventsController = {
   },
   getEvent: async (req, res) => {
     try {    
-      let {eventid} = req.body;
-      let result = await req.db.query(`SELECT * FROM tbl_events WHERE catid = '${eventid}'`,'getEvent'); 
+      let {data} = req.body;
+      let result = await req.db.query(`SELECT * FROM tbl_events WHERE eventid = '${data}'`,'getEvent'); 
       console.log(result);    
       res.json({result})
     }
@@ -255,6 +255,64 @@ var eventsController = {
     catch (ex) {
       res.json({ error: ex.toString() })
     }
+  },
+  getStudentByTag: async (req, res) => {
+    try {    
+      let { tags } = req.body;
+      console.log(tags);
+      let result = await req.db.query(`SELECT email FROM tbl_students WHERE tag = '${tags}'`,'getEvent'); 
+      console.log(result);    
+      res.json({result})
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  sendNotification: async (req, res) => {
+    try {    
+      let { data, stdEmails } = req.body;
+
+      if(stdEmails.length>0)
+      {
+        stdEmails.forEach(val => { 
+          if(val){
+              console.log(val);
+              /* mail function start */
+              var from = process.env.user;
+              var subject = data.title;
+              var message = data.message;
+              var to = val;
+              let transporter = nodemailer.createTransport({
+                host: process.env.host,
+                port: 587,
+                secure: false,
+                auth: {
+                  user: process.env.user,
+                  pass: process.env.pass
+                },
+              });
+                
+              var mailOptions = {
+                  from: from,
+                  to: to, 
+                  subject: subject,
+                  text: message,
+                  html: message
+              }
+              transporter.sendMail(mailOptions, function(error, response){});
+              /* mail function start */
+          } 
+        });   
+      } 
+      await eventsController.sleep( 20 * 1000);
+      res.json({result: 'success'})    
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  sleep: async (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
   },
 }
 
