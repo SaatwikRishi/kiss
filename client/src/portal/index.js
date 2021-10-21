@@ -13,6 +13,8 @@ import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import PortalBanner from "./layout/portalbanner";
 
+import EventDetails from "./component/events/eventDetails";
+
 import '../assets/css/portal.less' 
 
 const Index = (props)=>{ 
@@ -40,14 +42,15 @@ const Index = (props)=>{
                 </div> */}
                 <Layout>
                     <PortalHeader />
-                    <PortalBanner />
-                    <section className="layout_section center_layout">                        
+                    {/* <PortalBanner /> */}
+                    <section className="main-content">
                         <Layout className="layout_contentWrapper">
                             <Content>
                                 <Router>
                                     <IndexPage path="/" />                                  
                                     <LoginPage path="/login" />                                 
                                     <ProfilePage path="/profile" />                                  
+                                    <EventDetails path="/event/:eventId" />
                                 </Router>
                             </Content>
                         </Layout>
