@@ -75,22 +75,13 @@ const EventDetails = (props) => {
 
     const getListData = (value)=> {
         let today = moment(value).format('YYYY-MM-DD');
-
         let listData = _(eventsData.eventList.data).filter(val=>{
             if (val.start_date && val.end_date){
-                let cnt=  moment(today).isBetween(moment(val.start_date, 'YYYY-MM-DD'), moment(val.end_date, 'YYYY-MM-DD')) || moment(today).isSame(moment(val.start_date)) ;
-                console.log({
-                    today: today,
-                    start_date: val.start_date,
-                    ans: moment(today).isSame(val.start_date)
-                });
-                return cnt;
+                return moment(today).isBetween(moment(val.start_date, 'YYYY-MM-DD'), moment(val.end_date, 'YYYY-MM-DD')) || moment(today).isSame(moment(val.start_date, 'YYYY-MM-DD'));
             }
         }).map(val=>{
             return { type: 'success', content: val.event_name };
         }).value();
-        console.log(listData);
-
         return listData || [];
     }
 
