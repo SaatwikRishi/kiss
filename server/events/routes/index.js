@@ -16,5 +16,6 @@ router.post('/api/saveStudentProfile',eventsController.saveStudentProfile)
 router.get('/api/getAllStudents',eventsController.getAllStudents)
 router.post('/api/saveTag',eventsController.saveTag)
 router.get('/api/getAllTags',eventsController.getAllTags)
+router.post('/api/sendNotification',eventsController.sendNotification)
 
 module.exports = router;
