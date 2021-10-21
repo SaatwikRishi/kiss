@@ -14,5 +14,7 @@ router.post('/api/saveStudentCategory',eventsController.saveStudentCategory)
 router.get('/api/getAllStdCategories',eventsController.getAllStdCategories)
 router.post('/api/saveStudentProfile',eventsController.saveStudentProfile)
 router.get('/api/getAllStudents',eventsController.getAllStudents)
+router.post('/api/saveTag',eventsController.saveTag)
+router.get('/api/getAllTags',eventsController.getAllTags)
 
 module.exports = router;
