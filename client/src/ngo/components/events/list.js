@@ -9,9 +9,10 @@ import {
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllEvents } from '../../store/actions';
+import { getAllEvents, getAllStudents } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
+import SendNotification from './sendnotification';
 
 const { Option, OptGroup } = Select;
 const { Text } = Typography;
@@ -20,11 +21,14 @@ const { Search } = Input;
 
 const ListEvents = (props) => {
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getAllEvents());
+    dispatch(getAllStudents());
   }, []);
 
   const categoryData = useSelector(state => state.events);
+  const studentsList = useSelector(state => state.students);
   let categorys = categoryData.eventList ? categoryData.eventList : {};
   categorys = categorys.data ? categorys.data : [];
   const categoryDatas = [];
@@ -54,6 +58,22 @@ const ListEvents = (props) => {
   }
 
   const tableDatas = (InitialDatas.length > 0) ? InitialDatas : categoryDatas;
+
+  /* modal functions */  
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const showModal = () => {
+      setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+      setShowRawdata(true);
+      copyRef.current.style.display = 'inline';
+  };
+
+  const handleCancel = () => {
+      setIsModalVisible(false);
+  };
+  /* modal functions */
 
   const columns = [
     {
@@ -86,6 +106,7 @@ const ListEvents = (props) => {
             <Popconfirm title="Sure to delete?">
               <a title="Delete" style={{ padding: "0px 10px" }}><DeleteOutlined /></a>
             </Popconfirm>
+            <SendNotification data={{categorys, record, studentsList}} />
           </>
         );
       },

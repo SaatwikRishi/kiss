@@ -15,6 +15,7 @@ import {
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
 moment.tz.setDefault('America/Los_Angeles');
+import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
@@ -22,12 +23,13 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 /**
  * Custom Component
  */
-import { getAllStdCategories } from "../../store/actions";
+import { getAllStdCategories, getAllTags, getAllStudents } from "../../store/actions";
 
 const CreateStdProfile = memo((props) => {
     const [form] = Form.useForm();
     const dispatch = useDispatch()
-    const eventsStore = useSelector(state => state.stdcategory);
+    const eventsStore = useSelector(state => state.stdcategory);    
+    const tagsStore = useSelector(state => state.tags);
 
     /**
      * get Category list from Event store
@@ -37,6 +39,11 @@ const CreateStdProfile = memo((props) => {
             dispatch(getAllStdCategories());
         } else if (!eventsStore.loading){
             dispatch(getAllStdCategories());
+        }
+        if (!tagsStore){
+            dispatch(getAllTags());
+        } else if (!tagsStore.loading){
+            dispatch(getAllTags());
         }
     },[])
 
@@ -55,6 +62,18 @@ const CreateStdProfile = memo((props) => {
         }
     }
     let eventsData = getEventStoreData();
+    const getTagsStoreData = () => {
+        //console.log(eventsStore);
+        let mainObj = tagsStore ? tagsStore: {}
+        mainObj = mainObj ? mainObj : [];
+        //console.log(mainObj);
+        return {
+            loading: true,
+            list: [],
+            ...mainObj
+        }
+    }
+    let tagsData = getTagsStoreData();
     //console.log(eventsData);
 
     
@@ -68,7 +87,8 @@ const CreateStdProfile = memo((props) => {
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
         await axios.post(`/events/api/saveStudentProfile`, { data: formData }).then(res => {
-            console.log(res);
+            dispatch(getAllStudents());
+            navigate("/admin/students/list")
         }).finally(() => {
             setloading(false);
         })
@@ -114,7 +134,7 @@ const CreateStdProfile = memo((props) => {
                 }}>
                 
                 <div className="category_list">
-                    <BasicFields {...{ form, fUpdateTrigger, eventsData }} />
+                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData }} />
 
                     <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />
                 </div>
@@ -134,9 +154,14 @@ export default CreateStdProfile;
  * Sub form box
  */
 const BasicFields = (props) =>{
-    const { form, fUpdateTrigger, eventsData } = props;
+    const { form, fUpdateTrigger, eventsData, tagsData } = props;
     const dateFormat = 'YYYY-MM-DD';
-    console.log(eventsData);
+    const tagslist = tagsData.list;
+    console.log(tagslist);
+    const children = [];
+    for (let i = 0; i < tagslist.length; i++) {
+        children.push(<Option key={tagslist[i].tag}>{tagslist[i].tag}</Option>);
+    }
     
     return <>
         <div className="category_box_basic">
@@ -173,6 +198,14 @@ const BasicFields = (props) =>{
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
                     <Input size="middle" />
+                </Form.Item>
+            </div>
+
+            <div className="category_item">
+                <Form.Item hasFeedback={true} name={'tags'} label="skills/interests" rules={[{ required: false, message: 'Please fill!' }]}>
+                    <Select mode="tags" style={{ width: '100%' }} placeholder="skills/interests">
+                        {children}
+                    </Select>
                 </Form.Item>
             </div>
 
