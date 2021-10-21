@@ -6,7 +6,7 @@ import '../assets/css/style.less';
 
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
-import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
+import { ContainerOutlined, FormOutlined, TagOutlined, UserOutlined } from '@ant-design/icons';
 import { updateUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
@@ -96,8 +96,16 @@ const LayoutSidebar = (props) =>{
                     <div className="_title">Events</div>
                 </li>
                 <li className={url == '/admin/category/list' ? 'active' : ''} onClick={() => navigateTo('/admin/category/list')}>
-                    <ReconciliationOutlined />
+                    <ContainerOutlined />
                     <div className="_title">Category</div>
+                </li>
+                <li className={url == '/admin/students/list' ? 'active' : ''} onClick={() => navigateTo('/admin/students/list')}>
+                    <UserOutlined />
+                    <div className="_title">Students</div>
+                </li>
+                <li className={url == '/admin/events/listtags' ? 'active' : ''} onClick={() => navigateTo('/admin/events/listtags')}>
+                    <TagOutlined />
+                    <div className="_title">Tags</div>
                 </li>
             </ul>
         </div>

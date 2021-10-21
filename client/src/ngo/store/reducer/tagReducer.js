@@ -1,7 +1,7 @@
 import moment from "moment-timezone"
 moment.tz('America/Los_Angeles')
 let userState = {
-    loaded:false,
+    loading:false,
 }
 
 export default function (state = userState, action) {
