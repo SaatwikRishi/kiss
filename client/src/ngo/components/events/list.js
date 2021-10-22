@@ -25,7 +25,7 @@ const ListEvents = (props) => {
 
   useEffect(() => {
     dispatch(getAllEvents());
-    dispatch(getAllStudents());
+    dispatch(getAllStudents(1));
   }, []);
 
   const categoryData = useSelector(state => state.events);

@@ -116,7 +116,9 @@ var eventsController = {
   },
   getAllEvents: async (req, res) => {
     try {
-      let result = await req.db.query('SELECT * FROM tbl_events ORDER BY end_date DESC', 'getAllEvents');
+      let { status } = req.query;
+      let where = (status)?` WHERE status = '${status}' `:'';
+      let result = await req.db.query(`SELECT * FROM tbl_events ${where} ORDER BY end_date DESC`, 'getAllEvents');
       console.log(result);
       res.json({ result })
     }
@@ -243,8 +245,9 @@ var eventsController = {
   },
   getAllStudents: async (req, res) => {
     try {
-      let result = await req.db.query('SELECT * FROM tbl_students ORDER BY firstname ASC', 'getAllStudents');
-      //console.log(result);    
+      let { status } = req.query;
+      let where = (status)?` WHERE status = '${status}' `:'';
+      let result = await req.db.query(`SELECT * FROM tbl_students ${where} ORDER BY firstname ASC`, 'getAllStudents');
       res.json({ result })
     }
     catch (ex) {
