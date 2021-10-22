@@ -36,26 +36,22 @@ const KISSHomePage = (props) => {
         dispatch(getUser());
     }, []);
 
-    useEffect(() => {
+/*     useEffect(() => {
         if (user && user.email) {
             if (!user.isProfileUpdate) {
                 navigate("/profile")
             } else {
-                navigate("/")
+                navigate("/home")
             }
         } else {
             navigate("/login")
         }
-    }, [user]);
+    }, [user]); */
 
 
 
     return <>
         <Layout className="layout_portal">
-            {/* loading && <div class="progress">
-                    <div class="color"></div>
-                </div> */}
-
             <Layout>
                 <PortalHeader />
                 {/* <PortalBanner /> */}
@@ -63,7 +59,8 @@ const KISSHomePage = (props) => {
                     <Layout className="layout_contentWrapper">
                         <Content>
                             <Router>
-                                <IndexPage path="/" />
+                                <IndexPage path="/home" />
+                                <LoginPage path="/" />
                                 <LoginPage path="/login" />
                                 <ProfilePage path="/profile" />
                                 <EventsList path="/eventslist" />

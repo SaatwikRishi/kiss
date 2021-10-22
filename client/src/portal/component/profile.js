@@ -12,50 +12,21 @@ const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
 const { Content } = Layout;
-import {  getAllStudents } from '../../ngo/store/actions';
+import { getAllStudents } from '../../ngo/store/actions';
 import axios from 'axios';
 
-const ProfilePage = (props) => {    
+const ProfilePage = (props) => {
     const [form] = Form.useForm();
-    const dispatch = useDispatch();
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
 
-    if(!auth.currentUser) {
-        //navigate('/login')
-        navigate('/profile')
-    }
-    useEffect(() => {
-      dispatch(getAllStudents());
-    },[]);
 
-    const studentData = useSelector(state => state.students);
-    const students = studentData.list;
-    let stdId = 1;
-
-    let formStore = {};    
-    let initialState = {}
+    const student = useSelector(state => state.user);
+    let initialState = student
     const [loading, setloading] = useState(false);
     const [Inistate, setIniState] = useState(initialState)
 
-    let getStudent = {};
-    useEffect(
-        ()=>{
-            if(stdId!='' &&  students!=undefined)
-            {    
-                getStudent = students.filter(function(item) {
-                return (item.studentid==stdId);
-            });
-            if(getStudent!=undefined)
-            {
-                setIniState({studentid: stdId, stdcatid: getStudent[0].stdcatid, firstname: getStudent[0].firstname, lastname: getStudent[0].lastname, email: getStudent[0].email, regno: getStudent[0].regno, phoneno: getStudent[0].phoneno });
-            }
-            }
-        },[stdId, students]
-    )
-    useEffect(() => form.resetFields(), [Inistate])
+    //useEffect(() => form.resetFields(), [Inistate])
 
-    const onFinish = async (e) =>{
+    const onFinish = async (e) => {
         console.log(e);
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
@@ -65,70 +36,135 @@ const ProfilePage = (props) => {
             setloading(false);
         })
     }
-    
+
     return <>
         <Content>
-            <section style={{ marginTop: 50, fontSize: 30 }}>
-                <div className="category_creation" style={{ minHeight: '80vh'}}>
-                <Form className="initial_form" layout="vertical"
-                    form={form}
-                    onFinish={(e) => onFinish(e)}
-                    initialValues={{
-                        ...(() => {
-                            return {
-                                ...Inistate,
-                            }
-                        })(),
-                    }}>
-                    <div className="category_box_basic">
-                        <div className="category_item">
-                            <Form.Item name={'studentid'}  hidden={true}>
-                                <Input type="text" />
-                            </Form.Item>
-                            <Form.Item name={'stdcatid'}  hidden={true}>
-                                <Input type="text" />
-                            </Form.Item>
+            <section style={{ marginTop: 50, padding: '10px 20px' }}>
+                <div className="category_creation" style={{ minHeight: '80vh' }}>
+                    <Form className="initial_form" layout="vertical"
+                        form={form}
+                        onFinish={(e) => onFinish(e)}
+                        initialValues={{
+                            ...(() => {
+                                return {
+                                    ...Inistate,
+                                }
+                            })(),
+                        }}>
+                        <div className="category_box_basic">
+                            <div className="category_item">
+                                <Form.Item name={'studentid'} hidden={true}>
+                                    <Input type="text" />
+                                </Form.Item>
+                                <Form.Item name={'stdcatid'} hidden={true}>
+                                    <Input type="text" />
+                                </Form.Item>
 
-                            <Form.Item hasFeedback={true} name={'firstname'} label="first name" rules={[{ required: true, message: 'Please fill!' }]}>
-                                <Input size="middle" />
-                            </Form.Item>
+                                <Form.Item hasFeedback={true} name={'firstname'} label="first name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Input size="middle" />
+                                </Form.Item>
+                            </div>
+
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Input size="middle" />
+                                </Form.Item>
+                            </div>
+
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'email'} label="email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Input size="middle" />
+                                </Form.Item>
+                            </div>
+
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Input size="middle" />
+                                </Form.Item>
+                            </div>
+
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
+                                    <Input size="middle" />
+                                </Form.Item>
+                            </div>
                         </div>
-
-                        <div className="category_item">
-                            <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: true, message: 'Please fill!' }]}>
-                                <Input size="middle" />
-                            </Form.Item>
-                        </div>
-
-                        <div className="category_item">
-                            <Form.Item hasFeedback={true} name={'email'} label="email address" rules={[{ required: true, message: 'Please fill!' }]}>
-                                <Input size="middle" />
-                            </Form.Item>
-                        </div>
-
-                        <div className="category_item">
-                            <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>
-                                <Input size="middle" />
-                            </Form.Item>
-                        </div>
-
-                        <div className="category_item">
-                            <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
-                                <Input size="middle" />
-                            </Form.Item>
-                        </div>
-                    </div>
-
-                    <Divider style={{ margin: '20px 0' }} />
-                    <Space>
-                        <Button loading={loading} disabled={loading} icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Update Profile </Button>
-                    </Space>
+                        <section>
+                            <CategoryForm student={student} />
+                        </section>
+                        <Divider style={{ margin: '20px 0' }} />
+                        <Space>
+                            <Button loading={loading} disabled={loading} icon={<FileSearchOutlined />} size="large" type="primary" htmlType="submit"> Update Profile </Button>
+                        </Space>
                     </Form>
                 </div>
             </section>
+
         </Content>
 
     </>
 }
+const CategoryForm = (props) => {
+    const { student_json, fUpdateTrigger, fields } = props;
+
+    const dateFormat = 'YYYY-MM-DD';
+    return <>
+        <Divider style={{ margin: '20px 0' }} />
+        <div className="category_box_basic" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gridGap: 25 }}>
+            {_.keys(fields, (val) => {
+                let template = '';
+                if (val.input_type == 'text') {
+                    template = <div className="category_item">
+                        <Form.Item hasFeedback={true} name={['student_json', 0, val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                            <Input size="middle" style={{ width: '100%' }} />
+                        </Form.Item>
+                    </div>
+                }
+                if (val.input_type == 'dropdown') {
+                    template = <div className="category_item">
+                        <Form.Item hasFeedback={true} name={['student_json', 0, val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                            <Select size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
+                                {val.dropdown.map(val => <Option value={val}>{val}</Option>)}
+                            </Select>
+                        </Form.Item>
+                    </div>
+                }
+                if (val.input_type == 'tags') {
+                    template = <div className="category_item">
+                        <Form.Item hasFeedback={true} name={['student_json', 0, val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                            <Select mode="tags" size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
+                                {val.dropdown.map(val => <Option value={val}>{val}</Option>)}
+                            </Select>
+                        </Form.Item>
+                    </div>
+                }
+                if (val.input_type == 'datepicker') {
+                    template = <div className="category_item">
+                        <Form.Item hasFeedback={true} name={['student_json', 0, val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                            <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                        </Form.Item>
+                    </div>
+                }
+                // if (val.input_type == 'upload'){
+                //     template = <div className="category_item">
+                //         <Form.Item hasFeedback={true} name={['student_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+
+                //         </Form.Item>
+                //     </div>
+                // }
+                return template;
+            }
+            )}
+
+        </div>
+    </>
+}
+
+/* 
+
+
+
+
+*/
 
 export default ProfilePage;

@@ -24,8 +24,7 @@ var loginModel = {
                     profile.status=status
                     let fields = JSON.parse(profile.student_json)
                     profile["fields"] = { ...fields[0] }
-
-                    delete profile.student_json                   
+                    //delete profile.student_json                   
                     delete profile.password                   
                     res.cookie('user',profile, { maxAge: 9000000 * 27 * 360 , httpOnly: true })
                 } else {

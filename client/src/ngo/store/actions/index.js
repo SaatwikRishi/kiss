@@ -9,7 +9,7 @@ import moment from 'moment-timezone'
  * @param {*} state 
  * @returns 
  */
-let pending = [];
+/* let pending = [];
 let cancelToken = axios.CancelToken;
 let removePending = ever => {
   for (let p in pending) {
@@ -49,7 +49,7 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+ */
 /**
  * Get getCategory
  */
