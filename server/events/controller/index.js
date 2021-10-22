@@ -27,10 +27,10 @@ var eventsController = {
       });
       updateField = updateField.substr(0, updateField.length - 2);
       let queries = {
-        category: ((data.catid != '') ? `UPDATE tbl_categories SET ${updateField} WHERE catid='${data.catid}'` : `INSERT INTO tbl_categories SET ${updateField}`),
+        category: ((data.catid) ? `UPDATE tbl_categories SET ${updateField} WHERE catid='${data.catid}'` : `INSERT INTO tbl_categories SET ${updateField}`),
       }
       let result = await req.db.query(queries.category, 'saveCategory');
-      console.log(result);
+      console.log(queries.category);
       res.json({ result })
     }
     catch (ex) {
@@ -167,41 +167,44 @@ var eventsController = {
       let result = await req.db.query(queries.category, 'saveStudentProfile');
       console.log(queries.category);
 
-      /* mail function start */
-      var from = process.env.user;
-      var subjectcontent = process.env.subject.replace('<name>', data.firstname);
-      var msgcontent1 = process.env.message1.replace('<name>', data.firstname);
-      var msgcontent2 = process.env.message2;
-      var msgcontent3 = process.env.message3;
-      var msgcontent4 = process.env.message4.replace('<user>', data.email);
-      var msgcontent5 = process.env.message5.replace('<pass>', data.password);
-      var message = msgcontent1 + '\n\n' + msgcontent2 + '\n\n' + msgcontent3 + '\n\n' + msgcontent4 + '\n' + msgcontent5;
-      var to = data.email;
-      let transporter = nodemailer.createTransport({
-        host: process.env.host,
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.user,
-          pass: process.env.pass
-        },
-      });
-
-      var mailOptions = {
-        from: from,
-        to: to,
-        subject: subjectcontent,
-        text: message,
-        html: message
-      }
-      transporter.sendMail(mailOptions, function (error, response) {
-        if (error) {
-          res.json({ error: error.toString() })
-        } else {
-          res.json({ result })
+      if(!data.studentid)
+      {
+        /* mail function start */
+        var from = process.env.user;
+        var subjectcontent = process.env.subject.replace('<name>',data.firstname);
+        var msgcontent1 = process.env.message1.replace('<name>',data.firstname);
+        var msgcontent2 = process.env.message2;
+        var msgcontent3 = process.env.message3;
+        var msgcontent4 = process.env.message4.replace('<user>',data.email);
+        var msgcontent5 = process.env.message5.replace('<pass>',data.password);
+        var message = msgcontent1+'\n\n'+msgcontent2+'\n\n'+msgcontent3+'\n\n'+msgcontent4+'\n'+msgcontent5;
+        var to = data.email;
+        let transporter = nodemailer.createTransport({
+          host: process.env.host,
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.user,
+            pass: process.env.pass
+          },
+        });
+          
+        var mailOptions = {
+            from: from,
+            to: to, 
+            subject: subjectcontent,
+            text: message,
+            html: message
         }
-      });
-      /* mail function start */
+        transporter.sendMail(mailOptions, function(error, response){
+            if(error){
+              res.json({ error: error.toString() })
+            }else{
+              res.json({result})
+            }
+        });
+        /* mail function start */
+      }      
     }
     catch (ex) {
       res.json({ error: ex.toString() })
@@ -300,6 +303,22 @@ var eventsController = {
       }
       await eventsController.sleep(20 * 1000);
       res.json({ result: 'success' })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  saveStudentEventForm: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let updateField = `eventid = '${data.eventid}', studentid = '${data.studentid}', created_date = '${(data.created_date) ? moment(data.created_date).format('YYYY-MM_DD') : ''}', form_json = '${(data.form_json) ? JSON.stringify(data.form_json) : ''}' `
+      let queries = {
+        category: `INSERT INTO tbl_student_forms SET ${updateField}`,
+      }
+      let result = await req.db.query(queries.category, 'saveStudentEventForm');
+      console.log(result);
+      res.json({ result })
     }
     catch (ex) {
       res.json({ error: ex.toString() })

@@ -3,10 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 
 import { Breadcrumb, Card, Layout, Spin, Input,
-    Row, Col, Calendar, Divider, Badge, message, Space, Tag, Form  } from 'antd';
+    Row, Col, Calendar, Divider, Badge, message, Space, Tag, Form, notification  } from 'antd';
 import {
     Tabs, Select, Popover, Button, Tooltip,
-    Upload, DatePicker, Progress, notification, TimePicker, Modal
+    Upload, DatePicker, Progress,  TimePicker, Modal
 } from 'antd';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
@@ -148,7 +148,7 @@ const EventDetails = (props) => {
         </div>
 
         <div id="scroll_to_details">
-            {selectedEvent && <EventInfo {...{ info: selectedEvent }} />}
+            {selectedEvent && <EventInfo {...{ info: selectedEvent, eventId: eventId }} />}
         </div>
     </>
 }
@@ -157,7 +157,7 @@ export default EventDetails;
 
 
 const EventInfo = (props) =>{
-    const { info = {} } = props;
+    const { info = {}, eventId } = props;
 
     let categoryInfo = null;
     let event_json = null;
@@ -231,7 +231,7 @@ const EventInfo = (props) =>{
                 })}
             </div><br />
             
-            {event_json && <EventDetailsForm {...{ formFields: event_json}}/>}
+            {event_json && <EventDetailsForm {...{ formFields: event_json, eventId: eventId}}/>}
 
         </div>
 
@@ -241,7 +241,7 @@ const EventInfo = (props) =>{
 
 const EventDetailsForm = (props) =>{
     const [form] = Form.useForm();
-    const { formFields } = props;
+    const { formFields, eventId } = props;
 
     /**
      * state Variables
@@ -253,7 +253,22 @@ const EventDetailsForm = (props) =>{
 
     const [loading, setloading] = useState(false);
     const onFinish = (e) =>{
-        console.log(e);
+        let formData = _(e).pickBy(val => val).value();
+        setloading(true);
+        axios.post(`/events/api/saveStudentEventForm`, { data: { 
+            form_json: formData, 
+            eventid: eventId, 
+            created_date: moment().format('YYYY-MM-DD'),
+            studentid: 3,
+        }}).then(res => {
+            form.resetFields();
+            notification.success({
+                message: 'Success',
+                description: `Application submitted successfully!`
+            });
+        }).finally(() => {
+            setloading(false);
+        })
     }
 
     return <>

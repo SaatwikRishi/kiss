@@ -14,6 +14,7 @@ import PortalFooter from "./layout/portalFooter";
 
 
 import EventDetails from "./component/events/eventDetails";
+import EventsList from "./component/eventslist";
 
 import '../assets/css/portal.less'
 
@@ -34,7 +35,7 @@ const KISSHomePage = (props) => {
     useEffect(() => {
         dispatch(getUser());
     }, []);
-    
+
     useEffect(() => {
         if (user && user.email) {
             if (!user.isProfileUpdate) {
@@ -54,6 +55,7 @@ const KISSHomePage = (props) => {
             {/* loading && <div class="progress">
                     <div class="color"></div>
                 </div> */}
+
             <Layout>
                 <PortalHeader />
                 {/* <PortalBanner /> */}
@@ -64,6 +66,7 @@ const KISSHomePage = (props) => {
                                 <IndexPage path="/" />
                                 <LoginPage path="/login" />
                                 <ProfilePage path="/profile" />
+                                <EventsList path="/eventslist" />
                                 <EventDetails path="/event" />
                                 <EventDetails path="/event/:eventId" />
                             </Router>
