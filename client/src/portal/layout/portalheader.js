@@ -22,15 +22,7 @@ const PortalHeader = (props) => {
         setState(e.key);
     };
 
-    const checkLogin = (auth) => {
-        if(auth.currentUser) {
-            navigate('/profile')
-        }
-        else {
-            //navigate('/login')
-            navigate('/profile')
-        }
-    }
+
     return <>
         <div className="" style={{background: '#fff'}}>
             <div className="main-content">
@@ -46,7 +38,7 @@ const PortalHeader = (props) => {
                     </Col>
                     <Col span={12}>
                         <Menu mode="horizontal" style={{ float: "right"}}>
-                            <Menu.Item icon={<SettingOutlined />} onClick={() => checkLogin(auth)}>My Profile</Menu.Item>
+                            <Menu.Item icon={<SettingOutlined />} >My Profile</Menu.Item>
                             <Menu.Item>
                                 <Avatar.Group size="large">
                                     <Avatar size="large" src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
@@ -61,15 +53,11 @@ const PortalHeader = (props) => {
         <div className="menu_placeholder">
             <div className="main-content">
                 <Menu theme="dark" onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
-                    <Menu.Item key="mail" icon={<HomeOutlined />}>
-                        <a href="/" rel="noopener noreferrer">
-                            Home
-                        </a>
+                    <Menu.Item key="mail" icon={<HomeOutlined />} onClick={()=>navigate('/')} >
+                        <a rel="noopener noreferrer" >Home</a>
                     </Menu.Item>
-                    <Menu.Item key="alipay">
-                        <a href="/event" rel="noopener noreferrer">
-                            Events List
-                        </a>
+                    <Menu.Item key="alipay" onClick={()=>navigate('/event')}>
+                        <a rel="noopener noreferrer" >Events List</a>
                     </Menu.Item>
                 </Menu>
             </div>

@@ -8,5 +8,11 @@ export default function (state = userState, action) {
             ...data
         }
     }
+    if (action.type === 'GET_USER') {
+        const data = action.payload;
+        return {
+            ...data
+        }
+    }
     return state;
 }
