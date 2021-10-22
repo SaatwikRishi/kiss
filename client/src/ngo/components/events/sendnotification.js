@@ -41,7 +41,8 @@ const Notification = (props) => {
         console.log(e);
         let formData = {
             title: e.title,
-            message: EditorVal
+            message: EditorVal,
+            eventid: record.eventid
         };
         setloading(true);
         let students = studentsList.list;
