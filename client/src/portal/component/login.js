@@ -22,14 +22,14 @@ const LoginPage = (props) => {
         setState({ ...state, hasError: false, message: null })
         axios.post('/api/login', values).then((resp) => {
             if (resp.data.result && resp.data.result.status === 'active') {
-                let user = updateUser(resp.data.result)              
-                dispatch(user)
+                let user = resp.data.result
+                dispatch(updateUser(user))
                 if (!resp.data.result.isProfileUpdate){
-                    navigate("/updateProfile")
+                    navigate("/profile")
                 }else{
                     navigate("/")
                 }
-            }             
+            }
             else {
                 setState({ ...state, hasError: true, message: resp.data.result.status })
             }
