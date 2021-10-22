@@ -1,7 +1,7 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector, navigate } from 'react-redux';
 import { Link } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm  } from 'antd';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message  } from 'antd';
 import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
     FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash'
@@ -17,6 +17,7 @@ const { Column } = Table;
 const { Search } = Input;
 
 const ListCategory = (props) => {
+  const [form] = Form.useForm();
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getTagsResult());
@@ -51,11 +52,104 @@ const ListCategory = (props) => {
   }
 
   const tableDatas = (InitialDatas.length>0)?InitialDatas:tagDatas;
+
+  const EditableCell = ({
+    editing,
+    dataIndex,
+    title,
+    inputType,
+    record,
+    index,
+    children,
+    ...restProps
+  }) => {
+    const inputNode = <Input id="tag" placeholder="Tag Name"/>;
+    return (<>
+      <td {...restProps}>
+        {editing ? (
+          <Form.Item
+            name={dataIndex}
+            style={{
+              margin: 0,
+            }}
+            rules={[
+              {
+                required: true,
+                message: `Please Input ${title}!`,
+              },
+            ]}
+          >
+            {inputNode}
+          </Form.Item>
+        ) : (
+          children
+        )}
+      </td>
+      </>
+    );
+  };
+  const [editingKey, setEditingKey] = useState('');
+  const [data, setData] = useState(tableDatas);
+  const isEditing = (record) => record.key === editingKey;
+
+  const edit = (record) => {
+    form.setFieldsValue({
+      tag: '',
+      ...record,
+    });
+    setEditingKey(record.key);
+  };
+
+  const cancel = () => {
+    setEditingKey('');
+  };
+
+  const deleteRec = (record) => {
+    axios.post('/events/api/deleteTag', {data:{...record}}).then(function (res) {
+      message.success(`Record deleted successfully, Please refresh the page!`);
+      dispatch(getTagsResult());
+      navigate("/admin/events/listtags")
+    })
+    .catch(function (error) {
+      navigate("/admin/events/listtags")
+    });
+  };
+
+  const save = async (key) => {
+    try {
+      const row = await form.validateFields();
+      const newData = [...tableDatas];
+      const index = newData.findIndex((item) => key === item.key);
+
+      if (index > -1) {
+        const item = newData[index]; 
+        newData.splice(index, 1, { ...item, ...row });
+        setData(newData);
+        setEditingKey('');
+      } else {
+        newData.push(row);
+        setData(newData);
+        setEditingKey('');
+      } 
+      const updateditem = newData[index];       
+      axios.post('/events/api/saveTag', {data:{...updateditem}}).then(function (res) {
+        message.success(`Record updated successfully, Please refresh the page!`);
+        dispatch(getTagsResult());
+        navigate("/admin/events/listtags")
+      })
+      .catch(function (error) {
+        navigate("/admin/events/listtags")
+      });
+    } catch (errInfo) {
+      console.log('Validate Failed:', errInfo);
+    }
+  };
  
   const columns = [
     {
       title: 'Tag',
       dataIndex: 'tag',
+      editable: true,
       width: '80%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'tag'),
       render: (text, record) => {
@@ -69,12 +163,29 @@ const ListCategory = (props) => {
       dataIndex: 'action',
       width: '20%',
       render: (_, record) => {
-        return (
+        const editable = isEditing(record);
+        return editable ? (
+          <span>
+            <a
+              href="javascript:;"
+              onClick={() => save(record.key)}
+              style={{
+                marginRight: 8,
+              }}
+              title="Save"
+            >
+              <SaveOutlined />
+            </a>
+            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+              <a title="Cancel" style={{padding:"0px 10px"}}><CloseCircleOutlined /></a>
+            </Popconfirm>
+          </span>
+        ) : (
           <>
-          <Typography.Link title="Edit">
-            <Link to={`/admin/events/createtag/${record.tagid}`}><EditOutlined /></Link>
+          <Typography.Link title="Edit" disabled={editingKey !== ''} onClick={() => edit(record)}>
+            <EditOutlined />
           </Typography.Link>
-          <Popconfirm title="Sure to delete?">
+          <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
           </Popconfirm>
           </>
@@ -82,6 +193,22 @@ const ListCategory = (props) => {
       },
     },
   ];
+
+  const mergedColumns = columns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        inputType: col.dataIndex === 'type' ? 'select' : 'text',
+        dataIndex: col.dataIndex,
+        title: col.title,
+        editing: isEditing(record),
+      }),
+    };
+  });
 
   return <>
         <div className="_apifilter_subheader">
@@ -105,11 +232,19 @@ const ListCategory = (props) => {
                 <Link to={`/admin/events/createtag/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
-                <Table 
-                bordered
-                dataSource={tableDatas}
-                columns={columns}     
-                />
+                  <Form form={form} component={false}>
+                  <Table 
+                  bordered
+                  dataSource={tableDatas}
+                  columns={mergedColumns}  
+                  components={{
+                    body: {
+                      cell: EditableCell,
+                    },
+                  }}    
+                  rowClassName="editable-row"   
+                  />
+                  </Form>
                 </Col>
             </Row>
             </div> :

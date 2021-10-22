@@ -1,7 +1,7 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector, navigate } from 'react-redux';
 import { Link } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm  } from 'antd';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message  } from 'antd';
 import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
     FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash'
@@ -21,6 +21,17 @@ const ListCategory = (props) => {
   useEffect(() => {
     dispatch(getAllCategories());
   },[]);
+
+  const deleteRec = (record) => {
+    axios.post('/events/api/deleteCategory', {data:{...record}}).then(function (res) {
+      message.success(`Record deleted successfully, Please refresh the page!`);
+      dispatch(getAllCategories());
+      navigate("/admin/category/list")
+    })
+    .catch(function (error) {
+      navigate("/admin/category/list")
+    });
+  };
 
   const categoryData = useSelector(state => state.category);
   const categorys = categoryData.list;
@@ -81,7 +92,7 @@ const ListCategory = (props) => {
           <Typography.Link title="Edit">
             <Link to={`/admin/category/new/${record.catid}`}><EditOutlined /></Link>
           </Typography.Link>
-          <Popconfirm title="Sure to delete?">
+          <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
           </Popconfirm>
           </>
@@ -99,7 +110,7 @@ const ListCategory = (props) => {
             <div className="filters"></div>
         </div>
         <Divider style={{ margin: '20px 0' }} />
-        {categoryDatas.length>0 ?
+        {!categoryDatas.loading ?
             <div className="_admin_body">
             <Row className="rowclass">
                 <Col span={17}>

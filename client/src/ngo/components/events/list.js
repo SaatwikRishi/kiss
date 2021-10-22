@@ -1,7 +1,7 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector, navigate } from 'react-redux';
 import { Link } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm } from 'antd';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message } from 'antd';
 import {
   SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
   FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined
@@ -79,6 +79,17 @@ const ListEvents = (props) => {
   };
   /* modal functions */
 
+  const deleteRec = (record) => {
+    axios.post('/events/api/deleteEvent', {data:{...record}}).then(function (res) {
+      message.success(`Record deleted successfully, Please refresh the page!`);
+      dispatch(getAllEvents());
+      navigate("/admin/events/list")
+    })
+    .catch(function (error) {
+      navigate("/admin/events/list")
+    });
+  };
+
   const columns = [
     {
       title: 'Event Name',
@@ -119,7 +130,7 @@ const ListEvents = (props) => {
             <Typography.Link title="Edit">
               <Link to={`/admin/events/new/${record.eventid}`}><EditOutlined /></Link>
             </Typography.Link>
-            <Popconfirm title="Sure to delete?">
+            <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
               <a title="Delete" style={{ padding: "0px 10px" }}><DeleteOutlined /></a>
             </Popconfirm>
             <SendNotification data={{categorys, record, studentsList}} />
@@ -138,7 +149,7 @@ const ListEvents = (props) => {
       <div className="filters"></div>
     </div>
     <Divider style={{ margin: '20px 0' }} />
-    {categoryDatas.length > 0 ?
+    {!categoryDatas.loading ?
       <div className="_admin_body">
         <Row className="rowclass">
           <Col span={17}>

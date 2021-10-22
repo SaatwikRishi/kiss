@@ -76,7 +76,7 @@ const ListCategory = (props) => {
           <Typography.Link title="Edit">
           <Link to={`/admin/students/createstdcategory/${record.stdcatid}`}><EditOutlined /></Link>
           </Typography.Link>
-          <Popconfirm title="Sure to delete?">
+          <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
           </Popconfirm>
           </>
@@ -84,6 +84,17 @@ const ListCategory = (props) => {
       },
     },
   ];
+
+  const deleteRec = (record) => {
+    axios.post('/events/api/deleteStdCategory', {data:{...record}}).then(function (res) {
+      message.success(`Record deleted successfully, Please refresh the page!`);
+      dispatch(getAllStdCategories());
+      navigate("/admin/students/liststdcategory")
+    })
+    .catch(function (error) {
+      navigate("/admin/students/liststdcategory")
+    });
+  };
 
   return <>
         <div className="_apifilter_subheader">
