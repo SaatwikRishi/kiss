@@ -18,5 +18,11 @@ router.post('/api/saveTag',eventsController.saveTag)
 router.get('/api/getAllTags',eventsController.getAllTags)
 router.post('/api/sendNotification',eventsController.sendNotification)
 router.post('/api/saveStudentEventForm',eventsController.saveStudentEventForm)
+router.post('/api/changeStudentStatus',eventsController.changeStudentStatus)
+router.post('/api/deleteTag',eventsController.deleteTag)
+router.post('/api/deleteEvent',eventsController.deleteEvent)
+router.post('/api/deleteCategory',eventsController.deleteCategory)
+router.post('/api/deleteStdCategory',eventsController.deleteStdCategory)
+router.post('/api/deleteStudent',eventsController.deleteStudent)
 
 module.exports = router;

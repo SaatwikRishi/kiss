@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
 import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, navigate } from '@reach/router';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -16,10 +18,15 @@ import moment from 'moment-timezone';
 moment.tz.setDefault('America/Los_Angeles');
 import axios from 'axios';
 export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
-
+import { getAllStdCategories } from '../../store/actions';
 
 const CreateStdCategory = memo((props) => {
+    const { catId = null } = props;
+    const dispatch = useDispatch();
     const [form] = Form.useForm();
+    useEffect(() => {
+        dispatch(getAllStdCategories());
+    },[]);
     
     /**
      * on form Finish
@@ -28,11 +35,15 @@ const CreateStdCategory = memo((props) => {
     const onFinish = async (e) =>{
         let studentcat_json = _(e.studentcat_json).pickBy(val => val).map(val=>val).value();
         let formData = {
-            studentcat_json: studentcat_json
+            studentcat_json: studentcat_json,
+            ...(()=>{
+                return catId!=null ? { stdcatid: parseInt(catId) }: {}
+            })()
         };
         console.log(formData);
         await axios.post(`/events/api/saveStudentCategory`, { data: formData }).then(res => {
-            console.log(res);
+            dispatch(getAllStdCategories());
+            navigate("/admin/students/liststdcategory")
         });
     }
 
@@ -45,7 +56,64 @@ const CreateStdCategory = memo((props) => {
     /**
      * Form Arr
      */
-    const [categoryList, setcategoryList] = useState([0]);
+    /**
+     * dynamic category array for form
+     */
+     const [categoryList, setcategoryList] = useState([0]);
+
+     /**
+      * getForm data  from Store
+      */
+     const categoryStore = useSelector(state => state.stdcategory);
+     const getEventStoreData = () => {
+         let mainObj = categoryStore ? categoryStore : {}
+         return {
+             categoryList: {
+                 loading: mainObj.loading == true ? false: true,
+                 data: mainObj.list ? mainObj.list :[],
+             }
+         }
+     }
+     let categoryData = getEventStoreData();
+     console.log(categoryData);
+    /**
+     * based on catId check edit mode or not
+     * if setForm data
+     */
+     let eventEditObj = {};
+     useEffect(() => {
+         console.log(catId); 
+         if (catId !=null && categoryData.categoryList.loading == false) {
+             eventEditObj = _(categoryData.categoryList.data).filter(val => val.stdcatid == parseInt(catId) ).value();
+             eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
+             if (Object.keys(eventEditObj).length == 0) {
+                 message.warning(`No records fount for this ID : ${catId}`);
+                 // navigate('/admin/category/list');
+             } else {
+                 eventEditObj = _(eventEditObj).pickBy(val => val).value();
+ 
+                 let formInit = {
+                     ...eventEditObj,
+                     ...(() => {
+                         if (eventEditObj.studentcat_json) {
+                             try {
+                                 let studentcat_json = JSON.parse(eventEditObj.studentcat_json);
+                                 studentcat_json = studentcat_json && studentcat_json.length ? studentcat_json : null;
+                                 if (studentcat_json) {
+                                     return { studentcat_json: studentcat_json }
+                                 }
+                             } catch (error) { }
+                         }
+                     })(),
+                 };
+                 formInit.studentcat_json && formInit.studentcat_json.length && setcategoryList(Array.from({ length: formInit.studentcat_json.length }, (val, key) => key));
+                 form.setFieldsValue(formInit);
+             }
+         } else { }
+     }, [categoryData.categoryList.data])
+
+
+    console.log(categoryList);
 
     /**
      * remove CategoryList
