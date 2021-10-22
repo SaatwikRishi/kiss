@@ -6,7 +6,7 @@ import '../assets/css/style.less';
 
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
-import { ContainerOutlined, FormOutlined, TagOutlined, UserOutlined } from '@ant-design/icons';
+import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined } from '@ant-design/icons';
 import { updateUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
@@ -61,8 +61,10 @@ const Index = (props)=>{
                                     <CreateCategory path="/category/new/:catId" />
                                     <ListCategory path="/category/list"/>
                                     <CreateStdCategory path="/students/createstdcategory"/>
+                                    <CreateStdCategory path="/students/createstdcategory/:catId"/>
                                     <ListStdCategory path="/students/liststdcategory"/>
                                     <CreateStdProfile path="/students/create"/>
+                                    <CreateStdProfile path="/students/create/:id"/>
                                     <ListStudents path="/students/list"/>
                                 </Router>
                             </Content>
@@ -92,7 +94,7 @@ const LayoutSidebar = (props) =>{
         <div className={`main_sidebar ${expand? 'expand': ''}`} onMouseEnter={() => setexpand(true)} onMouseLeave={() => setexpand(false)}>
             <ul>
                 <li className={url == '/admin/events/list' ? 'active' : ''} onClick={() => navigateTo('/admin/events/list')}>
-                    <FormOutlined />
+                    <ProfileOutlined />
                     <div className="_title">Events</div>
                 </li>
                 <li className={url == '/admin/category/list' ? 'active' : ''} onClick={() => navigateTo('/admin/category/list')}>
@@ -100,8 +102,12 @@ const LayoutSidebar = (props) =>{
                     <div className="_title">Category</div>
                 </li>
                 <li className={url == '/admin/students/list' ? 'active' : ''} onClick={() => navigateTo('/admin/students/list')}>
-                    <UserOutlined />
+                    <TeamOutlined />
                     <div className="_title">Students</div>
+                </li>
+                <li className={url == '/admin/students/liststdcategory' ? 'active' : ''} onClick={() => navigateTo('/admin/students/liststdcategory')}>
+                    <SolutionOutlined />
+                    <div className="_title">Students Form Fields</div>
                 </li>
                 <li className={url == '/admin/events/listtags' ? 'active' : ''} onClick={() => navigateTo('/admin/events/listtags')}>
                     <TagOutlined />
