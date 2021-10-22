@@ -161,8 +161,8 @@ export const getAllStdCategories = async () => {
   };
 }
 
-export const getAllStudents = async () => {
-  let response = await axios.get('/events/api/getAllStudents')
+export const getAllStudents = async (status='') => {
+  let response = await axios.get(`/events/api/getAllStudents?status=${status}`)
 
   return {
     type: 'GET_ALLSTUDENTS',
@@ -170,8 +170,8 @@ export const getAllStudents = async () => {
   };
 }
 
-export const getAllEvents = async () => {
-  let response = await axios.get('/events/api/getAllEvents')
+export const getAllEvents = async (status='') => {
+  let response = await axios.get(`/events/api/getAllEvents?status=${status}`)
 
   return {
     type: 'EVENTS_LIST',
