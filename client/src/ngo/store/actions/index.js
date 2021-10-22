@@ -1,3 +1,4 @@
+import { navigate } from '@reach/router';
 import axios from 'axios';
 import moment from 'moment-timezone'
 
@@ -67,11 +68,31 @@ export const getCategoryList = async (date, country) => {
  * Update User Infomation
  */
 export const updateUser = async (payload) => {
-
   return {
     type: 'UPDATE_USER',
     payload: payload
   };
+}
+export const getUser = async () => {
+  let response = await axios.get(`/api/getUser`)
+  let payload = response.data.result
+/*   if (payload !== null) {
+
+    if (!payload.isProfileUpdate) {
+      navigate("/profile")
+    } else {
+      navigate("/")
+    }
+ 
+
+  }else{
+    navigate("/login")
+  } */
+  return {
+    type: 'GET_USER',
+    payload: payload
+  };
+
 }
 
 /**

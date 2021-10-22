@@ -25,7 +25,7 @@ import axios from 'axios';
 /**
  * Actions 
  */
-import {updateUser, getAllEvents, getCategoryListforEvents } from '../../../ngo/store/actions';
+import { getAllEvents, getCategoryListforEvents } from '../../../ngo/store/actions';
 
 /**
  * File upload packages

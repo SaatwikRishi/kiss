@@ -9,7 +9,7 @@ import { ReconciliationOutlined, FormOutlined, ClockCircleOutlined } from '@ant-
 /**
  * Actions
  */
-import { updateUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
+import { getUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
 
 const Index = (props) => {
     const dispatch = useDispatch();
@@ -24,7 +24,7 @@ const Index = (props) => {
     }, [location.pathname])
 
     useEffect(() => {
-        dispatch(updateUser());
+        dispatch(getUser());
         dispatch(getAllEvents());
         dispatch(getCategoryListforEvents());
     }, []);

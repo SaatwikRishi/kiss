@@ -12,7 +12,7 @@ const { TabPane } = Tabs;
 const { Option } = Select;
 const { TextArea } = Input;
 const { Content } = Layout;
-import { updateUser, getAllStudents } from '../../ngo/store/actions';
+import {  getAllStudents } from '../../ngo/store/actions';
 import axios from 'axios';
 
 const ProfilePage = (props) => {    

@@ -7,7 +7,7 @@ import '../assets/css/style.less';
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
 import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined } from '@ant-design/icons';
-import { updateUser } from './store/actions';
+import { getUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
@@ -35,7 +35,7 @@ const Index = (props)=>{
     
     const [loading, setloading] = useState(false);
     useEffect(() => {
-        dispatch(updateUser());
+        dispatch(getUser());
     },[]);
 
     return <>
