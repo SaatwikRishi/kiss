@@ -14,6 +14,7 @@ import PortalFooter from "./layout/portalFooter";
 import PortalBanner from "./layout/portalbanner";
 
 import EventDetails from "./component/events/eventDetails";
+import EventsList from "./component/eventslist";
 
 import '../assets/css/portal.less' 
 
@@ -49,7 +50,8 @@ const Index = (props)=>{
                                 <Router>
                                     <IndexPage path="/" />                                  
                                     <LoginPage path="/login" />                                 
-                                    <ProfilePage path="/profile" />                                  
+                                    <ProfilePage path="/profile" />                                 
+                                    <EventsList path="/eventslist" />                                  
                                     <EventDetails path="/event" />
                                     <EventDetails path="/event/:eventId" />
                                 </Router>

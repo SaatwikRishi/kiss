@@ -27,10 +27,10 @@ var eventsController = {
       });
       updateField = updateField.substr(0, updateField.length - 2);
       let queries = {
-        category: ((data.catid != '') ? `UPDATE tbl_categories SET ${updateField} WHERE catid='${data.catid}'` : `INSERT INTO tbl_categories SET ${updateField}`),
+        category: ((data.catid) ? `UPDATE tbl_categories SET ${updateField} WHERE catid='${data.catid}'` : `INSERT INTO tbl_categories SET ${updateField}`),
       }
       let result = await req.db.query(queries.category, 'saveCategory');
-      console.log(result);
+      console.log(queries.category);
       res.json({ result })
     }
     catch (ex) {
