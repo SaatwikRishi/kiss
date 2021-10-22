@@ -41,7 +41,8 @@ const Notification = (props) => {
         console.log(e);
         let formData = {
             title: e.title,
-            message: EditorVal
+            message: EditorVal,
+            eventid: record.eventid
         };
         setloading(true);
         let students = studentsList.list;
@@ -95,6 +96,7 @@ const Notification = (props) => {
                 visible={isModalVisible} 
                 footer={null} 
                 width={800}
+                onCancel={handleCancel}
             >
                 <div className="category_creation" style={{ minHeight: '60vh'}}>
                     <Form className="initial_form" layout="vertical"
@@ -115,7 +117,7 @@ const Notification = (props) => {
 
                             <div className="category_item">
                                 <Form.Item hasFeedback={true} name={'message'} label="message" rules={[{ required: EditorValid, message: 'Please fill!' }]}>
-                                    <TextEditor setEditorValid={setEditorValid} setEditorVal={setEditorVal} />
+                                    <TextEditor setEditorValid={setEditorValid} setEditorVal={setEditorVal} formStore={formStore} />
                                 </Form.Item>
                             </div>
                         </div>
@@ -133,7 +135,8 @@ const Notification = (props) => {
 export default Notification;
 
 const TextEditor = (props) =>{
-    console.log(props);
+    const { formStore } = props;
+    console.log(formStore);
     const OnChange = (value) => {
       let editorval = ((value.trim()=='' || value=='<p><br></p>')?true:false)
       props.setEditorValid(editorval)
@@ -172,6 +175,7 @@ const TextEditor = (props) =>{
     return <>
         <ReactQuill
           theme="snow"
+          value={formStore.message}
           modules={modules}
           formats={formats}
           onChange={OnChange}

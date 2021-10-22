@@ -178,3 +178,12 @@ export const getAllEvents = async (status='') => {
     payload: response.data.result
   };
 }
+
+export const getAllStudentForms = async () => {
+  let response = await axios.get(`/events/api/getAllStudentForms`)
+
+  return {
+    type: 'STUDENT_EVENTFORM',
+    payload: response.data.result
+  };
+}

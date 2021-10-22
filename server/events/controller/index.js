@@ -204,13 +204,10 @@ var eventsController = {
       {
         /* mail function start */
         var from = process.env.user;
-        var subjectcontent = process.env.subject.replace('<name>',data.firstname);
-        var msgcontent1 = process.env.message1.replace('<name>',data.firstname);
-        var msgcontent2 = process.env.message2;
-        var msgcontent3 = process.env.message3;
-        var msgcontent4 = process.env.message4.replace('<user>',data.email);
-        var msgcontent5 = process.env.message5.replace('<pass>',data.password);
-        var message = msgcontent1+'\n\n'+msgcontent2+'\n\n'+msgcontent3+'\n\n'+msgcontent4+'\n'+msgcontent5;
+        var subject = process.env.subject.replace('<name>',data.firstname);
+        var message = process.env.message.replace('<name>',data.firstname);
+        message = process.env.message.replace('<user>',data.email);
+        message = process.env.message.replace('<pass>',data.password);
         var to = data.email;
         let transporter = nodemailer.createTransport({
           host: process.env.host,
@@ -225,7 +222,7 @@ var eventsController = {
         var mailOptions = {
             from: from,
             to: to, 
-            subject: subjectcontent,
+            subject: subject,
             text: message,
             html: message
         }
@@ -233,6 +230,7 @@ var eventsController = {
             if(error){
               res.json({ error: error.toString() })
             }else{
+              let mailres = req.db.query(`INSERT INTO tbl_notifications SET notify_type = 'MAIL', notify_for = 'STUDENT', action = 'Registration', value = '${(data.studentid)?data.studentid:0}', title = '${subject}', message = '${message}', created_date = '${moment().format('YYYY-MM-DD')}', headers = '${JSON.stringify(mailOptions)}'`, 'insertNotification');
               res.json({result})
             }
         });
@@ -337,7 +335,15 @@ var eventsController = {
             transporter.sendMail(mailOptions, function (error, response) { });
             /* mail function start */
           }
-        });
+        });        
+        var Options = {
+          from: process.env.user,
+          to: stdEmails.join(','),
+          subject: data.title,
+          text: data.message,
+          html: data.message
+        }
+        let mailres = req.db.query(`INSERT INTO tbl_notifications SET notify_type = 'MAIL', notify_for = 'EVENTS', action = 'Notification', value = '${(data.eventid)?data.eventid:0}', title = '${data.title}', message = '${data.message}', created_date = '${moment().format('YYYY-MM-DD')}', headers = '${JSON.stringify(Options)}'`, 'insertNotification');
       }
       await eventsController.sleep(20 * 1000);
       res.json({ result: 'success' })
@@ -399,6 +405,7 @@ var eventsController = {
           if(error){
             res.json({ error: error.toString() })
           }else{
+            let mailres = req.db.query(`INSERT INTO tbl_notifications SET notify_type = 'MAIL', notify_for = 'STUDENTS', action = 'Status', value = '${(data.studentid)?data.studentid:0}', title = '${subject}', message = '${message}', created_date = '${moment().format('YYYY-MM-DD')}', headers = '${JSON.stringify(mailOptions)}'`, 'insertNotification');
             res.json({result})
           }
       });
@@ -479,6 +486,17 @@ var eventsController = {
         delete:((data.studentid)?`DELETE FROM tbl_students WHERE studentid='${data.studentid}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteStudent');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  getAllStudentForms: async (req, res) => {
+    try {
+      let { status } = req.query;
+      let result = await req.db.query(`SELECT * FROM tbl_student_forms ORDER BY created_date DESC`, 'getAllStudentForms');
       console.log(result);
       res.json({ result })
     }
