@@ -24,8 +24,8 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 /**
  * Editor Textarea
  */
-import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+ import ReactQuill from 'react-quill';
+ import 'react-quill/dist/quill.snow.css';
 
 /**
  * Custom Component
@@ -100,6 +100,7 @@ const CreateEvent = (props) => {
      * based on eventId check edit mode or not
      * if setForm data
      */
+    const [eventDesc, seteventDesc] = useState('');
     let eventEditObj = {};
     useEffect(() => {
         if (eventId && eventsData.eventList.loading == false) {
@@ -109,8 +110,8 @@ const CreateEvent = (props) => {
                 message.warning(`No records fount for this ID : ${eventId}`);
                 navigate('/admin/events/list');
             } else {
+                seteventDesc(eventEditObj.event_desc);
                 eventEditObj = _(eventEditObj).pickBy(val => val).value();
-                console.log(eventEditObj);
 
                 let formInit = {
                     ...eventEditObj,
@@ -162,10 +163,16 @@ const CreateEvent = (props) => {
                 form.setFieldsValue(formInit);
             }
         } else { }
-    }, [eventsData.eventList.data])
+    }, [eventsData.eventList.data, eventDesc])    
+    
+    const [EditorValid, setEditorValid] = useState(true);
+    const [EditorVal, setEditorVal] = useState(eventDesc);
+    const dateFormat = 'YYYY-MM-DD';
 
-
-
+    useEffect(() => {
+        setEditorVal(eventDesc);
+    }, [eventDesc])
+    
     /**
      * on form Finish
      */
@@ -178,7 +185,8 @@ const CreateEvent = (props) => {
         await axios.post(`/events/api/saveEvents`, { data: { 
             ...formData, 
             created_by: user.username, 
-            created_date: moment().format('YYYY-MM-DD'), 
+            created_date: moment().format('YYYY-MM-DD'),
+            event_desc: EditorVal,
             ...(() => {
                 return eventId !=null ? { eventid: parseInt(eventId) } : {}
             })(),
@@ -221,7 +229,58 @@ const CreateEvent = (props) => {
                 }}>
                 
                 <div className="category_list">
-                    <BasicFields {...{ form, fUpdateTrigger, eventsData }} />
+                    <div className="category_box_basic bgwhite20">
+                        <div className="category_item">
+                            <Form.Item hasFeedback={true} name={'event_name'} label="event name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                <Input size="middle" />
+                            </Form.Item>
+                        </div>            
+                        <div className="category_item">
+                            <Form.Item hasFeedback={true} name={'event_desc'} label="event description" rules={[{ required: EditorValid, message: 'Please fill!' }]}>
+                                <TextEditor setEditorValid={setEditorValid} setEditorVal={setEditorVal} EditorVal={EditorVal} />
+                            </Form.Item>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gridGap: '10px 25px', marginTop: 50}}>
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'catid'} label="select category" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Select size="middle" onChange={(e) => { fUpdateTrigger() }} >
+                                        {eventsData.categoryList.data.map(val => <Option value={val.catid}>{val.name}</Option>)}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'tags'} label="select Tags" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Select mode="tags" size="middle" onChange={(e) => {  }} >
+                                        {eventsData.tagList && eventsData.tagList.data.map(val => <Option value={val.tag}>{val.tag}</Option>)}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <RangePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={val => moment(val).isBefore(moment.now())} />
+                                </Form.Item>
+                            </div>
+                        
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isBefore(moment.now())} />
+                                </Form.Item>
+                            </div>
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'document_url'} label="document url" rules={[{ required: false, message: 'Please fill!' }]}>
+                                    <Input size="middle" style={{ width: '100%' }}/>
+                                </Form.Item>
+                            </div>
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'gallery'} label="Event Image" rules={[{ required: false, message: 'Please fill!' }]}>
+                                    <FireBaseGalleryFileUpload {...{ formName: 'gallery', form, fUpdateTrigger }} />
+                                </Form.Item>
+                            </div>
+                        </div>
+                    </div>
 
                     {form.getFieldValue('catid') && <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />}
 
@@ -261,92 +320,6 @@ const CreateEvent = (props) => {
     </>
 }
 export default CreateEvent;
-
-/**
- * Sub form box
- */
-const BasicFields = (props) =>{
-    const { form, fUpdateTrigger, eventsData } = props;
-    const dateFormat = 'YYYY-MM-DD';
-
-    // const [editValue, seteditValue] = useState(form.getFieldValue('event_desc'));
-    // const onEditorStateChange = (e) =>{
-    //     form.setFieldsValue({
-    //         ...form.getFieldsValue(),
-    //         event_desc: e
-    //     });
-    //     console.log(e);
-    //     seteditValue(e);
-    // }
-    return <>
-        <div className="category_box_basic bgwhite20">
-            <div className="category_item">
-                <Form.Item hasFeedback={true} name={'event_name'} label="event name" rules={[{ required: true, message: 'Please fill!' }]}>
-                    <Input size="middle" />
-                </Form.Item>
-            </div>
-
-            {/* <div className="category_item">
-                <Form.Item hasFeedback={true} name={'event_desc'} label="event description" rules={[{ required: false, message: 'Please fill!' }]}>
-                    <Editor
-                        editorState={editValue}
-                        toolbarClassName="toolbarClassName"
-                        wrapperClassName="customtextareaEditor"
-                        editorClassName="editorClassName"
-                        onEditorStateChange={onEditorStateChange}
-                    />
-                    <TextArea rows={0} style={{ display: 'none'}} />
-                </Form.Item>
-            </div> */}
-            
-            <div className="category_item">
-                <Form.Item hasFeedback={true} name={'event_desc'} label="event description" rules={[{ required: false, message: 'Please fill!' }]}>
-                    <TextArea rows={3} />
-                </Form.Item>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gridGap: '10px 25px', marginTop: 20}}>
-                <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'catid'} label="select category" rules={[{ required: true, message: 'Please fill!' }]}>
-                        <Select size="middle" onChange={(e) => { fUpdateTrigger() }} >
-                            {eventsData.categoryList.data.map(val => <Option value={val.catid}>{val.name}</Option>)}
-                        </Select>
-                    </Form.Item>
-                </div>
-
-                <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'tags'} label="select Tags" rules={[{ required: true, message: 'Please fill!' }]}>
-                        <Select mode="tags" size="middle" onChange={(e) => {  }} >
-                            {eventsData.tagList.data.map(val => <Option value={val.tag}>{val.tag}</Option>)}
-                        </Select>
-                    </Form.Item>
-                </div>
-                
-                <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: true, message: 'Please fill!' }]}>
-                        <RangePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={val => moment(val).isBefore(moment.now())} />
-                    </Form.Item>
-                </div>
-            
-                <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: true, message: 'Please fill!' }]}>
-                        <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isBefore(moment.now())} />
-                    </Form.Item>
-                </div>
-                <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'document_url'} label="document url" rules={[{ required: false, message: 'Please fill!' }]}>
-                        <Input size="middle" style={{ width: '100%' }}/>
-                    </Form.Item>
-                </div>
-                <div className="category_item">
-                    <Form.Item hasFeedback={true} name={'gallery'} label="Event Image" rules={[{ required: false, message: 'Please fill!' }]}>
-                        <FireBaseGalleryFileUpload {...{ formName: 'gallery', form, fUpdateTrigger }} />
-                    </Form.Item>
-                </div>
-            </div>
-        </div>
-    </>
-}
 
 /**
  * Catgory Form
@@ -585,3 +558,53 @@ const FormTags = (props) => {
         </div>
     </>
 }
+
+const TextEditor = (props) =>{
+    const { EditorVal } = props;
+    console.log(EditorVal);
+    const OnChange = (value) => {
+      let editorval = ((value.trim()=='' || value=='<p><br></p>')?true:false)
+      props.setEditorValid(editorval)
+      props.setEditorVal(value)
+    }
+  
+    const modules = {
+      toolbar: [
+        [{ header: [1, 2, false] }],
+        ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+        [
+          { list: 'ordered' },
+          { list: 'bullet' },
+          { indent: '-1' },
+          { indent: '+1' },
+        ],
+        ['link', 'code'],
+        ['clean'],
+      ],
+    };
+    
+    const formats = [
+      'header',
+      'bold',
+      'italic',
+      'underline',
+      'strike',
+      'blockquote',
+      'list',
+      'bullet',
+      'indent',
+      'link',
+      'code',
+    ];
+    
+    return <>
+        <ReactQuill
+          theme="snow"
+          value={EditorVal || ''}
+          modules={modules}
+          formats={formats}
+          onChange={OnChange}
+          style={{height: '150px'}}
+        />
+      </>
+  };
