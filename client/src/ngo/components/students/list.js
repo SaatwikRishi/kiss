@@ -44,8 +44,8 @@ const ListStudents = (props) => {
   const [SelStatus, setSelStatus] = useState('');
   const [Searched, setSearched] = useState(0); 
 
-  const saveStatus = (studentid) => {
-    let formData = { studentid: studentid, status: SelStatus }
+  const saveStatus = (record) => {
+    let formData = { studentid: record.studentid, status: SelStatus, firstname: record.lastname, lastname: record.lastname, email: record.email }
     axios.post(`/events/api/changeStudentStatus`, { data: formData }).then(res => {
         setRowPopover(null)
         message.success(`Status updated successfully, Please refresh the page!`);
@@ -138,7 +138,7 @@ const ListStudents = (props) => {
                 <Option value="1">Active</Option>
                 <Option value="0">In Active</Option>
               </Select>
-              <Button type="primary" style={{ float: 'right', marginLeft: '5px' }} onClick={() => saveStatus(record.studentid)}>Save</Button>
+              <Button type="primary" style={{ float: 'right', marginLeft: '5px' }} onClick={() => saveStatus(record)}>Save</Button>
           </div>
         );
         return (

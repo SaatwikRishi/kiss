@@ -11,7 +11,38 @@ const passkey = crypto.scryptSync(passwordkey, 'salt', 24); //create key
 var eventsController = {
   testEvents: async (req, res) => {
     try {
-      let result = await req.db.query('SELECT * FROM tbl_events ORDER BY event_date DESC', 'testEvents');
+      let { data } = req.query;
+      var from = 'kalingaiss1@gmail.com';
+      var to = 'kalingaiss1@gmail.com';
+      var subjectcontent = process.env.subject.replace('<name>','data.firstname');
+      var message = process.env.message;
+
+        let transporter = nodemailer.createTransport({
+          host: process.env.host,
+          port: 587,
+          secure: false,
+          auth: {
+            user: process.env.user,
+            pass: process.env.pass
+          },
+        });
+          
+        var mailOptions = {
+            from: from,
+            to: to, 
+            subject: subjectcontent,
+            text: message,
+            html: message
+        }
+        transporter.sendMail(mailOptions, function(error, response){
+            if(error){
+              res.json({ error: error.toString() })
+            }else{
+              res.json({result})
+            }
+        });
+      let result = {}
+      console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -336,6 +367,40 @@ var eventsController = {
         category: `UPDATE tbl_students SET status = '${data.status}' WHERE studentid='${data.studentid}'`,
       }
       let result = await req.db.query(queries.category, 'changeStudentStatus');
+
+      /* active deactive mail */
+      var from = process.env.user;
+      var to = data.email;
+      var subject = process.env.approvesubject.replace('<name>',data.firstname);
+      var message = process.env.approvemessage.replace('<status>',(data.status=='0')?'de-activated':'activated');
+      message = message.replace('<name>',data.firstname);
+
+      let transporter = nodemailer.createTransport({
+        host: process.env.host,
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.user,
+          pass: process.env.pass
+        },
+      });
+        
+      var mailOptions = {
+          from: from,
+          to: to, 
+          subject: subject,
+          text: message,
+          html: message
+      }
+      transporter.sendMail(mailOptions, function(error, response){
+          if(error){
+            res.json({ error: error.toString() })
+          }else{
+            res.json({result})
+          }
+      });
+      /* active deactive mail */
+
       console.log(result);
       res.json({ result })
     }
