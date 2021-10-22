@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Fragment } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
@@ -11,7 +11,8 @@ import moment from 'moment-timezone'
  */
 import { getUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
 
-const Index = (props) => {
+const ListingView = (props) => {
+    const ListingViewId = parseInt(props.id)
     const dispatch = useDispatch();
     const location = useLocation();
     const eventsStore = useSelector(state => state.events);
@@ -20,14 +21,19 @@ const Index = (props) => {
      * Scroll to Top
      */
     useEffect(() => {
-        setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
-    }, [location.pathname])
-
-    useEffect(() => {
         dispatch(getUser());
         dispatch(getAllEvents());
         dispatch(getCategoryListforEvents());
     }, []);
+    useEffect(() => {
+        setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+    }, [location.pathname])
+
+    /*     useEffect(() => {
+            dispatch(getUser());
+            dispatch(getAllEvents());
+            dispatch(getCategoryListforEvents());
+        }, []); */
 
 
     /**
@@ -36,9 +42,7 @@ const Index = (props) => {
     const getEventStoreData = () => {
         let mainObj = eventsStore ? eventsStore : {}
         let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
-
         let eventList = mainObj.eventList ? mainObj.eventList : {};
-
         return {
             categoryList: {
                 loading: true,
@@ -77,86 +81,44 @@ const Index = (props) => {
 
     let categoryList = _(eventsData.categoryList.data).map((rec) => { return { name: rec.name, id: rec.catid } }).value()
     let eventsList = _(eventsData.eventList.data).map((rec) => { return { ...rec, category: _.find(categoryList, { "id": rec.catid }) } }).value()
-
-    const onSearch = (val) => {
-        let searchRec = eventsList.filter(o => Object.keys(o).some(k => String(o[k]).toLowerCase().includes(val.toLowerCase())));
-        setState({ ...state, search: val, searchResult: searchRec })
-    }
-    const onChange = (e) => {
-        if (e.target.value === '' || e.target.value === null) {
-            setState({ ...state, search: null, searchResult: [] })
-        } else {
-            setState({ ...state, search: null, searchResult: [] })
-        }
-    }
-    const getEvents = (id) => {
-        let dataSource = id ? _.filter(eventsList, { "catid": id }) : eventsList
-        if (state.searchResult.length > 0) {
-            dataSource = state.searchResult
-        }
-        return (
-
-            <List itemLayout="vertical" size="large"
-                dataSource={dataSource}
-                pagination={{ pageSize: 9, showQuickJumper: true }}
-                renderItem={item => (
-                    <div className="listing">
-                        <Link to={`/listing/${item.eventid}`}>
-                            <Card Bordered>
-                                <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
-                                <div className="details">
-                                    <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
-                                    <p className="title">{item.event_name}</p>
-                                    <p dangerouslySetInnerHTML={{__html:item.event_desc}} className="desc"/>
-                                    <Divider />
-                                    <div className="info">
-                                        <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
-                                        <p className="value"> {moment(item.start_date).format('lll')} - {moment(item.end_date).format('lll')} </p>
-                                    </div>
-                                </div>
-                            </Card>
-                        </Link>
-                    </div>
-                )}
-            />
-
-        )
-    }
-
-    const { TabPane } = Tabs;
-    const { Search } = Input;
-    console.log({ categoryList, eventsList })
+    let eventDetails = _.find(eventsList, { "eventid": ListingViewId })
+    let desc = eventDetails && eventDetails.event_desc
+    console.log({ categoryList, eventsList, eventDetails, ListingViewId })
     return <>
-        <Content style={{ padding: 20 }} className="homePage">
-            <section style={{ marginTop: 20 }}>
-                <Row gutter={[16, 16]}>
-                    <Col span={24}><h1>Our Events and Jobs Listings</h1></Col>
-                </Row>
-            </section>
-            {!state.isLoading ?
-                <section style={{ marginTop: 20, padding: 20 }}>
-                    <Row gutter={[16, 16]}>
-                        <Col span={24}>
-                            <Tabs defaultActiveKey={0} tabBarExtraContent={<Search onChange={onChange} onSearch={onSearch} placeholder="Search" allowClear enterButton="Search" size="large" />}>
-                                <TabPane tab="All" key={0}>
-                                    {getEvents()}
-                                </TabPane>
-                                {categoryList.map((rec, indx) =>
-                                    <TabPane tab={rec.name} key={rec.id + 1}>
-                                        {getEvents(rec.id)}
-                                    </TabPane>
-                                )}
-                            </Tabs>
-                        </Col>
-                    </Row>
-                </section>
+        <Content style={{ padding: 20 }} className="listingView">
+            {!state.isLoading && eventDetails.eventid ?
+                <div>
+                    <section style={{ marginTop: 20, padding: 20 }}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={18}>
+                                <Card bordered className="details" >
+                                    <div className="img" style={{ backgroundImage: `url(${eventDetails.gallery})` }}></div>
+                                    <Divider />
+                                    <h1>{eventDetails.event_name}</h1>
+                                    <Fragment><div className="description" dangerouslySetInnerHTML={{__html:desc}}/></Fragment>
+                                </Card>
+
+                            </Col>
+                            <Col span={6} className="categories" >
+                                <Card >
+                                    <ul>
+                                        <li>CAT A</li>
+                                        <li>CAT B</li>
+                                        <li>CAT C</li>
+                                    </ul>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </section>
+                </div>
                 : null
             }
+
         </Content>
 
     </>
 }
-export default Index;
+export default ListingView;
 
 
 {/* <Row gutter={[16, 16]}>
