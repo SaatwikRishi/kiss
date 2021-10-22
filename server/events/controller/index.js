@@ -232,6 +232,10 @@ var eventsController = {
           }
         });
       }
+      else
+      {
+        updateField += ` tag = '${data.tag}', `
+      }
       updateField = updateField.substr(0, updateField.length - 2);
       let queries = {
         tags: ((data.tagid) ? `UPDATE tbl_tags SET ${updateField} WHERE tagid='${data.tagid}'` : `INSERT INTO tbl_tags (tag) VALUES ${updateField}`),
@@ -317,6 +321,96 @@ var eventsController = {
         category: `INSERT INTO tbl_student_forms SET ${updateField}`,
       }
       let result = await req.db.query(queries.category, 'saveStudentEventForm');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  changeStudentStatus: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        category: `UPDATE tbl_students SET status = '${data.status}' WHERE studentid='${data.studentid}'`,
+      }
+      let result = await req.db.query(queries.category, 'changeStudentStatus');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteTag: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        delete:((data.tagid)?`DELETE FROM tbl_tags WHERE tagid='${data.tagid}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteTag');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteCategory: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        delete:((data.catid)?`DELETE FROM tbl_categories WHERE catid='${data.catid}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteCategory');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteEvent: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        delete:((data.eventid)?`DELETE FROM tbl_events WHERE eventid='${data.eventid}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteEvent');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteStdCategory: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        delete:((data.stdcatid)?`DELETE FROM tbl_student_categories WHERE stdcatid='${data.stdcatid}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteStdCategory');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },  
+  deleteStudent: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        delete:((data.studentid)?`DELETE FROM tbl_students WHERE studentid='${data.studentid}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteStudent');
       console.log(result);
       res.json({ result })
     }

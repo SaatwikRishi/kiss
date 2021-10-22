@@ -26,10 +26,14 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 import { getAllStdCategories, getTagsResult, getAllStudents } from "../../store/actions";
 
 const CreateStdProfile = memo((props) => {
+    const { id = null } = props;
     const [form] = Form.useForm();
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.stdcategory);    
     const tagsStore = useSelector(state => state.tags);
+    useEffect(() => {
+        dispatch(getAllStudents());
+    },[]);
 
     /**
      * get Category list from Event store
@@ -86,7 +90,12 @@ const CreateStdProfile = memo((props) => {
         console.log(e);
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
-        await axios.post(`/events/api/saveStudentProfile`, { data: formData }).then(res => {
+        await axios.post(`/events/api/saveStudentProfile`, { data: { 
+            ...formData, 
+            ...(() => {
+                return id !=null ? { studentid: parseInt(id) } : {}
+            })(),
+        }}).then(res => {
             dispatch(getAllStudents());
             navigate("/admin/students/list")
         }).finally(() => {
@@ -103,7 +112,70 @@ const CreateStdProfile = memo((props) => {
     /**
      * Form Arr
      */
-    const [categoryList, setcategoryList] = useState([0]);
+     const [categoryList, setcategoryList] = useState([0]);
+
+     /**
+      * getForm data  from Store
+      */
+     const categoryStore = useSelector(state => state.students);
+     const getStdStoreData = () => {
+         let mainObj = categoryStore ? categoryStore : {}
+         return {
+             categoryList: {
+                 loading: mainObj.loading == true ? false: true,
+                 data: mainObj.list ? mainObj.list :[],
+             }
+         }
+     }
+     let categoryData = getStdStoreData();
+     console.log(categoryData);
+    /**
+     * based on id check edit mode or not
+     * if setForm data
+     */
+     let eventEditObj = {};
+     useEffect(() => {
+         console.log(id); 
+         if (id !=null && categoryData.categoryList.loading == false) {
+             eventEditObj = _(categoryData.categoryList.data).filter(val => val.studentid == parseInt(id) ).value();
+             eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
+             if (Object.keys(eventEditObj).length == 0) {
+                 message.warning(`No records fount for this ID : ${id}`);
+                 // navigate('/admin/category/list');
+             } else {
+                 eventEditObj = _(eventEditObj).pickBy(val => val).value();
+ 
+                 let formInit = {
+                     ...eventEditObj,
+                     ...(() => {
+                         if (eventEditObj.student_json) {
+                             try {
+                                 let studentcat_json = JSON.parse(eventEditObj.student_json);
+                                 studentcat_json = studentcat_json && studentcat_json.length ? studentcat_json : null;
+                                 if (studentcat_json) {
+                                     return { studentcat_json: studentcat_json }
+                                 }
+                             } catch (error) { }
+                         }
+                     })(),
+                     ...(() => {
+                        if (eventEditObj.tags) {
+                           try {
+                               let tags = eventEditObj.tags.split(',');
+                               tags = tags && tags.length ? tags : [];
+                               if (tags) {
+                                   return { tags: tags }
+                               }
+                           } catch (error) { }
+                       }
+                    })(),
+                 };
+                 formInit.studentcat_json && formInit.studentcat_json.length && setcategoryList(Array.from({ length: formInit.studentcat_json.length }, (val, key) => key));
+                 form.setFieldsValue(formInit);
+             }
+         } else { }
+     }, [categoryData.categoryList.data])
+
 
     /**
      * remove CategoryList
@@ -134,7 +206,7 @@ const CreateStdProfile = memo((props) => {
                 }}>
                 
                 <div className="category_list">
-                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData }} />
+                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData, id }} />
 
                     <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />
                 </div>
@@ -154,7 +226,7 @@ export default CreateStdProfile;
  * Sub form box
  */
 const BasicFields = (props) =>{
-    const { form, fUpdateTrigger, eventsData, tagsData } = props;
+    const { form, fUpdateTrigger, eventsData, tagsData, id } = props;
     const dateFormat = 'YYYY-MM-DD';
     const tagslist = tagsData.list;
     console.log(tagslist);
@@ -182,12 +254,14 @@ const BasicFields = (props) =>{
                     <Input size="middle" />
                 </Form.Item>
             </div>
-
+            {!id ?
+            <>
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'password'} label="password" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input.Password size="middle" />
                 </Form.Item>
             </div>
+            </>:''}
 
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>

@@ -86,7 +86,8 @@ const Notification = (props) => {
     const handleCancel = () => {
         setIsModalVisible(false);
     };
-
+    let formStore = { title: record.event_name, message: record.event_desc };
+    
     return <>
             <Typography.Link title="Send Notification"><SendOutlined onClick={()=>clickRowData()} /></Typography.Link>
             <Modal
@@ -95,26 +96,30 @@ const Notification = (props) => {
                 footer={null} 
                 width={800}
             >
-                <div className="category_creation" style={{ minHeight: '50vh'}}>
+                <div className="category_creation" style={{ minHeight: '60vh'}}>
                     <Form className="initial_form" layout="vertical"
                         form={form}
-                        onFinish={(e) => onFinish(e, categorys, record, studentsList)}>
+                        onFinish={(e) => onFinish(e, categorys, record, studentsList)}
+                        initialValues={{
+                            ...(() => {
+                                return {...formStore}
+                            })(),
+                        }}
+                    >
                         <div className="category_list">
-                            <div className="category_box_basic">
-                                <div className="category_item">
-                                    <Form.Item  hasFeedback={true} name= {'title'} label="title" rules={[{ required: true, message: 'Please fill!' }]}>
-                                        <Input size="middle" />
-                                    </Form.Item>
-                                </div>
+                            <div className="category_item">
+                                <Form.Item  hasFeedback={true} name= {'title'} label="title" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Input size="middle" />
+                                </Form.Item>
+                            </div>
 
-                                <div className="category_item">
-                                    <Form.Item hasFeedback={true} name={'message'} label="message" rules={[{ required: EditorValid, message: 'Please fill!' }]}>
-                                        <TextEditor setEditorValid={setEditorValid} setEditorVal={setEditorVal} />
-                                    </Form.Item>
-                                </div>
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'message'} label="message" rules={[{ required: EditorValid, message: 'Please fill!' }]}>
+                                    <TextEditor setEditorValid={setEditorValid} setEditorVal={setEditorVal} />
+                                </Form.Item>
                             </div>
                         </div>
-                        <Divider style={{ margin: '20px 0' }} />
+                        <Divider style={{ margin: '60px 0 20px 0' }} />
                         <Space style={{float: 'right'}}>
                             <Button onClick={()=>handleCancel()}> Cancel </Button>
                             <Button loading={loading} disabled={loading} icon={<SendOutlined />} type="primary" htmlType="submit"> Send Notification </Button>                            
@@ -170,6 +175,7 @@ const TextEditor = (props) =>{
           modules={modules}
           formats={formats}
           onChange={OnChange}
+          style={{height: '150px'}}
         />
       </>
   };
