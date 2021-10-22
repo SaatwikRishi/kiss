@@ -8,6 +8,7 @@ import categoryReducer from "./categoryReducer";
 import stdcategoryReducer from "./stdcategoryReducer";
 import studentReducer from "./studentReducer";
 import tagReducer from "./tagReducer";
+import studentFormReducer from "./studentFormReducer";
 
 
 const rootReducer = combineReducers({
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
     stdcategory:stdcategoryReducer,
     students:studentReducer,
     tags:tagReducer,
+    forms:studentFormReducer,
 });
 
 export default rootReducer; 

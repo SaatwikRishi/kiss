@@ -11,6 +11,7 @@ import { getUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
+import Eventforms from "./components/events/eventforms";
 import CreateEvent from "./components/events/new";
 import ListEvents from "./components/events/list";
 import CreateTag from "./components/events/createtag";
@@ -52,6 +53,7 @@ const Index = (props)=>{
                                 <Router>
                                     <CreateEvent path="/events/new" />
                                     <CreateEvent path="/events/new/:eventId" />
+                                    <Eventforms path="/events/eventforms" />
                                     <ListEvents path="/events/list" />
                                     <CreateTag path="/events/createtag" />
                                     <CreateTag path="/events/createtag/:id" />
