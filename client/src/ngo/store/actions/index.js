@@ -119,6 +119,18 @@ export const getAllTags = async () => {
 }
 
 /**
+ * Get all Tag List
+ */
+ export const getTagsResult = async () => {
+  let response = await axios.get('/events/api/getAllTags')
+
+  return {
+    type: 'TAGS_LIST',
+    payload: response.data.result
+  };
+}
+
+/**
  * Get DashboardData
  */
 export const getDashboardData = async (date, country) => {

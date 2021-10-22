@@ -7,7 +7,7 @@ import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllTags } from '../../store/actions';
+import { getTagsResult } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 
@@ -19,7 +19,7 @@ const { Search } = Input;
 const ListCategory = (props) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch(getAllTags());
+    dispatch(getTagsResult());
   },[]);
 
   const tagData = useSelector(state => state.tags);

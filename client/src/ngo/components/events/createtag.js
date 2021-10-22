@@ -44,7 +44,7 @@ const CreateTag = memo((props) => {
         };        
         setloading(true);
         await axios.post(`/events/api/saveTag`, { data: formData }).then(res => {
-            dispatch(getAllTags());
+            dispatch(getTagsResult());
             navigate("/admin/events/listtags")
         }).finally(() => {
             setloading(false);

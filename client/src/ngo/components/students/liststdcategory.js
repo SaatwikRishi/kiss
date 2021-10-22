@@ -31,8 +31,7 @@ const ListCategory = (props) => {
       categoryDatas.push({
         key: (i + 1),
         stdcatid: categorys[i].stdcatid,
-        name: categorys[i].name,
-        description: categorys[i].description,
+        studentcat_json: categorys[i].studentcat_json,
       });
     }
   }
@@ -55,21 +54,17 @@ const ListCategory = (props) => {
  
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
+      title: 'Form Fields',
+      dataIndex: 'studentcat_json',
+      width: '80%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'studentcat_json'),
       render: (text, record) => {
         return (<>
-          <Link to={`/admin/students/createstdcategory/${record.stdcatid}`}>{text}</Link>
+          {JSON.parse(text).map(function(item){ 
+              return item.name+', '
+          })}
         </>)
       }
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'description'),
     },
     {
       title: 'Action',

@@ -85,6 +85,7 @@ const CreateCategory = memo((props) => {
         } else { }
     }, [categoryData.categoryList.data])
 
+    
 
     /**
      * on form Finish
