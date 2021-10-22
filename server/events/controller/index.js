@@ -493,6 +493,17 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  getAllStudentForms: async (req, res) => {
+    try {
+      let { status } = req.query;
+      let result = await req.db.query(`SELECT * FROM tbl_student_forms ORDER BY created_date DESC`, 'getAllStudentForms');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
   sleep: async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
