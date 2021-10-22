@@ -2,7 +2,7 @@ var moment = require('moment-timezone');
 moment.tz.setDefault('Asia/Kolkata')
 var _ = require('lodash');
 var nodemailer = require('nodemailer');
-
+var loginModel = require('../../portal/model/login');
 var crypto = require("crypto");
 var algorithm = "aes-192-cbc"; //algorithm to use
 var passwordkey = "PASSWORD";

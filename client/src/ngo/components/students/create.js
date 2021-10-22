@@ -23,7 +23,7 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 /**
  * Custom Component
  */
-import { getAllStdCategories, getAllTags, getAllStudents } from "../../store/actions";
+import { getAllStdCategories, getTagsResult, getAllStudents } from "../../store/actions";
 
 const CreateStdProfile = memo((props) => {
     const [form] = Form.useForm();
@@ -41,9 +41,9 @@ const CreateStdProfile = memo((props) => {
             dispatch(getAllStdCategories());
         }
         if (!tagsStore){
-            dispatch(getAllTags());
+            dispatch(getTagsResult());
         } else if (!tagsStore.loading){
-            dispatch(getAllTags());
+            dispatch(getTagsResult());
         }
     },[])
 
