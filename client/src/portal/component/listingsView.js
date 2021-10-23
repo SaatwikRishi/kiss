@@ -2,14 +2,18 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
-import { Tabs, List, Card, Layout, Spin, Tag, Row, Col, Input, Divider, Space, message, Button } from 'antd';
+import { Tabs, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
 const { Content } = Layout;
-import { ReconciliationOutlined, FormOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { ReconciliationOutlined, FormOutlined, CheckOutlined } from '@ant-design/icons';
 import { InlineReactionButtons } from 'sharethis-reactjs';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { StickyShareButtons } from 'sharethis-reactjs';
 import { InlineFollowButtons } from 'sharethis-reactjs';
 import ChatBot from 'react-simple-chatbot';
+import moment from 'moment-timezone';
+moment.tz.setDefault('Asia/Kolkata');
+import axios from 'axios';
+const { Option } = Select;
 
 /**
  * Actions
@@ -22,6 +26,8 @@ const ListingView = (props) => {
     const location = useLocation();
     const eventsStore = useSelector(state => state.events);
     const [state, setState] = useState({ isLoading: true, search: null, searchResult: [] })
+    const student = useSelector(state => state.user); 
+    const [isModalVisible, setIsModalVisible] = useState(false);
     /** 
      * Scroll to Top
      */
@@ -88,7 +94,49 @@ const ListingView = (props) => {
     let eventsList = _(eventsData.eventList.data).map((rec) => { return { ...rec, category: _.find(categoryList, { "id": rec.catid }) } }).value()
     let eventDetails = _.find(eventsList, { "eventid": ListingViewId })
     let desc = eventDetails && eventDetails.event_desc
-    console.log({ categoryList, eventsList, eventDetails, ListingViewId })
+    //console.log({ categoryList, eventsList, eventDetails, ListingViewId })
+    const [loading, setloading] = useState(false);
+    const applyForEvent = (eventid, student, eventDetails) => {
+        console.log(eventDetails);
+        if(!student.studentid) {
+            navigate('/login');
+        }
+        else if(eventDetails.event_json=='' || eventDetails.event_json==null) {
+            setloading(true);
+            axios.post(`/events/api/saveStudentEventForm`, { data: { 
+                form_json: '', 
+                eventid: eventDetails.eventid, 
+                created_date: moment().format('YYYY-MM-DD'),
+                studentid: student.studentid,
+            }}).then(res => {
+                notification.success({
+                    message: 'Success',
+                    description: `Application submitted successfully!`
+                });
+            }).finally(() => {
+                setloading(false);
+            })
+        } else {
+            showModal();
+        }
+    };
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    let event_json = null;
+    try {        
+        event_json = JSON.parse(eventDetails.event_json);
+        event_json = event_json ? event_json : []
+    } catch (error) {
+        
+    }
+
     const steps = [
         {
             id: '1',
@@ -136,8 +184,18 @@ const ListingView = (props) => {
                                 </Card>
 
                             </Col>
-                            <Col span={6} className="categories" >
-                                <Card title="Simmilar" >
+                            <Col span={6} className="categories" >                                
+                                <Button type="primary" block size="large" loading={loading} disabled={loading} htmlType="submit" style={{marginBottom: 10}} onClick={()=>applyForEvent(ListingViewId, student, eventDetails)}>Apply / Register</Button>
+                                <Modal
+                                    title={'Please fill the form'}
+                                    visible={isModalVisible} 
+                                    footer={null} 
+                                    width={800}
+                                    onCancel={handleCancel}
+                                >
+                                    {event_json && <EventDetailsForm {...{ formFields: event_json, eventId: ListingViewId, studentId: student.studentid }}/>}
+                                </Modal>
+                                <Card title="Similar Events" >
                                     <ul>
                                         <li>CAT A</li>
                                         <li>CAT B</li>
@@ -244,7 +302,106 @@ const ListingView = (props) => {
 }
 export default ListingView;
 
+const EventDetailsForm = (props) =>{
+    const [form] = Form.useForm();
+    const { formFields, eventId, studentId } = props;
 
+    /**
+     * state Variables
+     * fValue rerender State
+    */
+    const dateFormat = 'YYYY-MM-DD';
+    const [fValue, setfValue] = useState(1);
+    const fUpdateTrigger = () => { setfValue(fValue + 1) }
+
+    const [loading, setloading] = useState(false);
+    const onFinish = (e) =>{
+        let formData = _(e).pickBy(val => val).value();
+        setloading(true);
+        axios.post(`/events/api/saveStudentEventForm`, { data: { 
+            form_json: formData, 
+            eventid: eventId, 
+            created_date: moment().format('YYYY-MM-DD'),
+            studentid: studentId,
+        }}).then(res => {
+            form.resetFields();
+            notification.success({
+                message: 'Success',
+                description: `Application submitted successfully!`
+            });
+        }).finally(() => {
+            setloading(false);
+        })
+    }
+
+    return <>
+        <div className="event_details_form">
+            <Form className="initial_form" layout="vertical"
+                form={form}
+                onFinish={(e) => onFinish(e)}
+                initialValues={{
+                    ...(() => {
+                        return {}
+                    })(),
+                }}>
+
+                <div className="category_list">
+                    {formFields.map(val => {
+                        let keyName = val.name.replaceAll(/[ ]/g, '_');
+                        let template = '';
+                        
+                        if (val.input_type == 'text') {
+                            template = <div className="category_item">
+                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Input size="middle" style={{ width: '100%' }} />
+                                </Form.Item>
+                            </div>
+                        }
+                        if (val.input_type == 'dropdown' && val.dropdown) {
+                            template = <div className="category_item">
+                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Select size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
+                                        {val.dropdown.map(val => <Option value={val}>{val}</Option>)}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                        }
+                        if (val.input_type == 'tags' && val.tags) {
+                            template = <div className="category_item">
+                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Select mode="tags" size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
+                                        {val.tags.map(val => <Option value={val}>{val}</Option>)}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                        }
+                        if (val.input_type == 'datepicker') {
+                            template = <div className="category_item">
+                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                                </Form.Item>
+                            </div>
+                        }
+                        if (val.input_type == 'upload') {
+                            template = <div className="category_item">
+                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <FireBaseFileUpload {...{ formName: keyName, form, fUpdateTrigger }} />
+                                </Form.Item>
+                            </div>
+                        }
+                        return template;
+                    })}
+                </div>
+
+                <Divider style={{ margin: '20px 0' }} />
+                <Space>
+                    <Button type="primary" loading={loading} disabled={loading} icon={<CheckOutlined />} size="large" htmlType="submit"> Submit </Button>
+                </Space>
+                <br /><br /><br />
+            </Form>
+        </div>
+    </>
+}
 {/* <Row gutter={[16, 16]}>
                     <Col span={16}>
                         <div className="category_card">
