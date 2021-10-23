@@ -9,6 +9,8 @@ import { InlineReactionButtons } from 'sharethis-reactjs';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { StickyShareButtons } from 'sharethis-reactjs';
 import { InlineFollowButtons } from 'sharethis-reactjs';
+import ChatBot from 'react-simple-chatbot';
+
 /**
  * Actions
  */
@@ -87,6 +89,38 @@ const ListingView = (props) => {
     let eventDetails = _.find(eventsList, { "eventid": ListingViewId })
     let desc = eventDetails && eventDetails.event_desc
     console.log({ categoryList, eventsList, eventDetails, ListingViewId })
+    const steps = [
+        {
+            id: '1',
+            message: 'What is your name?',
+            trigger: '2',
+        },
+        {
+            id: '2',
+            user: true,
+            trigger: '3',
+        },
+        {
+            id: '3',
+            message: 'Hi {previousValue}, nice to meet you!',
+            trigger: '4',
+        },
+        {
+            id: '4',
+            message: 'How may i help you today?',
+            trigger: '5',
+        },
+        {
+            id: '5',
+            user: true,
+            trigger: '5',
+        },
+        {
+            id: '6',
+            message: 'Let me see for {previousValue}, just a moment',
+            end:true
+        },
+    ]
     return <>
         <Content style={{ padding: 20 }} className="listingView">
             {!state.isLoading && eventDetails.eventid ?
@@ -144,7 +178,7 @@ const ListingView = (props) => {
                                     <Divider />
                                     <InlineReactionButtons
                                         config={{
-                                            
+
                                             alignment: 'center',  // alignment of buttons (left, center, right)
                                             enabled: true,        // show/hide buttons (true, false)
                                             language: 'en',       // which language to use (see LANGUAGES)
@@ -165,7 +199,7 @@ const ListingView = (props) => {
                                             url: 'https://localhost:8000/' // (defaults to current url)
                                         }}
                                     />
-                                     <Divider />
+                                    <Divider />
                                     <InlineFollowButtons
                                         config={{
                                             action: 'Follow us:', // call to action (STRING)
@@ -193,7 +227,11 @@ const ListingView = (props) => {
                                         }}
                                     />
                                 </Card>
+                                <ChatBot steps={steps} />
+
+
                             </Col>
+
                         </Row>
                     </section>
                 </div>
