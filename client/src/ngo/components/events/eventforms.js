@@ -24,23 +24,70 @@ const Eventforms = (props) => {
 
   useEffect(() => {
     dispatch(getAllStudentForms());
-    dispatch(getAllEvents());
-    dispatch(getAllStudents(1));
-  }, []);
-
-  const formsData = useSelector(state => state.forms);
+  }, []);  
   const eventsData = useSelector(state => state.events);
   const studentsData = useSelector(state => state.students);
+
+  useEffect(() => {
+    if (!eventsData.eventsList) {
+        dispatch(getAllEvents());
+    } else if (eventsData.eventsList.loading) {
+        dispatch(getAllEvents());
+    }
+    if (!studentsData.students) {
+      dispatch(getAllStudents());
+  } else if (studentsData.students.loading) {
+      dispatch(getAllStudents());
+  }
+  }, [])
+
+  /**
+   * getForm data  from Store
+   */
+  const getEventStoreData = () => {
+      let mainEventsObj = eventsData ? eventsData : {}
+      mainEventsObj = mainEventsObj ? mainEventsObj : [];
+      
+      let mainStdObj = studentsData ? studentsData: {}
+      mainStdObj = mainStdObj ? mainStdObj : [];
+
+      return {
+          eventList:{
+              loading: true,
+              eventList:[],
+              ...mainEventsObj
+          },
+          studentsList:{
+              loading: true,
+              list: [],
+              ...mainStdObj
+          }
+      }
+  }
+  let eventsAllData = getEventStoreData();
+
+  const formsData = useSelector(state => state.forms);
   let forms = formsData.list ? formsData.list : [];
   const formDatas = [];
   if (forms != undefined) {
     for (let i = 0; i < forms.length; i++) {
+      let eventEditObj = _(eventsAllData.eventList.eventList.data).filter(val => val.eventid == forms[i].eventid).value();
+      eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
+      
+      let stdEditObj = _(eventsAllData.studentsList.list).filter(val => val.studentid == forms[i].studentid).value();
+      stdEditObj = stdEditObj.length ? stdEditObj[0] : {};
+
+      let formjson = (forms[i].form_json)?JSON.parse(forms[i].form_json):'';
+      let form_json = '';
+      Object.keys(formjson).forEach(key => {
+        form_json += `${key} : '${formjson[key]}', `
+      });
       formDatas.push({
         key: (i + 1),
-        eventid: forms[i].eventid,
-        studentid: forms[i].studentid,
+        eventid: eventEditObj.event_name,
+        studentid: stdEditObj.firstname+' '+stdEditObj.lastname,
         created_date: ((forms[i].created_date)?moment(forms[i].created_date).format('YYYY-MM-DD'):''),
-        form_json: forms[i].form_json,
+        form_json: form_json,
       });
     }
   }
@@ -67,11 +114,6 @@ const Eventforms = (props) => {
       dataIndex: 'eventid',
       width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'eventid'),
-      render: (text, record) => {
-        return (<>
-          {text}
-        </>)
-      }
     },
     {
       title: 'Student Name',
@@ -124,6 +166,9 @@ const Eventforms = (props) => {
               bordered
               dataSource={tableDatas}
               columns={columns}
+              expandable={{
+                expandedRowRender: record => <ExpandedRowRender data={record} />
+              }}
             />
           </Col>
         </Row>
@@ -136,3 +181,24 @@ const Eventforms = (props) => {
 };
 
 export default Eventforms;
+
+const ExpandedRowRender = ({ data }) => {    
+  return <>
+      <div style={{ width:'25%'}}>
+          {Array.isArray(Object.keys(data)) && Object.keys(data).map((ikey)=> {
+                return <>
+                    <Row style={{ border: "1px solid #666", padding: "5px"}}>
+                        <Col 
+                        span={12} 
+                        style={{ cursor:"pointer", fontWeight:'bold', borderRight:"1px solid #666", padding: "5px"}}
+                        >{ikey}</Col>
+                        <Col 
+                        span={12} 
+                        style={{ cursor:"pointer", padding: "5px"}}
+                        >{data[ikey]}</Col>
+                    </Row>
+                </>
+          })}                            
+      </div>                    
+  </>
+};
