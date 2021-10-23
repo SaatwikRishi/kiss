@@ -5,7 +5,10 @@ import _ from 'lodash';
 import { Tabs, List, Card, Layout, Spin, Tag, Row, Col, Input, Divider, Space, message, Button } from 'antd';
 const { Content } = Layout;
 import { ReconciliationOutlined, FormOutlined, ClockCircleOutlined } from '@ant-design/icons';
-import moment from 'moment-timezone'
+import { InlineReactionButtons } from 'sharethis-reactjs';
+import { InlineShareButtons } from 'sharethis-reactjs';
+import { StickyShareButtons } from 'sharethis-reactjs';
+import { InlineFollowButtons } from 'sharethis-reactjs';
 /**
  * Actions
  */
@@ -95,17 +98,100 @@ const ListingView = (props) => {
                                     <div className="img" style={{ backgroundImage: `url(${eventDetails.gallery})` }}></div>
                                     <Divider />
                                     <h1>{eventDetails.event_name}</h1>
-                                    <Fragment><div className="description" dangerouslySetInnerHTML={{__html:desc}}/></Fragment>
+                                    <Fragment><div className="description" dangerouslySetInnerHTML={{ __html: desc }} /></Fragment>
                                 </Card>
 
                             </Col>
                             <Col span={6} className="categories" >
-                                <Card >
+                                <Card title="Simmilar" >
                                     <ul>
                                         <li>CAT A</li>
                                         <li>CAT B</li>
                                         <li>CAT C</li>
                                     </ul>
+                                </Card>
+                                <Card title="Share" >
+                                    <InlineShareButtons
+                                        config={{
+                                            alignment: 'center',  // alignment of buttons (left, center, right)
+                                            color: 'social',      // set the color of buttons (social, white)
+                                            enabled: true,        // show/hide buttons (true, false)
+                                            font_size: 16,        // font size for the buttons
+                                            labels: 'cta',        // button labels (cta, counts, null)
+                                            language: 'en',       // which language to use (see LANGUAGES)
+                                            networks: [           // which networks to include (see SHARING NETWORKS)
+                                                'whatsapp',
+                                                'linkedin',
+                                                'messenger',
+                                                'facebook',
+                                                'twitter'
+                                            ],
+                                            padding: 12,          // padding within buttons (INTEGER)
+                                            radius: 4,            // the corner radius on each button (INTEGER)
+                                            show_total: true,
+                                            size: 40,             // the size of each button (INTEGER)
+
+                                            // OPTIONAL PARAMETERS
+                                            url: 'https://localhost:8000/', // (defaults to current url)
+                                            image: 'https://bit.ly/2CMhCMC',  // (defaults to og:image or twitter:image)
+                                            description: 'custom text',       // (defaults to og:description or twitter:description)
+                                            title: 'custom title',            // (defaults to og:title or twitter:title)
+                                            message: 'custom email text',     // (only for email sharing)
+                                            subject: 'custom email subject',  // (only for email sharing)
+                                            username: 'custom twitter handle' // (only for twitter sharing)
+                                        }}
+                                    />
+                                    <Divider />
+                                    <InlineReactionButtons
+                                        config={{
+                                            
+                                            alignment: 'center',  // alignment of buttons (left, center, right)
+                                            enabled: true,        // show/hide buttons (true, false)
+                                            language: 'en',       // which language to use (see LANGUAGES)
+                                            min_count: 0,         // hide react counts less than min_count (INTEGER)
+                                            padding: 12,          // padding within buttons (INTEGER)
+                                            reactions: [          // which reactions to include (see REACTIONS)
+                                                'slight_smile',
+                                                'heart_eyes',
+                                                'laughing',
+                                                'astonished',
+                                                'sob',
+                                                'rage'
+                                            ],
+                                            size: 48,             // the size of each button (INTEGER)
+                                            spacing: 8,           // the spacing between buttons (INTEGER)
+
+                                            // OPTIONAL PARAMETERS
+                                            url: 'https://localhost:8000/' // (defaults to current url)
+                                        }}
+                                    />
+                                     <Divider />
+                                    <InlineFollowButtons
+                                        config={{
+                                            action: 'Follow us:', // call to action (STRING)
+                                            action_enable: true,  // show/hide call to action (true, false)
+                                            action_pos: 'bottom', // position of call to action (left, top, right)
+                                            alignment: 'center',  // alignment of buttons (left, center, right)
+                                            color: 'white',       // set the color of buttons (social, white)
+                                            enabled: true,        // show/hide buttons (true, false)
+                                            networks: [           // which networks to include (see FOLLOW NETWORKS)
+                                                'twitter',
+                                                'facebook',
+                                                'instagram',
+                                                'youtube'
+                                            ],
+                                            padding: 8,           // padding within buttons (INTEGER)
+                                            profiles: {           // social profile links for buttons
+                                                twitter: 'sharethis',
+                                                facebook: 'sharethis',
+                                                instagram: 'sharethis',
+                                                youtube: '/channel/UCbM93niCmdc2RD9RZbLMP6A?view_as=subscriber'
+                                            },
+                                            radius: 9,            // the corner radius on each button (INTEGER)
+                                            size: 32,             // the size of each button (INTEGER)
+                                            spacing: 8            // the spacing between buttons (INTEGER)
+                                        }}
+                                    />
                                 </Card>
                             </Col>
                         </Row>

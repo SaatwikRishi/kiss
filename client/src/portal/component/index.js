@@ -107,7 +107,8 @@ const Index = (props) => {
                                 <div className="details">
                                     <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
                                     <p className="title">{item.event_name}</p>
-                                    <p dangerouslySetInnerHTML={{__html:item.event_desc}} className="desc"/>
+                                    <p className="desc">{item.event_desc}</p>
+                                    {/* <p dangerouslySetInnerHTML={{__html:item.event_desc}} className="desc"/> */}
                                     <Divider />
                                     <div className="info">
                                         <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>

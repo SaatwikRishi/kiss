@@ -67,6 +67,7 @@
     "react-router-dom": "^5.2.0",
     "redux": "^4.0.5",
     "redux-promise": "^0.6.0",
+    "sharethis-reactjs": "^1.6.0",
     "style-loader": "^1.2.1",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^4.1.0"
