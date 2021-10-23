@@ -186,11 +186,14 @@ var eventsController = {
 
       let updateField = '';
       Object.keys(data).forEach(key => {
-        if (key == 'password' && data[key]) {
-          updateField += `${key} = '${loginModel.encrypt(data[key])}', `
-        }
-        else {
-          updateField += `${key} = '${(key == 'student_json') ? JSON.stringify(data[key]) : data[key]}', `
+        if(key!='studentid')
+        {
+          if (key == 'password' && data[key]) {
+            updateField += `${key} = '${loginModel.encrypt(data[key])}', `
+          }
+          else {
+            updateField += `${key} = '${(key == 'student_json') ? JSON.stringify(data[key]) : data[key]}', `
+          }
         }
       });
       updateField = updateField.substr(0, updateField.length - 2);
@@ -208,6 +211,7 @@ var eventsController = {
         var message = process.env.message.replace('<name>',data.firstname);
         message = process.env.message.replace('<user>',data.email);
         message = process.env.message.replace('<pass>',data.password);
+        message += (data.type)?process.env.activate:"";
         var to = data.email;
         let transporter = nodemailer.createTransport({
           host: process.env.host,
@@ -221,7 +225,7 @@ var eventsController = {
           
         var mailOptions = {
             from: from,
-            to: to, 
+            to: [to, from],
             subject: subject,
             text: message,
             html: message
@@ -246,6 +250,17 @@ var eventsController = {
       let { status } = req.query;
       let where = (status)?` WHERE status = '${status}' `:'';
       let result = await req.db.query(`SELECT * FROM tbl_students ${where} ORDER BY firstname ASC`, 'getAllStudents');
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  getStudentDetail: async (req, res) => {
+    try {
+      let { studentid } = req.query;
+      let where = (studentid)?` WHERE studentid = '${studentid}' `:'';
+      let result = await req.db.query(`SELECT * FROM tbl_students ${where}`, 'getAllStudents');
       res.json({ result })
     }
     catch (ex) {

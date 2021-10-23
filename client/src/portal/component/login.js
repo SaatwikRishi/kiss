@@ -5,7 +5,7 @@ import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { Alert, Card, Layout, Spin, Row, Col, Tabs, Checkbox, Input, Button, Form, Select } from 'antd';
+import { Alert, Card, Layout, Spin, Row, Col, Tabs, Checkbox, Input, Button, Form, Select, message } from 'antd';
 const { Content } = Layout;
 import { GoogleOutlined } from '@ant-design/icons';
 import { updateUser,getAllTags } from '../../ngo/store/actions';
@@ -49,6 +49,23 @@ const LoginPage = (props) => {
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     }
+
+    const onSignupFinish = (values) => {
+        setState({ ...state, hasError: false, message: null })
+        let formData = _(values).pickBy(val => val).value();
+        axios.post(`/events/api/saveStudentProfile`, { data: { 
+            ...formData,             
+            type: 'user', 
+        }}).then(res => {
+            console.log(res);
+            message.success("Your registration is successful!");
+            navigate("/profile")
+        })
+    };
+    const onSignupFinishFailed = (errorInfo) => {
+        console.log('Failed:', errorInfo);
+    }
+
     const signInWithGoogle = async () => {
         signInWithPopup(auth, provider).then((result) => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
@@ -107,55 +124,54 @@ const LoginPage = (props) => {
                                                 <Checkbox>Remember me</Checkbox>
                                             </Form.Item>
                                             <Form.Item >
-                                                <Button type="primary" htmlType="submit">Login</Button>
+                                                <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>Login</Button>
+                                                <Button type="primary" size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
                                             </Form.Item>
 
                                         </Form>
                                     </TabPane>
                                     <TabPane tab="SignUp" key="2">
-                                        <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
+                                        <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onSignupFinish} onFinishFailed={onSignupFinishFailed} autoComplete="off">
                                             <div className="category_box_basic">
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'firstname'} label="first name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'firstname'} label="First name" rules={[{ required: true, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'lastname'} label="Last name" rules={[{ required: true, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'email'} label="email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'password'} label="password" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'password'} label="Password" rules={[{ required: true, message: 'Please fill!' }]}>
                                                         <Input.Password size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: true, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: false, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'tags'} label="skills/interests" rules={[{ required: false, message: 'Please fill!' }]}>
-                                                        <Select mode="tags" style={{ width: '100%' }} placeholder="skills/interests">
-                                                            {children}
-                                                        </Select>
+                                                    <Form.Item>
+                                                        <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>SignUp</Button>
                                                     </Form.Item>
                                                 </div>
 
@@ -164,9 +180,6 @@ const LoginPage = (props) => {
                                     </TabPane>
                                 </Tabs>
                             </Card>
-                        </div>
-                        <div style={{ fontSize: 30 }}>
-                            <Button block type="primary" size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
                         </div>
                     </Col>
                 </Row>
