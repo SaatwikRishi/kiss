@@ -14,7 +14,7 @@ import {
 
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
-moment.tz.setDefault('America/Los_Angeles');
+moment.tz.setDefault('America/Kolkata');
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
@@ -151,7 +151,8 @@ const CreateStdProfile = memo((props) => {
                          if (eventEditObj.student_json) {
                              try {
                                  let studentcat_json = JSON.parse(eventEditObj.student_json);
-                                 studentcat_json = studentcat_json && studentcat_json.length ? studentcat_json : null;
+                                 studentcat_json = studentcat_json && studentcat_json.length ? studentcat_json : null;                                 
+                                
                                  if (studentcat_json) {
                                      return { studentcat_json: studentcat_json }
                                  }
@@ -171,6 +172,7 @@ const CreateStdProfile = memo((props) => {
                     })(),
                  };
                  formInit.studentcat_json && formInit.studentcat_json.length && setcategoryList(Array.from({ length: formInit.studentcat_json.length }, (val, key) => key));
+                 console.log(formInit);
                  form.setFieldsValue(formInit);
              }
          } else { }
@@ -229,7 +231,6 @@ const BasicFields = (props) =>{
     const { form, fUpdateTrigger, eventsData, tagsData, id } = props;
     const dateFormat = 'YYYY-MM-DD';
     const tagslist = tagsData.list;
-    console.log(tagslist);
     const children = [];
     for (let i = 0; i < tagslist.length; i++) {
         children.push(<Option key={tagslist[i].tag}>{tagslist[i].tag}</Option>);
@@ -292,7 +293,6 @@ const BasicFields = (props) =>{
  */
 const CategoryForm = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
-    console.log(eventsData);
     
     let catgoryJson = eventsData.list || [];
     try {
@@ -300,7 +300,6 @@ const CategoryForm = (props) =>{
         catgoryJson = catgoryJson.length ? catgoryJson[0]: {};
         catgoryJson = JSON.parse(catgoryJson.studentcat_json);
         catgoryJson = catgoryJson ? catgoryJson : [];
-        console.log(catgoryJson);
     } catch (error) {
         catgoryJson = [];
     }

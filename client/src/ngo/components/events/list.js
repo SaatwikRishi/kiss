@@ -1,6 +1,6 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
-import { useDispatch, useSelector, navigate } from 'react-redux';
-import { Link } from '@reach/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link , navigate } from '@reach/router';
 import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message } from 'antd';
 import {
   SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
@@ -9,7 +9,7 @@ import {
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllEvents, getAllStudents } from '../../store/actions';
+import { getAllEvents, getAllStudents, getAllStudentForms } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 import SendNotification from './sendnotification';
@@ -26,10 +26,12 @@ const ListEvents = (props) => {
   useEffect(() => {
     dispatch(getAllEvents());
     dispatch(getAllStudents(1));
+    dispatch(getAllStudentForms());
   }, []);
 
   const categoryData = useSelector(state => state.events);
   const studentsList = useSelector(state => state.students);
+  const formsData = useSelector(state => state.forms);
   let categorys = categoryData.eventList ? categoryData.eventList : {};
   categorys = categorys.data ? categorys.data : [];
   const categoryDatas = [];
@@ -134,7 +136,7 @@ const ListEvents = (props) => {
             <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
               <a title="Delete" style={{ padding: "0px 10px" }}><DeleteOutlined /></a>
             </Popconfirm>
-            <SendNotification data={{categorys, record, studentsList}} />
+            <SendNotification data={{categorys, record, studentsList, formsData}} />
           </>
         );
       },

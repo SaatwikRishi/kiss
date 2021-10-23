@@ -170,6 +170,15 @@ export const getAllStudents = async (status='') => {
   };
 }
 
+export const getStudentDetail = async (studentid='') => {
+  let response = await axios.get(`/events/api/getStudentDetail?studentid=${studentid}`)
+
+  return {
+    type: 'GET_ALLSTUDENTS',
+    payload: response.data.result
+  };
+}
+
 export const getAllEvents = async (status='') => {
   let response = await axios.get(`/events/api/getAllEvents?status=${status}`)
 
