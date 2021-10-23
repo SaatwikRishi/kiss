@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
-import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, message, TimePicker, Modal } from 'antd';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -96,7 +96,13 @@ const CreateStdProfile = memo((props) => {
                 return id !=null ? { studentid: parseInt(id) } : {}
             })(),
         }}).then(res => {
-            dispatch(getAllStudents());
+            console.log(res)
+            if(res.data.result.error) {
+                message.error(`Failed to add student, please try again!`);
+            } else {
+                message.success(`Student added successfully!`);
+                dispatch(getAllStudents());
+            }
             navigate("/admin/students/list")
         }).finally(() => {
             setloading(false);
@@ -159,6 +165,11 @@ const CreateStdProfile = memo((props) => {
                              } catch (error) { }
                          }
                      })(),
+                     ...(() => {
+                        if (eventEditObj.dob) {
+                            return { dob: moment(eventEditObj.dob) }
+                        }
+                    })(),
                      ...(() => {
                         if (eventEditObj.tags) {
                            try {
@@ -239,39 +250,45 @@ const BasicFields = (props) =>{
     return <>
         <div className="category_box_basic">
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'firstname'} label="first name" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'firstname'} label="First name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'lastname'} label="Last name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'email'} label="email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
             {!id ?
             <>
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'password'} label="password" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'password'} label="Password" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input.Password size="middle" />
                 </Form.Item>
             </div>
             </>:''}
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: false, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'dob'} label="Date of Birth" rules={[{ required: true, message: 'Please fill!' }]}>
+                    <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                </Form.Item>
+            </div>
+
+            <div className="category_item">
+                <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>

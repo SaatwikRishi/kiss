@@ -5,7 +5,7 @@ import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
-import { Breadcrumb, Card, Layout, Spin, Row, Col, Divider, Button, Input, Tabs, Select, Popover, Form, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { Breadcrumb, Card, Layout, Spin, Row, Col, Divider, Button, Input, Tabs, Select, Popover, Form, DatePicker, Space, notification, TimePicker, Modal, message } from 'antd';
 import { FileSearchOutlined } from '@ant-design/icons';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
@@ -22,6 +22,10 @@ const ProfilePage = (props) => {
     const student = useSelector(state => state.user); 
     const eventsStore = useSelector(state => state.stdcategory); 
     const tagsStore = useSelector(state => state.tags);
+
+    if(student.status!='active') {
+        navigate('/login');
+    }
     /**
      * get Category list from Event store
      */
@@ -75,6 +79,11 @@ const ProfilePage = (props) => {
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
         await axios.post(`/events/api/saveStudentProfile`, { data: formData }).then(res => {
+            if(res.data.result.error) {
+                message.error(`Failed to update profile, please try again!`);
+            } else {
+                message.success(`profile added successfully!`);
+            }
             navigate("/home")
         }).finally(() => {
             setloading(false);
@@ -114,6 +123,11 @@ const ProfilePage = (props) => {
                             return { studentcat_json: studentcat_json }
                         }
                     } catch (error) { }
+                }
+            })(),            
+            ...(() => {
+                if (eventEditObj.dob) {
+                    return { dob: moment(eventEditObj.dob) }
                 }
             })(),
             ...(() => {
@@ -177,6 +191,12 @@ const ProfilePage = (props) => {
                             <div className="category_item">
                                 <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
                                     <Input size="middle" />
+                                </Form.Item>
+                            </div>
+
+                            <div className="category_item">
+                                <Form.Item hasFeedback={true} name={'dob'} label="Date of Birth" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
                                 </Form.Item>
                             </div>
 
