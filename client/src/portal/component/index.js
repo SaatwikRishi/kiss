@@ -23,11 +23,11 @@ const Index = (props) => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
 
-/*     if(eventsStore.eventList.loading){
-        dispatch(getUser());
-        dispatch(getAllEvents());
-        dispatch(getCategoryListforEvents());
-    } */
+    /*     if(eventsStore.eventList.loading){
+            dispatch(getUser());
+            dispatch(getAllEvents());
+            dispatch(getCategoryListforEvents());
+        } */
 
 
     /**
@@ -75,7 +75,9 @@ const Index = (props) => {
             return { categoryName: name, data: val }
         }).value() */
 
-    let categoryList = _(eventsData.categoryList.data).map((rec) => { return { name: rec.name, id: rec.catid } }).value()
+    let categoryList = _(eventsData.categoryList.data).map((rec) => {
+        return { name: rec && rec.name, id: rec && rec.catid }
+    }).value()
     let eventsList = _(eventsData.eventList.data).map((rec) => { return { ...rec, category: _.find(categoryList, { "id": rec.catid }) } }).value()
 
     const onSearch = (val) => {
