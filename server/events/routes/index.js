@@ -25,5 +25,6 @@ router.post('/api/deleteCategory',eventsController.deleteCategory)
 router.post('/api/deleteStdCategory',eventsController.deleteStdCategory)
 router.post('/api/deleteStudent',eventsController.deleteStudent)
 router.get('/api/getAllStudentForms',eventsController.getAllStudentForms)
+router.get('/api/getStudentDetail',eventsController.getStudentDetail)
 
 module.exports = router;
