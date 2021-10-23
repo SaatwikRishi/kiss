@@ -11,13 +11,12 @@ import LoginPage from "./component/login";
 import ProfilePage from "./component/profile";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
-
-
 import EventDetails from "./component/events/eventDetails";
 import EventsList from "./component/eventslist";
 import ListingView from "./component/listingsView";
-
+import ChatBot from 'react-simple-chatbot';
 import '../assets/css/portal.less'
+import chatBot from '../assets/images/chat-bot.png'
 
 const KISSHomePage = (props) => {
     const dispatch = useDispatch();
@@ -35,29 +34,30 @@ const KISSHomePage = (props) => {
 
     const [loading, setloading] = useState(false);
     useEffect(() => {
-        if(eventsStore.eventList.loading){
+        if (eventsStore.eventList.loading) {
             dispatch(getUser());
             dispatch(getAllTags());
             dispatch(getAllEvents());
             dispatch(getCategoryListforEvents());
         }
     }, []);
-/*     useEffect(() => {
-        if (user && user.email) {
-            if (!user.isProfileUpdate) {
-                navigate("/profile")
+    /*     useEffect(() => {
+            if (user && user.email) {
+                if (!user.isProfileUpdate) {
+                    navigate("/profile")
+                } else {
+                    navigate("/home")
+                }
             } else {
-                navigate("/home")
+                navigate("/login")
             }
-        } else {
-            navigate("/login")
-        }
-    }, [user]); */
+        }, [user]); */
 
 
 
     return <>
         <Layout className="layout_portal">
+            <GetChatBot />
             <Layout>
                 <PortalHeader />
                 {/* <PortalBanner /> */}
@@ -86,30 +86,38 @@ const KISSHomePage = (props) => {
 export default KISSHomePage;
 
 
+const GetChatBot = () => {
+    const steps = [
+        {
+            id: 1,
+            message: `Hi, How may i help you`,
+            trigger: 2,
+        },
+        {
+            id: 2,
+            user: true,
+            trigger: 3,
+        },
+        {
+            id: 3,
+            message: 'Let me see for {previousValue}, just a moment',
+            trigger: 4
+        },
+        {
+            id: 4,
+            options: [
+                { value: 1, label: 'Number 1', trigger: '3' },
+                { value: 2, label: 'Number 2', trigger: '2' },
+                { value: 3, label: 'Number 3', trigger: '2' },
+            ],
+            trigger: 3,
+        }
+    ]
 
-/**
- * Layout Sidebar
- */
-const LayoutSidebar = (props) => {
+    return (
+        <ChatBot st headerTitle="Chat with KISS Bot" steps={steps} floating={true} floatingIcon={<img src={chatBot} height={80} />} />
 
-    const [expand, setexpand] = useState(false);
-    const [url, seturl] = useState('/');
-    const navigateTo = (url) => {
-        navigate(url);
-        seturl(url);
-    }
-    return <>
-        <div className={`main_sidebar ${expand ? 'expand' : ''}`} onMouseEnter={() => setexpand(true)} onMouseLeave={() => setexpand(false)}>
-            <ul>
-                <li className={url == '/events/new' ? 'active' : ''} onClick={() => navigateTo('/events/new')}>
-                    <FormOutlined />
-                    <div className="_title">New Events</div>
-                </li>
-                <li className={url == '/category/new' ? 'active' : ''} onClick={() => navigateTo('/category/new')}>
-                    <ReconciliationOutlined />
-                    <div className="_title">New Category</div>
-                </li>
-            </ul>
-        </div>
-    </>
+    )
+
 }
+

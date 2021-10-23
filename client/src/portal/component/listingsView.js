@@ -9,7 +9,7 @@ import { InlineReactionButtons } from 'sharethis-reactjs';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { StickyShareButtons } from 'sharethis-reactjs';
 import { InlineFollowButtons } from 'sharethis-reactjs';
-import ChatBot from 'react-simple-chatbot';
+
 import moment from 'moment-timezone';
 moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
@@ -141,38 +141,7 @@ const ListingView = (props) => {
         
     }
 
-    const steps = [
-        {
-            id: '1',
-            message: `Hi,`,
-            trigger: '2',
-        },
-        {
-            id: '2',
-            user: true,
-            trigger: '3',
-        },
-        {
-            id: '3',
-            message: 'Hi {previousValue}, nice to meet you!',
-            trigger: '4',
-        },
-        {
-            id: '4',
-            message: 'How may i help you today?',
-            trigger: '5',
-        },
-        {
-            id: '5',
-            user: true,
-            trigger: '5',
-        },
-        {
-            id: '6',
-            message: 'Let me see for {previousValue}, just a moment',
-            end:true
-        },
-    ]
+
     return <>
         <Content style={{ padding: 20 }} className="listingView">
             {!state.isLoading && eventDetails.eventid ?
@@ -289,8 +258,7 @@ const ListingView = (props) => {
                                         }}
                                     />
                                 </Card>
-                                <ChatBot headerTitle="Chat with KISS Bot" steps={steps}  floating={true} floatingIcon={<RobotOutlined style={{color:'#FFF',fontSize:30}} />} />
-
+                               
 
                             </Col>
 
@@ -399,7 +367,7 @@ const EventDetailsForm = (props) =>{
 
                 <Divider style={{ margin: '20px 0' }} />
                 <Space>
-                    <Button type="primary" loading={loading} disabled={loading} icon={<CheckOutlined />} size="large" htmlType="submit"> Submit </Button>
+                    <Button type="primary" loading={loading} disabled={loading} icon={<CheckOutWhatined />} size="large" htmlType="submit"> Submit </Button>
                 </Space>
                 <br /><br /><br />
             </Form>
