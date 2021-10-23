@@ -99,9 +99,11 @@ const ListingView = (props) => {
     //console.log({ categoryList, eventsList, eventDetails, ListingViewId })
     const [loading, setloading] = useState(false);
     const applyForEvent = (eventid, student, eventDetails) => {
-        console.log(eventDetails);
+        console.log(student);
         if(!student.studentid) {
             navigate('/login');
+        } else if(!student.isProfileUpdate) {
+            navigate('/profile');
         }
         else if(eventDetails.event_json=='' || eventDetails.event_json==null) {
             setloading(true);

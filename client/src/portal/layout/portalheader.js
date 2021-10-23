@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, navigate } from '@reach/router';
 import { Layout, Avatar, Menu, Row, Col, Dropdown } from 'antd';
 import { AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, AppstoreAddOutlined } from '@ant-design/icons';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
+import axios from 'axios';
 
 const { Header } = Layout;
 import logo from "../../assets/images/kiss.png";
+import { updateUser } from '../../ngo/store/actions';
 
 
 const PortalHeader = (props) => {
     const user = useSelector(state => state.user);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
+    const dispatch = useDispatch();
 
     //console.log({ auth, provider })
 
@@ -22,6 +25,14 @@ const PortalHeader = (props) => {
         setState(e.key);
     };
     const { SubMenu } = Menu;
+
+    const logout = () =>{
+        axios.get(`/api/logout`).then(res => {
+            dispatch(updateUser());
+            navigate("/login")
+        });
+    }
+
     return <>
         <div className="header_cont" style={{ background: '#fff' }}>
             <div className="main-content">
@@ -52,8 +63,13 @@ const PortalHeader = (props) => {
                                     <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
                                     <div className="userinfo"><span className="username">{user.firstname} {user.lastname} </span></div>
                                 </Avatar.Group>}>
-                                <Menu.Item key="setting:1">Profile</Menu.Item>
-                                <Menu.Item key="setting:2">Logout</Menu.Item>
+                                {user.email?
+                                    <>
+                                    <Menu.Item key="setting:1" onClick={() => navigate((user.status=='active')?'/profile':'/login')}>Profile</Menu.Item>
+                                    <Menu.Item key="setting:2" onClick={() => logout()}>Logout</Menu.Item>
+                                    </> :
+                                    <Menu.Item key="setting:1" onClick={() => navigate('/login')}>Login</Menu.Item>
+                                }
                             </SubMenu>
                         </Menu>
 
