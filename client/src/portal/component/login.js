@@ -33,13 +33,14 @@ const LoginPage = (props) => {
     const onFinish = (values) => {
         setState({ ...state, hasError: false, message: null })
         axios.post('/api/login', values).then((resp) => {
+            console.log(resp);
             if (resp.data.result && resp.data.result.status === 'active') {
                 let user = resp.data.result
                 dispatch(updateUser(user))
                 if (!resp.data.result.isProfileUpdate) {
                     navigate("/profile")
                 } else {
-                    navigate("/")
+                    navigate("/home")
                 }
             }
             else {

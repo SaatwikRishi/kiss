@@ -191,6 +191,9 @@ var eventsController = {
           if (key == 'password' && data[key]) {
             updateField += `${key} = '${loginModel.encrypt(data[key])}', `
           }
+          else if (key == 'dob' && data[key]) {
+            updateField += `${key} = '${moment(data[key]).format('YYYY-MM-DD')}', `
+          }
           else {
             updateField += `${key} = '${(key == 'student_json') ? JSON.stringify(data[key]) : data[key]}', `
           }
@@ -230,16 +233,11 @@ var eventsController = {
             text: message,
             html: message
         }
-        transporter.sendMail(mailOptions, function(error, response){
-            if(error){
-              res.json({ error: error.toString() })
-            }else{
-              let mailres = req.db.query(`INSERT INTO tbl_notifications SET notify_type = 'MAIL', notify_for = 'STUDENT', action = 'Registration', value = '${(data.studentid)?data.studentid:0}', title = '${subject}', message = '${message}', created_date = '${moment().format('YYYY-MM-DD')}', headers = '${JSON.stringify(mailOptions)}'`, 'insertNotification');
-              res.json({result})
-            }
-        });
+        transporter.sendMail(mailOptions, function (error, response) { });
+        let mailres = req.db.query(`INSERT INTO tbl_notifications SET notify_type = 'MAIL', notify_for = 'STUDENT', action = 'Registration', value = '${(data.studentid)?data.studentid:0}', title = '${subject}', message = '${message}', created_date = '${moment().format('YYYY-MM-DD')}', headers = '${JSON.stringify(mailOptions)}'`, 'insertNotification');  
         /* mail function start */
-      }      
+      }    
+      res.json({result})  
     }
     catch (ex) {
       res.json({ error: ex.toString() })

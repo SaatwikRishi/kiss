@@ -192,9 +192,13 @@ const CreateEvent = (props) => {
             })(),
         }}).then(res => {
             console.log(res);
-            message.success("Event Created Successfully");
-            dispatch(getAllEvents());
-            navigate("/admin/events/list")
+            if(res.data.result.error) {
+                message.error(`Failed to add event, please try again!`);
+            } else {
+                message.success("Event Created Successfully");
+                dispatch(getAllEvents());
+            }
+            window.location.href = "/admin/events/list";
         }).finally(() => {
             setloading(false);
         })
