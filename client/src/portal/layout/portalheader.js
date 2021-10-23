@@ -37,7 +37,7 @@ const PortalHeader = (props) => {
                     </Col>
                     <Col span={15} offset={1}>
                         <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
-                            <Menu.Item key="mail" icon={<HomeOutlined />} onClick={() => navigate('/home')} >
+                            <Menu.Item key="mail" onClick={() => navigate('/home')} >
                                 <a rel="noopener noreferrer" >Home</a>
                             </Menu.Item>
                             <Menu.Item key="alipay" onClick={() => navigate('/event')}>

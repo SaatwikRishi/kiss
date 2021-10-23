@@ -1,49 +1,33 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { Router, Link, navigate, useLocation } from '@reach/router';
-
-import { Breadcrumb, Card, Layout, Spin, Input,
-    Row, Col, Calendar, Divider, Badge, message, Space, Tag, Form, notification  } from 'antd';
-import {
-    Tabs, Select, Popover, Button, Tooltip,
-    Upload, DatePicker, Progress,  TimePicker, Modal
-} from 'antd';
-const { confirm } = Modal;
-const { TabPane } = Tabs;
-const { Option } = Select;
-const { TextArea } = Input;
-const { RangePicker } = DatePicker;
-const { Content } = Layout;
-import { ReconciliationOutlined, 
-    CheckOutlined } from '@ant-design/icons';
+import { Row, Col, message } from 'antd';
+import { ReconciliationOutlined, CheckOutlined } from '@ant-design/icons';
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
 moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
-
-
-/**
- * Actions 
- */
 import { getAllEvents, getCategoryListforEvents } from '../../../ngo/store/actions';
 
-/**
- * File upload packages
- */
-import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import storage from '../../../ngo/components/events/fire';
+import FullCalendar from '@fullcalendar/react' // must go before plugins
+
+import dayGridPlugin from '@fullcalendar/daygrid';
+import listPlugin from '@fullcalendar/list';
+import timegridPlugin from '@fullcalendar/timegrid';
+import ineraton from '@fullcalendar/common'
+
+
+
 
 const EventDetails = (props) => {
+    const calendarEl = useRef(null);
     const { eventId } = props;
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.events);
-
-    /**
-     * get All events Category list from Event store
-     */
+    const [state, setState] = useState({ isLoading: true })
     useEffect(() => {
         dispatch(getAllEvents());
     }, []);
+
     useEffect(() => {
         if (!eventsStore.categoryList) {
             dispatch(getCategoryListforEvents());
@@ -51,10 +35,14 @@ const EventDetails = (props) => {
             dispatch(getCategoryListforEvents());
         }
     }, [])
-
-    /**
-     * getForm data  from Store
-     */
+    const generateRandomColor=()=>{
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
     const getEventStoreData = () => {
         let mainObj = eventsStore ? eventsStore : {}
         let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
@@ -75,321 +63,53 @@ const EventDetails = (props) => {
         }
     }
     let eventsData = getEventStoreData();
-
-    /**
-     * Loading message
-     */
     useEffect(() => {
-        eventsData.eventList.loading && message.success("Loading . . .");
+        if (eventsData.eventList.loading) {
+            message.success("Loading . . .");
+        } else {
+            setState({ ...state, isLoading: false })
+        }
     }, [eventsData.eventList.loading])
-
-    /**
-     * Selected Date Events
-     */
-    const [selectedEvent, setselectedEvent] = useState(null);
-    const getSelectedDate = (info) => {
-        console.log(info);
-        setselectedEvent(info);
-        setTimeout(() => { document.getElementById('scroll_to_details').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
-    }
-
-    /**
-     * based on eventId show event details
-     */
-    let eventEditObj = {};
-    useEffect(() => {
-        if (eventId && eventsData.eventList.loading == false) {
-            eventEditObj = _(eventsData.eventList.data).filter(val => val.eventid == eventId).value();
-            eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
-            if(Object.keys(eventEditObj).length){
-                setselectedEvent(eventEditObj);
-                setTimeout(() => { document.getElementById('scroll_to_details').scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
-            }
-        } else { }
-    }, [eventsData.eventList.data])
-
-    /**
-     * Create Event as date List
-     */
-    const getListData = (value)=> {
-        let today = moment(value).format('YYYY-MM-DD');
-        let listData = _(eventsData.eventList.data).filter(val=>{
-            if (val.start_date && val.end_date){
-                return moment(today).isBetween(moment(val.start_date, 'YYYY-MM-DD'), moment(val.end_date, 'YYYY-MM-DD')) || moment(today).isSame(moment(val.start_date, 'YYYY-MM-DD')) || moment(today).isSame(moment(val.end_date, 'YYYY-MM-DD'));
-            }
-        }).map(val=>{
-            return { type: 'success', content: val.event_name, info: val };
-        }).value();
-        return listData || [];
-    }
-
-    /**
-     * Calender Cell Rendering
-     */
-    const monthCellRender = (value)=> { return <p>.</p>; }
-    const dateCellRender = (value)=> {
-        const listData = getListData(value);
-        return <>
-            <ul className="calender_events">
-                {listData.map(item => (
-                    <li key={item.content} className={item.type} onClick={() => getSelectedDate(item.info)}>
-                        <Badge status={item.type} text={item.content} />
-                    </li>
-                ))}
-            </ul>
-        </>;
-    }
-
+    const events=_.map(eventsData.eventList.data,(rec)=>{ 
+        return { 
+            interactive:true, 
+            id:rec.eventid,title:rec.event_name, 
+            start:rec.start_date, 
+            end:rec.end_date, 
+            backgroundColor:generateRandomColor()
+        }
+    })
     return <>
-        <div className="events_details_wrapper main-content">
-            <div className="events_details_calender">
-                {eventsData.eventList.loading == false && <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />}
-            </div>
-        </div>
+        <div className="calenderView">
+            {!state.isLoading ?
+                <section className="calenderView">
+                    
+                    <FullCalendar          
 
-        <div id="scroll_to_details">
-            {selectedEvent && <EventInfo {...{ info: selectedEvent, eventId: eventId }} />}
+                        headerToolbar={{
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,listWeek'
+                        }}
+                        dateClick={(info)=>{
+                            alert('Clicked on: ' + info.dateStr);
+                            alert('Coordinates: ' + info.jsEvent.pageX + ',' + info.jsEvent.pageY);
+                            alert('Current view: ' + info.view.type);
+                            // change the day's background color just for fun
+                            info.dayEl.style.backgroundColor = 'red';
+                        }}
+                        plugins={[listPlugin, dayGridPlugin, timegridPlugin]}
+                        initialView="dayGridMonth"
+                        events={events} eventClick={(e)=>console.log(e.event.id)}
+                        /* events={[{}]} */
+                    />
+
+                </section>
+                : null
+            }
         </div>
     </>
 }
 export default EventDetails;
 
 
-
-const EventInfo = (props) =>{
-    const { info = {}, eventId } = props;
-
-    let categoryInfo = null;
-    let event_json = null;
-    try {
-        categoryInfo = JSON.parse(info.category_json);
-        categoryInfo = categoryInfo ? categoryInfo: [];
-        
-        event_json = JSON.parse(info.event_json);
-        event_json = event_json ? event_json : []
-    } catch (error) {
-        
-    }
-    
-    const colors = ['#f50', '#2db7f5', '#87d068', '#108ee9'];
-    const getHtml = (val) =>{
-        if (val.includes('http://') || val.includes('https://') || val.includes('www.')) {
-            return <a href={val} target="_blank">{val}</a>;
-        } else if (moment(val, true).isValid()) {
-            return moment(val).format('YYYY-MM-DD');
-        }else{
-            return val;
-        }
-    }
-
-    return <>
-        <div className="event_details_wrapper">
-            <div className="event_title">{info.event_name? info.event_name: '---'}</div>
-            <Space>
-                {info.tags && _(info.tags.split(',')).map(val => val).value().map(val => <Tag color={_.sample(colors)}>{val}</Tag>)}
-            </Space>
-            <div className="des_box">
-                <div className="des_box_list">
-                    <div className="_title">health Care</div>
-                    <div className="_value">{info.event_name? info.event_name: '---'}</div>
-                </div>
-                <div className="des_box_list">
-                    <div className="_title">event start date</div>
-                    <div className="_value">{info.start_date ? moment(info.start_date).format('YYYY-MM-DD') : '---'}</div>
-                </div>
-                <div className="des_box_list">
-                    <div className="_title">event end date</div>
-                    <div className="_value">{info.end_date ? moment(info.end_date).format('YYYY-MM-DD'): '---'}</div>
-                </div>
-                <div className="des_box_list">
-                    <div className="_title">last apply date</div>
-                    <div className="_value">{info.apply_date ? moment(info.apply_date).format('YYYY-MM-DD'): '---'}</div>
-                </div>
-                <div className="des_box_list">
-                    <div className="_title">event status</div>
-                    <div className="_value activeColor">{
-                        moment(info.end_date).isBefore(moment()) ? <Tag color="#2db7f5">Completed</Tag> : <Tag color="#87d068">Active</Tag>
-                    }</div>
-                </div>
-            </div>
-
-            <Divider style={{ margin: '25px 0px 20px 0px' }} />
-
-            <div className="event_des_title">Events Overview</div>
-            <div className="event_des_des">{info.event_desc}</div><br />
-            
-            <div className="event_des_otherInfo">
-                {categoryInfo.map(val=>{
-                    return Object.keys(val).map(key=><>
-                        <div className="event_otherInfo_box">
-                            <div className="otherInfo_title">{key}</div>
-                            <div className="otherInfo_des">
-                                <Tooltip title={val[key] ? val[key] : '---'}>{val[key] ? getHtml(val[key]) : '---'}</Tooltip>
-                            </div>
-                        </div>
-                    </>)
-                })}
-            </div><br />
-            
-            {event_json && <EventDetailsForm {...{ formFields: event_json, eventId: eventId}}/>}
-
-        </div>
-
-    </>
-}
-
-
-const EventDetailsForm = (props) =>{
-    const [form] = Form.useForm();
-    const { formFields, eventId } = props;
-
-    /**
-     * state Variables
-     * fValue rerender State
-    */
-    const dateFormat = 'YYYY-MM-DD';
-    const [fValue, setfValue] = useState(1);
-    const fUpdateTrigger = () => { setfValue(fValue + 1) }
-
-    const [loading, setloading] = useState(false);
-    const onFinish = (e) =>{
-        let formData = _(e).pickBy(val => val).value();
-        setloading(true);
-        axios.post(`/events/api/saveStudentEventForm`, { data: { 
-            form_json: formData, 
-            eventid: eventId, 
-            created_date: moment().format('YYYY-MM-DD'),
-            studentid: 3,
-        }}).then(res => {
-            form.resetFields();
-            notification.success({
-                message: 'Success',
-                description: `Application submitted successfully!`
-            });
-        }).finally(() => {
-            setloading(false);
-        })
-    }
-
-    return <>
-        <div className="event_details_form">
-            <Form className="initial_form" layout="vertical"
-                form={form}
-                onFinish={(e) => onFinish(e)}
-                initialValues={{
-                    ...(() => {
-                        return {}
-                    })(),
-                }}>
-
-                <div className="category_list">
-                    {formFields.map(val => {
-                        let keyName = val.name.replaceAll(/[ ]/g, '_');
-                        let template = '';
-                        
-                        if (val.input_type == 'text') {
-                            template = <div className="category_item">
-                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <Input size="middle" style={{ width: '100%' }} />
-                                </Form.Item>
-                            </div>
-                        }
-                        if (val.input_type == 'dropdown' && val.dropdown) {
-                            template = <div className="category_item">
-                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <Select size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
-                                        {val.dropdown.map(val => <Option value={val}>{val}</Option>)}
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                        }
-                        if (val.input_type == 'tags' && val.tags) {
-                            template = <div className="category_item">
-                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <Select mode="tags" size="middle" onChange={(e) => { }} style={{ width: '100%' }}>
-                                        {val.tags.map(val => <Option value={val}>{val}</Option>)}
-                                    </Select>
-                                </Form.Item>
-                            </div>
-                        }
-                        if (val.input_type == 'datepicker') {
-                            template = <div className="category_item">
-                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
-                                </Form.Item>
-                            </div>
-                        }
-                        if (val.input_type == 'upload') {
-                            template = <div className="category_item">
-                                <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <FireBaseFileUpload {...{ formName: keyName, form, fUpdateTrigger }} />
-                                </Form.Item>
-                            </div>
-                        }
-                        return template;
-                    })}
-                </div>
-
-                <Divider style={{ margin: '20px 0' }} />
-                <Space>
-                    <Button style={{ color: '#108ee9' }} loading={loading} disabled={loading} icon={<CheckOutlined />} size="large" htmlType="submit"> Submit </Button>
-                </Space>
-                <br /><br /><br />
-            </Form>
-        </div>
-    </>
-}
-
-
-
-
-/**
- * file Upload 
- */
-
-const FireBaseFileUpload = (props) => {
-    const { formName, form, fUpdateTrigger } = props;
-
-    const [refUrlFile, setrefUrlFile] = useState({ progress: 0, url: form.getFieldValue(formName) });
-    const onRefFileUpload = (e) => {
-
-        let file = e.target.files[0];
-        const storageRef = ref(storage, file.name ? 'events/' + file.name : 'events/ref_lini');
-        const uploadTask = uploadBytesResumable(storageRef, file);
-
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setrefUrlFile({ ...refUrlFile, progress: progress });
-                switch (snapshot.state) {
-                    case 'paused':
-                        console.log('Upload is paused');
-                        break;
-                    case 'running':
-                        console.log('Upload is running');
-                        setrefUrlFile({ ...refUrlFile, progress: progress < 6 ? 5 : progress });
-                        break;
-                }
-            }, (error) => { setrefUrlFile({ ...refUrlFile, progress: 0 }); }, () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    setrefUrlFile({ ...refUrlFile, url: downloadURL });
-
-                    /**
-                     * update value to form
-                     */
-                    let temp = _.cloneDeep(form.getFieldsValue());
-                    temp[formName] = downloadURL;
-                    form.setFieldsValue(temp);
-                    fUpdateTrigger();
-                });
-            }
-        );
-    }
-    return <>
-        <div className="file_upload_custom">
-            <Input type="file" size="middle" onChange={(e) => onRefFileUpload(e)} />
-            <a style={{ fontSize: 12, fontWeight: 300, color: '#009688' }} href={refUrlFile.url} target="_blank" title={refUrlFile.url} className="url">{refUrlFile.url}</a>
-            {refUrlFile.progress ? <Progress percent={refUrlFile.progress} /> : ''}
-        </div>
-    </>
-}
