@@ -4,7 +4,7 @@ import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 import { Tabs, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
 const { Content } = Layout;
-import { ReconciliationOutlined, FormOutlined, CheckOutlined } from '@ant-design/icons';
+import { ReconciliationOutlined, FormOutlined, CheckOutlined, WhatsAppOutlined, RobotOutlined } from '@ant-design/icons';
 import { InlineReactionButtons } from 'sharethis-reactjs';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { StickyShareButtons } from 'sharethis-reactjs';
@@ -31,11 +31,13 @@ const ListingView = (props) => {
     /** 
      * Scroll to Top
      */
-    useEffect(() => {
-        dispatch(getUser());
-        dispatch(getAllEvents());
-        dispatch(getCategoryListforEvents());
-    }, []);
+/*     useEffect(() => {
+        if(eventsStore.eventList.loading){
+            dispatch(getUser());
+            dispatch(getAllEvents());
+            dispatch(getCategoryListforEvents());
+        }
+    }, []); */
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
@@ -140,7 +142,7 @@ const ListingView = (props) => {
     const steps = [
         {
             id: '1',
-            message: 'What is your name?',
+            message: `Hi,`,
             trigger: '2',
         },
         {
@@ -285,7 +287,7 @@ const ListingView = (props) => {
                                         }}
                                     />
                                 </Card>
-                                <ChatBot steps={steps} />
+                                <ChatBot headerTitle="Chat with KISS Bot" steps={steps}  floating={true} floatingIcon={<RobotOutlined style={{color:'#FFF',fontSize:30}} />} />
 
 
                             </Col>

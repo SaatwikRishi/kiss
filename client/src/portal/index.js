@@ -5,7 +5,7 @@ import _ from 'lodash';
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
 import { ReconciliationOutlined, FormOutlined } from '@ant-design/icons';
-import { getUser } from '../ngo/store/actions';
+import { getUser, getAllEvents, getCategoryListforEvents, getAllTags } from '../ngo/store/actions';
 import IndexPage from "./component/index";
 import LoginPage from "./component/login";
 import ProfilePage from "./component/profile";
@@ -23,6 +23,7 @@ const KISSHomePage = (props) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const user = useSelector(state => state.user);
+    const eventsStore = useSelector(state => state.events);
     /**
      * Scroll Top on Each Routing
      * user Tracking  . . .
@@ -34,9 +35,13 @@ const KISSHomePage = (props) => {
 
     const [loading, setloading] = useState(false);
     useEffect(() => {
-        dispatch(getUser());
+        if(eventsStore.eventList.loading){
+            dispatch(getUser());
+            dispatch(getAllTags());
+            dispatch(getAllEvents());
+            dispatch(getCategoryListforEvents());
+        }
     }, []);
-
 /*     useEffect(() => {
         if (user && user.email) {
             if (!user.isProfileUpdate) {
