@@ -13,9 +13,9 @@ var bodyParser = require('body-parser')
 var app = express();
 
 const mysqlConfig={
-  host: process.env.host,
-  user: process.env.user,
-  password:  process.env.dbpassword,
+  host: process.env.dbhost,
+  user: process.env.dbuser,
+  password:  process.env.dbpass,
   database: 'kiss',
   connectTimeout:48800,
   waitForConnections: true,

@@ -265,13 +265,13 @@ const BasicFields = (props) =>{
             </>:''}
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: false, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>

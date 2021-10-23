@@ -5,7 +5,7 @@ import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { Alert, Card, Layout, Spin, Row, Col, Tabs, Checkbox, Input, Button, Form, Select, message } from 'antd';
+import { Alert, Card, Layout, Spin, Row, Col, Tabs, Checkbox, Input, Button, Form, Select, message, Modal, Result } from 'antd';
 const { Content } = Layout;
 import { GoogleOutlined } from '@ant-design/icons';
 import { updateUser,getAllTags } from '../../ngo/store/actions';
@@ -20,6 +20,7 @@ const LoginPage = (props) => {
     const dispatch = useDispatch();
     const [state, setState] = useState({ hasError: false, message: null })
     const tagsStore = useSelector(state => state.tags);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     useEffect(() => {
         if (!tagsStore){
@@ -58,8 +59,13 @@ const LoginPage = (props) => {
             type: 'user', 
         }}).then(res => {
             console.log(res);
-            message.success("Your registration is successful!");
-            navigate("/profile")
+            if(!res.data.result.error) {                
+                showModal();
+            }
+            else {
+                message.error(`Registartion failed, please try after sometime!`);
+            }            
+            onReset();
         })
     };
     const onSignupFinishFailed = (errorInfo) => {
@@ -92,6 +98,18 @@ const LoginPage = (props) => {
         }
     }
     let tagsData = getTagsStoreData();
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const onReset = () => {
+        form.resetFields();
+    }; 
 
     const tagslist = tagsData.list;
     console.log(tagslist);
@@ -158,13 +176,13 @@ const LoginPage = (props) => {
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
 
                                                 <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: false, message: 'Please fill!' }]}>
+                                                    <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
                                                         <Input size="middle" />
                                                     </Form.Item>
                                                 </div>
@@ -176,6 +194,19 @@ const LoginPage = (props) => {
                                                 </div>
 
                                             </div>
+                                            <Modal
+                                                title={null}
+                                                visible={isModalVisible} 
+                                                footer={null} 
+                                                width={800}
+                                                onCancel={handleCancel}
+                                            >
+                                                <Result
+                                                    status="success"
+                                                    title="Your registration is successfull!"
+                                                    subTitle="You have to wait for administrator to activate your account!"
+                                                />
+                                            </Modal>
                                         </Form>
                                     </TabPane>
                                 </Tabs>
