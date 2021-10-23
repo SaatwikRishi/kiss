@@ -13,9 +13,9 @@ var bodyParser = require('body-parser')
 var app = express();
 
 const mysqlConfig={
-  host: 'socialdb.pp-devcos-khizahmed.us-central1.gcp.dev.paypalinc.com',
-  user:'root',
-  password: 'Shower@123',
+  host: process.env.host,
+  user: process.env.user,
+  password:  process.env.dbpassword,
   database: 'kiss',
   connectTimeout:48800,
   waitForConnections: true,

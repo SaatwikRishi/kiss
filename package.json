@@ -10,7 +10,7 @@
     "webpack": "webpack --progress -p",
     "watch": "webpack -d --watch --progress -p",
     "build": "set NODE_ENV=production && sudo rm -rf dist/ && webpack --progress -p --info-verbosity",
-    "mount": "sudo git pull && yarn install && npm run build && pm2 reload social"
+    "mount": "sudo git pull && npm install && npm run build && pm2 reload kiss"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^5.10.0",
@@ -65,10 +65,12 @@
     "react-redux": "^7.2.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
+    "react-simple-chatbot": "^0.6.1",
     "redux": "^4.0.5",
     "redux-promise": "^0.6.0",
     "sharethis-reactjs": "^1.6.0",
     "style-loader": "^1.2.1",
+    "styled-components": "^5.3.3",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^4.1.0"
   },
