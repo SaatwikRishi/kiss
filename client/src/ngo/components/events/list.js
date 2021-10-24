@@ -127,6 +127,11 @@ const ListEvents = (props) => {
       dataIndex: 'end_date',
       width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
+      render: (text, record) => {
+        return (<>
+          <span style={{ whiteSpace: 'nowrap'}}>{text}</span>
+        </>)
+      }
     },
     {
       title: 'Last Date',
@@ -177,14 +182,15 @@ const ListEvents = (props) => {
 
           </Col>
           <Col span={6}>
-            <Search size='middle' placeholder="Search" allowClear onSearch={(e) => search(e)} enterButton style={{ float: 'right', margin: '5px 25px' }} />
+            <Search size='large' placeholder="Search" allowClear onSearch={(e) => search(e)} enterButton style={{ float: 'right', margin: '5px 25px' }} />
           </Col>
           <Col span={1}>
-            <Link to={`/admin/events/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>
+            <Link to={`/admin/events/new/`}><Button size="large" type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>
           </Col>
           <Col span={24}>
             <Table
               bordered
+              size="middle"
               dataSource={tableDatas}
               columns={columns}
             />
