@@ -115,7 +115,7 @@ const Notification = (props) => {
     const [EditorVal, setEditorVal] = useState(record.event_desc);
     
     return <>
-            <Typography.Link title="Send Notification"><SendOutlined onClick={()=>clickRowData()} /></Typography.Link>
+            <Typography.Link title="Send Notification" style={{ padding: "0px 5px" }}><SendOutlined onClick={()=>clickRowData()} /></Typography.Link>
             <Modal
                 title="Send Notification"
                 visible={isModalVisible} 
