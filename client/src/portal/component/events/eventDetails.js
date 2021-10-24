@@ -5,6 +5,7 @@ import { ReconciliationOutlined, CheckOutlined } from '@ant-design/icons';
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
 moment.tz.setDefault('Asia/Kolkata');
+import { Link, navigate, useLocation } from '@reach/router';
 import axios from 'axios';
 import { getAllEvents, getCategoryListforEvents } from '../../../ngo/store/actions';
 
@@ -100,7 +101,10 @@ const EventDetails = (props) => {
                         }}
                         plugins={[listPlugin, dayGridPlugin, timegridPlugin]}
                         initialView="dayGridMonth"
-                        events={events} eventClick={(e)=>console.log(e.event.id)}
+                        events={events} eventClick={(e)=>{
+                            // console.log(e.event.id)
+                            navigate("/listing/" + e.event.id)
+                        }}
                         /* events={[{}]} */
                     />
 
