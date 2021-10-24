@@ -7,24 +7,35 @@ const { exec } = require("child_process");
 router.post('/api/login', portalController.login)
 router.get('/api/logout', portalController.logout)
 router.get('/api/getUser', portalController.getUser)
+router.get('/api/getComments/:id', portalController.getComments)
+router.post('/api/addComments', portalController.addComments)
 
 
 
-router.post('/api/deploy', async (req, res, next) => {
-    
+router.post('/api/deploy', async (req, res, next) => {    
+    const exececute=(cmd)=>{
+        return new Promise((resolve, reject)=>{
+            exec(cmd, (err, stdout, stderr) => {
+                if (err) {
+                  console.error(`exec error: ${err}`);
+                  reject({error:err});
+                }
+                console.log(stdout);
+                resolve({success:stdout})
+            });
+        })
+
+    }
+
     try {
-        let result={}
-        exec("cd /var/www/nodeapps/Team-1/ && npm run mount", (error, stdout, stderr) => {
-            if (error) {
-                console.error(`error: ${error.message}`);
-                result= error;
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                result= stderr;
-            }
-            res.json({result})
-        });
+        let result={
+            cmd1:await exececute('cd /var/www/nodeapps/Team-1/'),
+            cmd2:await exececute('ls -l -a'),
+            cmd3:await exececute('git checkout ./'),
+            cmd4:await exececute('npm run mount')
+        }
+        res.json({result})
+        
     } catch (error) {
         console.error(`error: ${error.message}`);
         res.json({error:error.message})

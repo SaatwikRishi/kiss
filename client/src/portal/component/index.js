@@ -130,14 +130,14 @@ const Index = (props) => {
     const { Search } = Input;
     console.log({ categoryList, eventsList })
     return <>
-        <Content style={{ padding: 20 }} className="homePage">
+        <Content className="homePage">
             <section style={{ marginTop: 20 }}>
                 <Row gutter={[16, 16]}>
                     <Col span={24}><h1>Our Events and Jobs Listings</h1></Col>
                 </Row>
             </section>
             {!state.isLoading ?
-                <section style={{ marginTop: 20, padding: 20 }}>
+                <section style={{ paddingTop: 20 }}>
                     <Row gutter={[16, 16]}>
                         <Col span={24}>
                             <Tabs defaultActiveKey={0} tabBarExtraContent={<Search onChange={onChange} onSearch={onSearch} placeholder="Search" allowClear enterButton="Search" size="large" />}>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import {  Link, navigate, useLocation } from '@reach/router';
-import { Row, Col, Calendar, Divider, Badge, message, Space, Tag, Form, notification , Tabs, Select, Popover, Button, Tooltip,Upload, DatePicker, Progress,  TimePicker, Modal
+import {
+    Row, Col, Calendar, Divider, Badge, message, Space, Input,
+    Tag, Form, notification , Tabs, Select, Popover, Button, Tooltip,Upload, DatePicker, Progress,  TimePicker, Modal
 } from 'antd';
 
 const { Option } = Select;
@@ -25,7 +27,7 @@ import { getAllEvents, getCategoryListforEvents } from '../../../ngo/store/actio
 import { getStorage, ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import storage from '../../../ngo/components/events/fire';
 
-const EventDetails = (props) => {
+const EventDetailsPage = (props) => {
     const { eventId } = props;
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.events);
@@ -144,7 +146,7 @@ const EventDetails = (props) => {
         </div>
     </>
 }
-export default EventDetails;
+export default EventDetailsPage;
 
 
 

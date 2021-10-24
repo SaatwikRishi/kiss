@@ -12,6 +12,7 @@ import ProfilePage from "./component/profile";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import EventDetails from "./component/events/eventDetails";
+
 import EventsList from "./component/eventslist";
 import ListingView from "./component/listingsView";
 import ChatBot from 'react-simple-chatbot';
@@ -58,7 +59,7 @@ const KISSHomePage = (props) => {
     return <>
         <Layout className="layout_portal">
             <GetChatBot />
-            <Layout>
+            <Layout style={{ background: '#fff'}}>
                 <PortalHeader />
                 {/* <PortalBanner /> */}
                 <section className="main-content">
@@ -69,9 +70,8 @@ const KISSHomePage = (props) => {
                                 <LoginPage path="/" />
                                 <LoginPage path="/login" />
                                 <ProfilePage path="/profile" />
-                                <EventsList path="/eventslist" />
                                 <EventDetails path="/event" />
-                                <EventDetails path="/event/:eventId" />
+                                <EventsList path="/eventslist" />
                                 <ListingView path="/listing/:id" />
                             </Router>
                         </Content>
@@ -109,8 +109,7 @@ const GetChatBot = () => {
                 { value: 1, label: 'Number 1', trigger: '3' },
                 { value: 2, label: 'Number 2', trigger: '2' },
                 { value: 3, label: 'Number 3', trigger: '2' },
-            ],
-            trigger: 3,
+            ]            
         }
     ]
 

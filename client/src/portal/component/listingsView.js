@@ -1,15 +1,13 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { createElement, useState, useEffect, Fragment } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
-import { Avatar, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
+import { Comment, Tooltip, Avatar, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
 const { Content } = Layout;
-import { ReconciliationOutlined, FormOutlined, CheckOutlined, WhatsAppOutlined, RobotOutlined } from '@ant-design/icons';
+import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, CheckOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons';
 import { InlineReactionButtons } from 'sharethis-reactjs';
 import { InlineShareButtons } from 'sharethis-reactjs';
-import { StickyShareButtons } from 'sharethis-reactjs';
 import { InlineFollowButtons } from 'sharethis-reactjs';
-
 import moment from 'moment-timezone';
 moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
@@ -25,9 +23,11 @@ const ListingView = (props) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const eventsStore = useSelector(state => state.events);
+    const user = useSelector(state => state.user);
     const [state, setState] = useState({ isLoading: true, search: null, searchResult: [] })
     const student = useSelector(state => state.user);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [comments, setComments] = useState({ isLoading: true, data: [] })
     /** 
      * Scroll to Top
      */
@@ -40,6 +40,10 @@ const ListingView = (props) => {
         }, []); */
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
+        getComments(ListingViewId).then((res) => {
+            setComments({ ...state, isLoading: false, data: res })
+        })
+
     }, [location.pathname])
 
     /*     useEffect(() => {
@@ -116,16 +120,16 @@ const ListingView = (props) => {
                     created_date: moment().format('YYYY-MM-DD'),
                     studentid: student.studentid,
                 }
-            }).then((res) => {           
+            }).then((res) => {
                 setIsModalVisible(false);
                 //handleCancel()    
-              /*   notification.success({
-                    message: 'Success',
-                    description: `Application submitted successfully!`
-                }); */
+                /*   notification.success({
+                      message: 'Success',
+                      description: `Application submitted successfully!`
+                  }); */
             }).finally(() => {
                 setloading(false);
-             
+
             })
         } else {
             showModal();
@@ -147,8 +151,53 @@ const ListingView = (props) => {
     } catch (error) {
 
     }
+    const [likes, setLikes] = useState(0);
+    const [dislikes, setDislikes] = useState(0);
+    const [action, setAction] = useState(null);
+    const like = () => {
+        setLikes(1);
+        setDislikes(0);
+        setAction('liked');
+    };
 
+    const dislike = () => {
+        setLikes(0);
+        setDislikes(1);
+        setAction('disliked');
+    };
+    const { TextArea } = Input;
 
+    const actions = [
+        <Tooltip key="comment-basic-like" title="Like">
+            <span onClick={like}>
+                {createElement(action === 'liked' ? LikeFilled : LikeOutlined)}
+                <span className="comment-action">{likes}</span>
+            </span>
+        </Tooltip>,
+        <Tooltip key="comment-basic-dislike" title="Dislike">
+            <span onClick={dislike}>
+                {React.createElement(action === 'disliked' ? DislikeFilled : DislikeOutlined)}
+                <span className="comment-action">{dislikes}</span>
+            </span>
+        </Tooltip>,
+        <span key="comment-basic-reply-to">Reply to</span>,
+    ];
+    const [form] = Form.useForm();
+    const addComments = (e) => {
+        const { comments } = e
+        const body = {
+            event_id: ListingViewId,
+            student_id: user.studentid,
+            com_text: comments,
+            com_date: `${moment().format('YYYY-MM-DD HH:mm:ss')}`
+        }
+        axios.post('/api/addComments', body).then((res) => {
+            notification.info({
+                message: 'Your comments has been sent for moderation. Will update you once the admin review your comments'
+            })
+            form.resetFields()
+        })
+    }
     return <>
         <Content style={{ padding: 20 }} className="listingView">
             {!state.isLoading && eventDetails.eventid ?
@@ -161,11 +210,36 @@ const ListingView = (props) => {
                                     <Divider />
                                     <h1>{eventDetails.event_name}</h1>
                                     <Fragment><div className="description" dangerouslySetInnerHTML={{ __html: desc }} /></Fragment>
+                                    <Divider>Comments</Divider>
+                                    {
+                                        !comments.isLoading ?
+                                            comments.data.map((rec) =>
+                                                <div>
+                                                    <Comment
+                                                        actions={actions}
+                                                        author={<a>{rec.firstname} {rec.lastname}</a>}
+                                                        avatar={<Avatar icon={<UserOutlined />} />}
+                                                        content={<p>{rec.com_text}</p>}
+                                                        datetime={
+                                                            <Tooltip title={moment(rec.com_date).format('YYYY-MM-DD HH:mm:ss')}>
+                                                                <span>{moment(rec.com_date).fromNow()}</span>
+                                                            </Tooltip>
+                                                        }
+                                                    />
+                                                </div>
+                                            )
+                                            : <LoadingOutlined />
+                                    }
+                                    <Divider />
+                                    <Form form={form} layout="vertical" onFinish={addComments} >
+                                        <Form.Item label="Add comments" name="comments" required ><TextArea rows={4} /></Form.Item>
+                                        <Form.Item><Button htmlType="submit" type="primary">Add Comment</Button></Form.Item>
+                                    </Form>
                                 </Card>
 
                             </Col>
                             <Col span={6} className="categories" >
-                                <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" style={{ marginBottom: 20 }} onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>Apply / Register</Button>
+                                <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" style={{ marginBottom: 20, background: '#a10d05;', fontSize: 18, borderRadius: 10, padding: '10px 20px', fontWeight: 700 }} onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>Apply / Register</Button>
                                 <Modal
                                     title={'Please fill the form'}
                                     visible={isModalVisible}
@@ -205,7 +279,7 @@ const ListingView = (props) => {
                                             description: eventDetails.event_desc,       // (defaults to og:description or twitter:description)
                                             title: eventDetails.event_name,          // (defaults to og:title or twitter:title)
                                             message: eventDetails.event_desc,     // (only for email sharing)
-                                            subject: "KISS -"+ eventDetails.event_name,   // (only for email sharing)
+                                            subject: "KISS -" + eventDetails.event_name,   // (only for email sharing)
                                             username: 'kalinga.institute' // (only for twitter sharing)
                                         }}
                                     />
@@ -261,10 +335,7 @@ const ListingView = (props) => {
                                         }}
                                     />
                                 </Card>
-
-
                             </Col>
-
                         </Row>
                     </section>
                 </div>
@@ -279,7 +350,7 @@ export default ListingView;
 
 
 const GetSimmilar = ({ eventsData }) => {
-    const dataSource=_.take(eventsData.eventList.data,10)
+    const dataSource = _.take(eventsData.eventList.data, 10)
     return (
         <List
             itemLayout="horizontal"
@@ -288,13 +359,19 @@ const GetSimmilar = ({ eventsData }) => {
                 <List.Item>
                     <List.Item.Meta
                         avatar={<Avatar src={item.gallery} />}
-                        title={<Link to={`/listing/${item.eventid}`} title={item.event_name}>{item.event_name}</Link>}                       
+                        title={<Link to={`/listing/${item.eventid}`} title={item.event_name}>{item.event_name}</Link>}
                     />
                 </List.Item>
             )}
         />
     )
 }
+
+const getComments = async (id) => {
+    let comments = await axios.get('/api/getComments/' + id)
+    return comments.data && comments.data.result
+}
+
 
 const EventDetailsForm = (props) => {
     const [form] = Form.useForm();
