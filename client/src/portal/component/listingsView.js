@@ -2,7 +2,10 @@ import React, { createElement, useState, useEffect, Fragment } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
-import { Comment, Tooltip, Avatar, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
+import {
+    Comment, Tooltip, Avatar, List, Card, Layout, Select, Tag, Row, Col, Typography,
+    Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
+const { Paragraph, Text } = Typography;
 const { Content } = Layout;
 import { DislikeOutlined, LikeOutlined, DislikeFilled, LikeFilled, CheckOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons';
 import { InlineReactionButtons } from 'sharethis-reactjs';
@@ -489,7 +492,6 @@ const EventDetailsForm = (props) => {
     </>
 }
 
-
 const EventInfo = (props) => {
     const { info = {} } = props;
 
@@ -524,7 +526,9 @@ const EventInfo = (props) => {
                         <div className="event_otherInfo_box" style={{padding: 0}}>
                             <div className="otherInfo_title">{key}</div>
                             <div className="otherInfo_des">
-                                <Tooltip title={val[key] ? val[key] : '---'}>{val[key] ? getHtml(val[key]) : '---'}</Tooltip>
+                                <Paragraph ellipsis={true ? { rows: 3, expandable: true, symbol: 'more' } : false}>
+                                    {val[key] ? getHtml(val[key]) : ''}
+                                </Paragraph>
                             </div>
                         </div>
                     </>)
