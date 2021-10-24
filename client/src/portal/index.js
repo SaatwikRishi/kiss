@@ -12,6 +12,8 @@ import ProfilePage from "./component/profile";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import EventDetails from "./component/events/eventDetails";
+import EventDetailsPage from "./component/events/eventDetailsPage";
+
 import EventsList from "./component/eventslist";
 import ListingView from "./component/listingsView";
 import ChatBot from 'react-simple-chatbot';
@@ -71,7 +73,7 @@ const KISSHomePage = (props) => {
                                 <ProfilePage path="/profile" />
                                 <EventsList path="/eventslist" />
                                 <EventDetails path="/event" />
-                                <EventDetails path="/event/:eventId" />
+                                <EventDetailsPage path="/event/:eventId" />
                                 <ListingView path="/listing/:id" />
                             </Router>
                         </Content>
