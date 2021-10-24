@@ -121,105 +121,99 @@ const LoginPage = (props) => {
         children.push(<Option key={tagslist[i].tag}>{tagslist[i].tag}</Option>);
     }
     return <>
-        <Content>
             <section style={{ marginTop: 50 }}>
-                <Row align="middle" justify="center">
-                    <Col span={10} >
-                        <div className="loginbox">
-                            <Card bordered title="Login / Sign Up">
-                                <Tabs defaultActiveKey="1" >
-                                    <TabPane tab="Login" key="1">
-                                        <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
-                                            <Form.Item label="E-Mail" name="email" rules={[{ required: true, message: 'Please input your username!' }]}>
-                                                <Input />
+                <div className="loginbox center_box_medium ">
+                    <Card bordered title="Login / Sign Up">
+                        <Tabs defaultActiveKey="1" >
+                            <TabPane tab="Login" key="1">
+                                <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
+                                    <Form.Item label="E-Mail" name="email" rules={[{ required: true, message: 'Please input your username!' }]}>
+                                        <Input />
+                                    </Form.Item>
+                                    <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Please input your password!' }]} >
+                                        <Input.Password />
+                                    </Form.Item>
+                                    {state.hasError &&
+                                        <Form.Item>
+                                            <Alert message="Login Failure" description={state.message} type="error" closable />
+                                        </Form.Item>
+                                    }
+                                    <Form.Item name="remember" valuePropName="checked" >
+                                        <Checkbox>Remember me</Checkbox>
+                                    </Form.Item>
+                                    <Form.Item >
+                                        <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>Login</Button>
+                                        <Button type="primary" size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
+                                    </Form.Item>
+
+                                </Form>
+                            </TabPane>
+                            <TabPane tab="SignUp" key="2">
+                                <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onSignupFinish} onFinishFailed={onSignupFinishFailed} autoComplete="off">
+                                    <div className="category_box_basic">
+                                        <div className="category_item">
+                                            <Form.Item hasFeedback={true} name={'firstname'} label="First name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                <Input size="middle" />
                                             </Form.Item>
-                                            <Form.Item label="Password" name="password" rules={[{ required: true, message: 'Please input your password!' }]} >
-                                                <Input.Password />
+                                        </div>
+
+                                        <div className="category_item">
+                                            <Form.Item hasFeedback={true} name={'lastname'} label="Last name" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                <Input size="middle" />
                                             </Form.Item>
-                                            {state.hasError &&
-                                                <Form.Item>
-                                                    <Alert message="Login Failure" description={state.message} type="error" closable />
-                                                </Form.Item>
-                                            }
-                                            <Form.Item name="remember" valuePropName="checked" >
-                                                <Checkbox>Remember me</Checkbox>
+                                        </div>
+
+                                        <div className="category_item">
+                                            <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                <Input size="middle" />
                                             </Form.Item>
-                                            <Form.Item >
-                                                <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>Login</Button>
-                                                <Button type="primary" size="large" icon={<GoogleOutlined />} onClick={() => signInWithGoogle()}>Login / Signup with Google</Button>
+                                        </div>
+
+                                        <div className="category_item">
+                                            <Form.Item hasFeedback={true} name={'password'} label="Password" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                <Input.Password size="middle" />
                                             </Form.Item>
+                                        </div>
 
-                                        </Form>
-                                    </TabPane>
-                                    <TabPane tab="SignUp" key="2">
-                                        <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onSignupFinish} onFinishFailed={onSignupFinishFailed} autoComplete="off">
-                                            <div className="category_box_basic">
-                                                <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'firstname'} label="First name" rules={[{ required: true, message: 'Please fill!' }]}>
-                                                        <Input size="middle" />
-                                                    </Form.Item>
-                                                </div>
+                                        <div className="category_item">
+                                            <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
+                                                <Input size="middle" />
+                                            </Form.Item>
+                                        </div>
 
-                                                <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'lastname'} label="Last name" rules={[{ required: true, message: 'Please fill!' }]}>
-                                                        <Input size="middle" />
-                                                    </Form.Item>
-                                                </div>
+                                        <div className="category_item">
+                                            <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
+                                                <Input size="middle" />
+                                            </Form.Item>
+                                        </div>
 
-                                                <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
-                                                        <Input size="middle" />
-                                                    </Form.Item>
-                                                </div>
+                                        <div className="category_item">
+                                            <Form.Item>
+                                                <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>SignUp</Button>
+                                            </Form.Item>
+                                        </div>
 
-                                                <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'password'} label="Password" rules={[{ required: true, message: 'Please fill!' }]}>
-                                                        <Input.Password size="middle" />
-                                                    </Form.Item>
-                                                </div>
-
-                                                <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
-                                                        <Input size="middle" />
-                                                    </Form.Item>
-                                                </div>
-
-                                                <div className="category_item">
-                                                    <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
-                                                        <Input size="middle" />
-                                                    </Form.Item>
-                                                </div>
-
-                                                <div className="category_item">
-                                                    <Form.Item>
-                                                        <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>SignUp</Button>
-                                                    </Form.Item>
-                                                </div>
-
-                                            </div>
-                                            <Modal
-                                                title={null}
-                                                visible={isModalVisible} 
-                                                footer={null} 
-                                                width={800}
-                                                onCancel={handleCancel}
-                                            >
-                                                <Result
-                                                    status="success"
-                                                    title="Your registration is successfull!"
-                                                    subTitle="You have to wait for administrator to activate your account!"
-                                                />
-                                            </Modal>
-                                        </Form>
-                                    </TabPane>
-                                </Tabs>
-                            </Card>
-                        </div>
-                    </Col>
-                </Row>
+                                    </div>
+                                    <Modal
+                                        title={null}
+                                        visible={isModalVisible} 
+                                        footer={null} 
+                                        width={800}
+                                        onCancel={handleCancel}
+                                    >
+                                        <Result
+                                            status="success"
+                                            title="Your registration is successfull!"
+                                            subTitle="You have to wait for administrator to activate your account!"
+                                        />
+                                    </Modal>
+                                </Form>
+                            </TabPane>
+                        </Tabs>
+                    </Card>
+                </div>
             </section>
-        </Content>
-
+            <br/><br/>
     </>
 }
 

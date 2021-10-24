@@ -199,14 +199,16 @@ const ListingView = (props) => {
         })
     }
     return <>
-        <Content style={{ padding: 20 }} className="listingView">
+        <Content className="listingView">
             {!state.isLoading && eventDetails.eventid ?
                 <div>
-                    <section style={{ marginTop: 20, padding: 20 }}>
+                    <section>
                         <Row gutter={[16, 16]}>
-                            <Col span={18}>
+                            <Col sm={24} md={18}>
                                 <Card bordered className="details" >
-                                    <div className="img" style={{ backgroundImage: `url(${eventDetails.gallery})` }}></div>
+                                    <div className="EventImg">
+                                        <div className={`img ${eventDetails.gallery == null ? 'blankImg' : ''}`} style={{ backgroundImage: `url(${eventDetails.gallery})` }}></div>
+                                    </div>
                                     <Divider />
                                     <h1>{eventDetails.event_name}</h1>
                                     <Fragment><div className="description" dangerouslySetInnerHTML={{ __html: desc }} /></Fragment>
@@ -238,8 +240,13 @@ const ListingView = (props) => {
                                 </Card>
 
                             </Col>
-                            <Col span={6} className="categories" >
-                                <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" style={{ marginBottom: 20, background: '#a10d05;', fontSize: 18, borderRadius: 10, padding: '10px 20px', fontWeight: 700 }} onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>Apply / Register</Button>
+                            <Col sm={24} md={6} className="categories" >
+                                <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" 
+                                    style={{
+                                        background: '#a10d05;', fontSize: 18, borderRadius: '10px 0px 10px 0px', padding: '2px 20px', fontWeight: 700, height: 60, fontSize: '2em', fontWeight: 300,textTransform: 'uppercase'}}
+                                        onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>
+                                    Apply / Register
+                                </Button>
                                 <Modal
                                     title={'Please fill the form'}
                                     visible={isModalVisible}
@@ -249,10 +256,13 @@ const ListingView = (props) => {
                                 >
                                     {event_json && <EventDetailsForm {...{ formFields: event_json, eventId: ListingViewId, studentId: student.studentid }} />}
                                 </Modal>
-                                <Card title="Similar Events" >
+
+                                <EventInfo {...{ info: eventDetails}} />
+
+                                <Card title={<div className="catd_title_right">Similar Events</div>} >
                                     <GetSimmilar eventsData={eventsData} />
                                 </Card>
-                                <Card title="Share" >
+                                <Card title={<div className="catd_title_right">Share</div>} >
                                     <InlineShareButtons
                                         config={{
                                             alignment: 'center',  // alignment of buttons (left, center, right)
@@ -475,28 +485,49 @@ const EventDetailsForm = (props) => {
         </div>
     </>
 }
-{/* <Row gutter={[16, 16]}>
-                    <Col span={16}>
-                        <div className="category_card">
-                            {categoryList.map(val => <>
-                                <div className="category_box">
-                                    <div className="category_title"> {val.categoryName}</div>
-                                    <div className="category_event_list">
-                                        {_(val.data).orderBy('start_date').reverse().take(5).value().map(event => <>
-                                            <div className="category_event_box" onClick={() => navigate(`/event/${event.eventid}`)}>
-                                                <div className="category_event_name">{event.event_name}</div>
-                                                <Space>
-                                                    <div className="category_event_start"><ClockCircleOutlined /> Date: <span className="date">{event.start_date && moment(event.start_date).format('YYYY-MM-DD')}</span></div>
-                                                    <div className="category_event_start"> -- &nbsp;<span className="date">{event.end_date && moment(event.end_date).format('YYYY-MM-DD')}</span></div>
-                                                </Space>
-                                            </div>
-                                        </>)}
-                                    </div>
-                                </div>
-                            </>)}
+
+
+const EventInfo = (props) => {
+    const { info = {} } = props;
+
+    let categoryInfo = null;
+    let event_json = null;
+    try {
+        categoryInfo = JSON.parse(info.category_json);
+        categoryInfo = categoryInfo ? categoryInfo : [];
+
+        event_json = JSON.parse(info.event_json);
+        event_json = event_json ? event_json : []
+    } catch (error) {
+
+    }
+
+    const colors = ['#f50', '#2db7f5', '#87d068', '#108ee9'];
+    const getHtml = (val) => {
+        if (val.includes('http://') || val.includes('https://') || val.includes('www.')) {
+            return <a href={val} target="_blank">{val}</a>;
+        } else if (moment(val, true).isValid()) {
+            return moment(val).format('YYYY-MM-DD');
+        } else {
+            return val;
+        }
+    }
+
+    return <>
+        <div className="event_details_wrapper" style={{ border: '1px solid #f0f0f0', margin: '10px auto', padding: '20px', borderRadius: '2px'}}>
+            <div className="event_des_otherInfo">
+                {categoryInfo.map(val => {
+                    return Object.keys(val).map(key => <>
+                        <div className="event_otherInfo_box" style={{padding: 0}}>
+                            <div className="otherInfo_title">{key}</div>
+                            <div className="otherInfo_des">
+                                <Tooltip title={val[key] ? val[key] : '---'}>{val[key] ? getHtml(val[key]) : '---'}</Tooltip>
+                            </div>
                         </div>
-                    </Col>
-                    <Col span={8}>
-                        <Calendar className="calender_box" onSelect={() => { navigate(`/event`) }} fullscreen={false} />
-                    </Col>
-                </Row> */}
+                    </>)
+                })}
+            </div>
+        </div>
+
+    </>
+}
