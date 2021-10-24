@@ -123,10 +123,10 @@ const ListingView = (props) => {
             }).then((res) => {
                 setIsModalVisible(false);
                 //handleCancel()    
-                /*   notification.success({
+                notification.success({
                       message: 'Success',
                       description: `Application submitted successfully!`
-                  }); */
+                });
             }).finally(() => {
                 setloading(false);
 

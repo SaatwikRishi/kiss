@@ -1,8 +1,8 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, navigate } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, Card, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message  } from 'antd';
-import { SafetyCertificateTwoTone, ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined, FundOutlined } from '@ant-design/icons';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, Card, DatePicker, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message  } from 'antd';
+import { SafetyCertificateTwoTone, ContainerOutlined, FormOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined, FundOutlined } from '@ant-design/icons';
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
@@ -15,6 +15,7 @@ const gridStyle = {
   width: '25%',
   textAlign: 'center',
 };
+const { RangePicker } = DatePicker;
 
 const AdmDashboard = (props) => {
 
@@ -162,12 +163,22 @@ const AdmDashboard = (props) => {
       width: '25%',
       textAlign: 'center',
     };
+
+    const _linkClass = {
+      color: "DodgerBlue",
+      padding: "10px",
+      fontFamily: "Arial",
+      fontSize: 24,
+      textAlign: "center"
+    };
+
     const commentsData = useSelector(state => state.comments);
 
   let eventslength = (eventsAllData.eventList)?eventsAllData.eventList.eventList.data.length:0;
   let studentslength = (studentsList.loading)?studentsList.list.length:0;
   let formslength = (data)?data.length:0;
   let commentslength = (commentsData.loading)?commentsData.list.length:0;
+  const dateFormat = 'YYYY-MM-DD';
   
   return <>
         <div className="_apifilter_subheader">
@@ -182,16 +193,17 @@ const AdmDashboard = (props) => {
           <Row className="rowclass">
             <Col span={24}>
               <h2>Recent Events vs Students Registration</h2>
+              <RangePicker format={dateFormat} size="middle" style={{ width: '20%', float: 'right' }}  />
               <ReactHighcharts config={config} />
             </Col>
           </Row>
           <Divider style={{ margin: '20px 0px' }} />
-          <Row className="rowclass">
+          <Row className="rowclass dashboardClass">
             <Col span={24}>
                 <Card>
                   <Card.Grid style={gridStyle}>
                     <Link to='/admin/category/list'>
-                      <Card title="Events" extra={<ProfileOutlined />} className="_linkClass">
+                      <Card title="Events" extra={<ProfileOutlined />} className={_linkClass}>
                         {eventslength}
                       </Card>
                     </Link>
