@@ -96,18 +96,21 @@ const Index = (props) => {
         if (state.searchResult.length > 0) {
             dataSource = state.searchResult
         }
-        return (
+        return <>
 
             <List itemLayout="vertical" size="large"
+                className="ant_listing_box"
                 dataSource={dataSource}
                 pagination={{ pageSize: 9, showQuickJumper: true }}
                 renderItem={item => (
                     <div className="listing">
                         <Link to={`/listing/${item.eventid}`}>
                             <Card Bordered>
-                                <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
-                                <div className="details">
+                                <div className="EventImg">
+                                    <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
                                     <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
+                                </div>
+                                <div className="details">
                                     <p className="title">{item.event_name}</p>
                                     <p className="desc">{item.event_desc}</p>
                                     {/* <p dangerouslySetInnerHTML={{__html:item.event_desc}} className="desc"/> */}
@@ -122,8 +125,7 @@ const Index = (props) => {
                     </div>
                 )}
             />
-
-        )
+        </>
     }
 
     const { TabPane } = Tabs;
@@ -131,15 +133,12 @@ const Index = (props) => {
     console.log({ categoryList, eventsList })
     return <>
         <Content className="homePage">
-            <section style={{ marginTop: 20 }}>
-                <Row gutter={[16, 16]}>
-                    <Col span={24}><h1>Our Events and Jobs Listings</h1></Col>
-                </Row>
-            </section>
-            {!state.isLoading ?
-                <section style={{ paddingTop: 20 }}>
-                    <Row gutter={[16, 16]}>
-                        <Col span={24}>
+                <section style={{ marginTop: 20 }}>
+                    <h1>Our Events and Jobs Listings</h1>
+                </section>
+                <div className="web_home_view">
+                    {!state.isLoading ?
+                        <section >
                             <Tabs defaultActiveKey={0} tabBarExtraContent={<Search onChange={onChange} onSearch={onSearch} placeholder="Search" allowClear enterButton="Search" size="large" />}>
                                 <TabPane tab="All" key={0}>
                                     {getEvents()}
@@ -150,40 +149,44 @@ const Index = (props) => {
                                     </TabPane>
                                 )}
                             </Tabs>
-                        </Col>
-                    </Row>
-                </section>
-                : null
-            }
+                        </section>
+                        : null
+                    }
+                </div>
+                <div className="mobile_home_view">
+                    {!state.isLoading ?
+                        <div className="event_list_card">
+                            {eventsList.map(item => <div className="event_list_box">
+                                <div className="listing">
+                                    <Link to={`/listing/${item.eventid}`}>
+                                        <Card Bordered>
+                                            <div className="EventImg">
+                                                <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
+                                                <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
+                                            </div>
+                                            <div className="details">
+                                                <p className="title">{item.event_name}</p>
+                                                <p className="desc">{item.event_desc}</p>
+                                                {/* <p dangerouslySetInnerHTML={{__html: item.event_desc}} className="desc"/> */}
+                                                <Divider />
+                                                <div className="info">
+                                                    <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
+                                                    <p className="value"> {moment(item.start_date).format('lll')} - {moment(item.end_date).format('lll')} </p>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </Link>
+                                </div>
+                            </div>)}
+                        </div>
+
+                        : null
+                    }
+                </div>
         </Content>
+
+
 
     </>
 }
 export default Index;
-
-
-{/* <Row gutter={[16, 16]}>
-                    <Col span={16}>
-                        <div className="category_card">
-                            {categoryList.map(val => <>
-                                <div className="category_box">
-                                    <div className="category_title"> {val.categoryName}</div>
-                                    <div className="category_event_list">
-                                        {_(val.data).orderBy('start_date').reverse().take(5).value().map(event => <>
-                                            <div className="category_event_box" onClick={() => navigate(`/event/${event.eventid}`)}>
-                                                <div className="category_event_name">{event.event_name}</div>
-                                                <Space>
-                                                    <div className="category_event_start"><ClockCircleOutlined /> Date: <span className="date">{event.start_date && moment(event.start_date).format('YYYY-MM-DD')}</span></div>
-                                                    <div className="category_event_start"> -- &nbsp;<span className="date">{event.end_date && moment(event.end_date).format('YYYY-MM-DD')}</span></div>
-                                                </Space>
-                                            </div>
-                                        </>)}
-                                    </div>
-                                </div>
-                            </>)}
-                        </div>
-                    </Col>
-                    <Col span={8}>
-                        <Calendar className="calender_box" onSelect={() => { navigate(`/event`) }} fullscreen={false} />
-                    </Col>
-                </Row> */}

@@ -155,7 +155,7 @@ const CreateCategory = memo((props) => {
 
                     <div className="category_dynamic_fields_header">
                         <div className="category_dynamic_title">
-                            Dynamic Form fields
+                            Add Form fields
                         </div>
                         <div className="category_dynamic_button">
                             <Button icon={<PlusOutlined />} size="large" type="dashed" className="add_dynamicFields_button"
