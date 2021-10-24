@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, memo } from 'react'
-import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, TimePicker, Modal } from 'antd';
+import { Row, Col, Input, Tabs, Select, Popover, Form, Button, Divider, DatePicker, Space, notification, message, TimePicker, Modal } from 'antd';
 const { confirm } = Modal;
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -14,7 +14,7 @@ import {
 
 import _, { remove } from 'lodash'
 import moment from 'moment-timezone';
-moment.tz.setDefault('America/Los_Angeles');
+moment.tz.setDefault('America/Kolkata');
 import { Link, navigate } from '@reach/router';
 import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
@@ -23,13 +23,17 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
 /**
  * Custom Component
  */
-import { getAllStdCategories, getAllTags, getAllStudents } from "../../store/actions";
+import { getAllStdCategories, getTagsResult, getAllStudents } from "../../store/actions";
 
 const CreateStdProfile = memo((props) => {
+    const { id = null } = props;
     const [form] = Form.useForm();
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.stdcategory);    
     const tagsStore = useSelector(state => state.tags);
+    useEffect(() => {
+        dispatch(getAllStudents());
+    },[]);
 
     /**
      * get Category list from Event store
@@ -41,9 +45,9 @@ const CreateStdProfile = memo((props) => {
             dispatch(getAllStdCategories());
         }
         if (!tagsStore){
-            dispatch(getAllTags());
+            dispatch(getTagsResult());
         } else if (!tagsStore.loading){
-            dispatch(getAllTags());
+            dispatch(getTagsResult());
         }
     },[])
 
@@ -86,8 +90,19 @@ const CreateStdProfile = memo((props) => {
         console.log(e);
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
-        await axios.post(`/events/api/saveStudentProfile`, { data: formData }).then(res => {
-            dispatch(getAllStudents());
+        await axios.post(`/events/api/saveStudentProfile`, { data: { 
+            ...formData, 
+            ...(() => {
+                return id !=null ? { studentid: parseInt(id) } : {}
+            })(),
+        }}).then(res => {
+            console.log(res)
+            if(res.data.result.error) {
+                message.error(`Failed to add student, please try again!`);
+            } else {
+                message.success(`Student added successfully!`);
+                dispatch(getAllStudents());
+            }
             navigate("/admin/students/list")
         }).finally(() => {
             setloading(false);
@@ -103,7 +118,77 @@ const CreateStdProfile = memo((props) => {
     /**
      * Form Arr
      */
-    const [categoryList, setcategoryList] = useState([0]);
+     const [categoryList, setcategoryList] = useState([0]);
+
+     /**
+      * getForm data  from Store
+      */
+     const categoryStore = useSelector(state => state.students);
+     const getStdStoreData = () => {
+         let mainObj = categoryStore ? categoryStore : {}
+         return {
+             categoryList: {
+                 loading: mainObj.loading == true ? false: true,
+                 data: mainObj.list ? mainObj.list :[],
+             }
+         }
+     }
+     let categoryData = getStdStoreData();
+     console.log(categoryData);
+    /**
+     * based on id check edit mode or not
+     * if setForm data
+     */
+     let eventEditObj = {};
+     useEffect(() => {
+         console.log(id); 
+         if (id !=null && categoryData.categoryList.loading == false) {
+             eventEditObj = _(categoryData.categoryList.data).filter(val => val.studentid == parseInt(id) ).value();
+             eventEditObj = eventEditObj.length ? eventEditObj[0] : {};
+             if (Object.keys(eventEditObj).length == 0) {
+                 message.warning(`No records fount for this ID : ${id}`);
+                 // navigate('/admin/category/list');
+             } else {
+                 eventEditObj = _(eventEditObj).pickBy(val => val).value();
+ 
+                 let formInit = {
+                     ...eventEditObj,
+                     ...(() => {
+                         if (eventEditObj.student_json) {
+                             try {
+                                 let studentcat_json = JSON.parse(eventEditObj.student_json);
+                                 studentcat_json = studentcat_json && studentcat_json.length ? studentcat_json : null;                                 
+                                
+                                 if (studentcat_json) {
+                                     return { studentcat_json: studentcat_json }
+                                 }
+                             } catch (error) { }
+                         }
+                     })(),
+                     ...(() => {
+                        if (eventEditObj.dob) {
+                            return { dob: moment(eventEditObj.dob) }
+                        }
+                    })(),
+                     ...(() => {
+                        if (eventEditObj.tags) {
+                           try {
+                               let tags = eventEditObj.tags.split(',');
+                               tags = tags && tags.length ? tags : [];
+                               if (tags) {
+                                   return { tags: tags }
+                               }
+                           } catch (error) { }
+                       }
+                    })(),
+                 };
+                 formInit.studentcat_json && formInit.studentcat_json.length && setcategoryList(Array.from({ length: formInit.studentcat_json.length }, (val, key) => key));
+                 console.log(formInit);
+                 form.setFieldsValue(formInit);
+             }
+         } else { }
+     }, [categoryData.categoryList.data])
+
 
     /**
      * remove CategoryList
@@ -134,7 +219,7 @@ const CreateStdProfile = memo((props) => {
                 }}>
                 
                 <div className="category_list">
-                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData }} />
+                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData, id }} />
 
                     <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />
                 </div>
@@ -154,10 +239,9 @@ export default CreateStdProfile;
  * Sub form box
  */
 const BasicFields = (props) =>{
-    const { form, fUpdateTrigger, eventsData, tagsData } = props;
+    const { form, fUpdateTrigger, eventsData, tagsData, id } = props;
     const dateFormat = 'YYYY-MM-DD';
     const tagslist = tagsData.list;
-    console.log(tagslist);
     const children = [];
     for (let i = 0; i < tagslist.length; i++) {
         children.push(<Option key={tagslist[i].tag}>{tagslist[i].tag}</Option>);
@@ -166,37 +250,45 @@ const BasicFields = (props) =>{
     return <>
         <div className="category_box_basic">
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'firstname'} label="first name" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'firstname'} label="First name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'lastname'} label="last name" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'lastname'} label="Last name" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'email'} label="email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
-
+            {!id ?
+            <>
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'password'} label="password" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'password'} label="Password" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input.Password size="middle" />
                 </Form.Item>
             </div>
+            </>:''}
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'regno'} label="registration number" rules={[{ required: true, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'dob'} label="Date of Birth" rules={[{ required: true, message: 'Please fill!' }]}>
+                    <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                </Form.Item>
+            </div>
+
+            <div className="category_item">
+                <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'phoneno'} label="phone number" rules={[{ required: false, message: 'Please fill!' }]}>
+                <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
@@ -218,7 +310,6 @@ const BasicFields = (props) =>{
  */
 const CategoryForm = (props) =>{
     const { form, fUpdateTrigger, eventsData } = props;
-    console.log(eventsData);
     
     let catgoryJson = eventsData.list || [];
     try {
@@ -226,7 +317,6 @@ const CategoryForm = (props) =>{
         catgoryJson = catgoryJson.length ? catgoryJson[0]: {};
         catgoryJson = JSON.parse(catgoryJson.studentcat_json);
         catgoryJson = catgoryJson ? catgoryJson : [];
-        console.log(catgoryJson);
     } catch (error) {
         catgoryJson = [];
     }

@@ -85,6 +85,7 @@ const CreateCategory = memo((props) => {
         } else { }
     }, [categoryData.categoryList.data])
 
+    
 
     /**
      * on form Finish
@@ -104,9 +105,13 @@ const CreateCategory = memo((props) => {
         
         setloading(true);
         await axios.post(`/events/api/saveCategory`, { data: formData }).then(res => {
-            dispatch(getAllCategories());
-            message.success("Category Created Successfully");
-            navigate("/admin/category/list")
+            if(res.data.result.error) {
+                message.error(`Failed to add category, please try again!`);
+            } else {
+                message.success("Category Created Successfully");
+                dispatch(getAllCategories());
+            }
+            window.location.href = "/admin/category/list";
         }).finally(() => {
             setloading(false);
         })

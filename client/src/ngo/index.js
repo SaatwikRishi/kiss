@@ -6,11 +6,12 @@ import '../assets/css/style.less';
 
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
-import { ContainerOutlined, FormOutlined, TagOutlined, UserOutlined } from '@ant-design/icons';
-import { updateUser } from './store/actions';
+import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined } from '@ant-design/icons';
+import { getUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
 import CreateCategory from "./components/category/new";
+import Eventforms from "./components/events/eventforms";
 import CreateEvent from "./components/events/new";
 import ListEvents from "./components/events/list";
 import CreateTag from "./components/events/createtag";
@@ -35,7 +36,7 @@ const Index = (props)=>{
     
     const [loading, setloading] = useState(false);
     useEffect(() => {
-        dispatch(updateUser());
+        dispatch(getUser());
     },[]);
 
     return <>
@@ -52,6 +53,7 @@ const Index = (props)=>{
                                 <Router>
                                     <CreateEvent path="/events/new" />
                                     <CreateEvent path="/events/new/:eventId" />
+                                    <Eventforms path="/events/eventforms" />
                                     <ListEvents path="/events/list" />
                                     <CreateTag path="/events/createtag" />
                                     <CreateTag path="/events/createtag/:id" />
@@ -61,8 +63,10 @@ const Index = (props)=>{
                                     <CreateCategory path="/category/new/:catId" />
                                     <ListCategory path="/category/list"/>
                                     <CreateStdCategory path="/students/createstdcategory"/>
+                                    <CreateStdCategory path="/students/createstdcategory/:catId"/>
                                     <ListStdCategory path="/students/liststdcategory"/>
                                     <CreateStdProfile path="/students/create"/>
+                                    <CreateStdProfile path="/students/create/:id"/>
                                     <ListStudents path="/students/list"/>
                                 </Router>
                             </Content>
@@ -92,7 +96,7 @@ const LayoutSidebar = (props) =>{
         <div className={`main_sidebar ${expand? 'expand': ''}`} onMouseEnter={() => setexpand(true)} onMouseLeave={() => setexpand(false)}>
             <ul>
                 <li className={url == '/admin/events/list' ? 'active' : ''} onClick={() => navigateTo('/admin/events/list')}>
-                    <FormOutlined />
+                    <ProfileOutlined />
                     <div className="_title">Events</div>
                 </li>
                 <li className={url == '/admin/category/list' ? 'active' : ''} onClick={() => navigateTo('/admin/category/list')}>
@@ -100,8 +104,16 @@ const LayoutSidebar = (props) =>{
                     <div className="_title">Category</div>
                 </li>
                 <li className={url == '/admin/students/list' ? 'active' : ''} onClick={() => navigateTo('/admin/students/list')}>
-                    <UserOutlined />
+                    <TeamOutlined />
                     <div className="_title">Students</div>
+                </li>
+                <li className={url == '/admin/students/liststdcategory' ? 'active' : ''} onClick={() => navigateTo('/admin/students/liststdcategory')}>
+                    <SolutionOutlined />
+                    <div className="_title">Students Fields</div>
+                </li>
+                <li className={url == '/admin/events/eventforms' ? 'active' : ''} onClick={() => navigateTo('/admin/events/eventforms')}>
+                    <FormOutlined />
+                    <div className="_title">Submitted Forms</div>
                 </li>
                 <li className={url == '/admin/events/listtags' ? 'active' : ''} onClick={() => navigateTo('/admin/events/listtags')}>
                     <TagOutlined />

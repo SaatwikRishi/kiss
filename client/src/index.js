@@ -29,7 +29,7 @@ const LayoutScreen = (props) => {
         </Router>
       </Provider>
     </ErrorBoundary>
-  )
+  ) 
 
 }
 const ErrorFallback = ({ error, resetErrorBoundary }) => {

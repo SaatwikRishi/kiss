@@ -1,6 +1,6 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
-import { useDispatch, useSelector, navigate } from 'react-redux';
-import { Link } from '@reach/router';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, navigate } from '@reach/router';
 import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm  } from 'antd';
 import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
     FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -31,8 +31,7 @@ const ListCategory = (props) => {
       categoryDatas.push({
         key: (i + 1),
         stdcatid: categorys[i].stdcatid,
-        name: categorys[i].name,
-        description: categorys[i].description,
+        studentcat_json: categorys[i].studentcat_json,
       });
     }
   }
@@ -55,21 +54,17 @@ const ListCategory = (props) => {
  
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
-      width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'name'),
+      title: 'Form Fields',
+      dataIndex: 'studentcat_json',
+      width: '80%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'studentcat_json'),
       render: (text, record) => {
         return (<>
-          <Link to={`/admin/students/createstdcategory/${record.stdcatid}`}>{text}</Link>
+          {JSON.parse(text).map(function(item){ 
+              return item.name+', '
+          })}
         </>)
       }
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      width: '40%',
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'description'),
     },
     {
       title: 'Action',
@@ -81,7 +76,7 @@ const ListCategory = (props) => {
           <Typography.Link title="Edit">
           <Link to={`/admin/students/createstdcategory/${record.stdcatid}`}><EditOutlined /></Link>
           </Typography.Link>
-          <Popconfirm title="Sure to delete?">
+          <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
             <a title="Delete" style={{padding:"0px 10px"}}><DeleteOutlined /></a>
           </Popconfirm>
           </>
@@ -89,6 +84,17 @@ const ListCategory = (props) => {
       },
     },
   ];
+
+  const deleteRec = (record) => {
+    axios.post('/events/api/deleteStdCategory', {data:{...record}}).then(function (res) {
+      message.success(`Record deleted successfully, Please refresh the page!`);
+      dispatch(getAllStdCategories());
+      navigate("/admin/students/liststdcategory")
+    })
+    .catch(function (error) {
+      navigate("/admin/students/liststdcategory")
+    });
+  };
 
   return <>
         <div className="_apifilter_subheader">

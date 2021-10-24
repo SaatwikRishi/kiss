@@ -1,23 +1,18 @@
 import React from 'react'
 import { useSelector } from "react-redux";
-
 import { Layout, Avatar} from 'antd';
-const { Header } = Layout;
-
 import logo from "../../assets/images/favicon.png";
-import { CommonSearchTweets } from "../layout/filters";
 const LayoutHeader = (props) => {
+    const { Header } = Layout;
     const user = useSelector(state => state.user);
     return <>
         <Header className="layout_header">
             <div className="grid_two">
                 <div className="_left">
                     <div className="_logo">
-                        <img src={logo} /> Project
+                        <img src={logo} /> 
                     </div>
-                    <div className="_apifilter_header_search">
-                        <CommonSearchTweets />
-                    </div>
+                   
                 </div>
                 <div className="_right">
                     <Avatar.Group size="large">                       

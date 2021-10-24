@@ -1,3 +1,4 @@
+import { navigate } from '@reach/router';
 import axios from 'axios';
 import moment from 'moment-timezone'
 
@@ -8,7 +9,7 @@ import moment from 'moment-timezone'
  * @param {*} state 
  * @returns 
  */
-let pending = [];
+/* let pending = [];
 let cancelToken = axios.CancelToken;
 let removePending = ever => {
   for (let p in pending) {
@@ -48,7 +49,7 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
+ */
 /**
  * Get getCategory
  */
@@ -66,21 +67,32 @@ export const getCategoryList = async (date, country) => {
 /**
  * Update User Infomation
  */
-export const updateUser = async () => {
-
-  let response = await axios.get('/user/getUser')
-  if (response.data.result.redirect) {
-    if (response.data.result.environment == 'production') {
-      window.location.href = 'https://ssoqa.paypalcorp.com/idp/startSSO.ping?PartnerSpId=socailappsqa&TargetResource=https://socialapps.qa.paypal.com/twitter/';
-    }
-    else {
-      window.location.href = 'https://ssodev.paypalcorp.com/idp/startSSO.ping?PartnerSpId=socailappsdev&TargetResource=https://proactive-apps.pp-devcos-smarttools.us-central1.gcp.dev.paypalinc.com/saml/acs';
-    }   
-  }
+export const updateUser = async (payload) => {
   return {
     type: 'UPDATE_USER',
-    payload: response.data.result
+    payload: payload
   };
+}
+export const getUser = async () => {
+  let response = await axios.get(`/api/getUser`)
+  let payload = response.data.result
+/*   if (payload !== null) {
+
+    if (!payload.isProfileUpdate) {
+      navigate("/profile")
+    } else {
+      navigate("/")
+    }
+ 
+
+  }else{
+    navigate("/login")
+  } */
+  return {
+    type: 'GET_USER',
+    payload: payload
+  };
+
 }
 
 /**
@@ -102,6 +114,18 @@ export const getAllTags = async () => {
 
   return {
     type: 'EVENTS_TAG_LIST',
+    payload: response.data.result
+  };
+}
+
+/**
+ * Get all Tag List
+ */
+ export const getTagsResult = async () => {
+  let response = await axios.get('/events/api/getAllTags')
+
+  return {
+    type: 'TAGS_LIST',
     payload: response.data.result
   };
 }
@@ -137,8 +161,8 @@ export const getAllStdCategories = async () => {
   };
 }
 
-export const getAllStudents = async () => {
-  let response = await axios.get('/events/api/getAllStudents')
+export const getAllStudents = async (status='') => {
+  let response = await axios.get(`/events/api/getAllStudents?status=${status}`)
 
   return {
     type: 'GET_ALLSTUDENTS',
@@ -146,11 +170,29 @@ export const getAllStudents = async () => {
   };
 }
 
-export const getAllEvents = async () => {
-  let response = await axios.get('/events/api/getAllEvents')
+export const getStudentDetail = async (studentid='') => {
+  let response = await axios.get(`/events/api/getStudentDetail?studentid=${studentid}`)
+
+  return {
+    type: 'GET_ALLSTUDENTS',
+    payload: response.data.result
+  };
+}
+
+export const getAllEvents = async (status='') => {
+  let response = await axios.get(`/events/api/getAllEvents?status=${status}`)
 
   return {
     type: 'EVENTS_LIST',
+    payload: response.data.result
+  };
+}
+
+export const getAllStudentForms = async () => {
+  let response = await axios.get(`/events/api/getAllStudentForms`)
+
+  return {
+    type: 'STUDENT_EVENTFORM',
     payload: response.data.result
   };
 }

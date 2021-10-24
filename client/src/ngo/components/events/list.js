@@ -1,7 +1,7 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
-import { useDispatch, useSelector, navigate } from 'react-redux';
-import { Link } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm } from 'antd';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link , navigate } from '@reach/router';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message } from 'antd';
 import {
   SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
   FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined
@@ -9,10 +9,11 @@ import {
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllEvents, getAllStudents } from '../../store/actions';
+import { getAllEvents, getAllStudents, getAllStudentForms } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 import SendNotification from './sendnotification';
+moment.tz.setDefault('Asia/Kolkata')
 
 const { Option, OptGroup } = Select;
 const { Text } = Typography;
@@ -24,11 +25,13 @@ const ListEvents = (props) => {
 
   useEffect(() => {
     dispatch(getAllEvents());
-    dispatch(getAllStudents());
+    dispatch(getAllStudents(1));
+    dispatch(getAllStudentForms());
   }, []);
 
   const categoryData = useSelector(state => state.events);
   const studentsList = useSelector(state => state.students);
+  const formsData = useSelector(state => state.forms);
   let categorys = categoryData.eventList ? categoryData.eventList : {};
   categorys = categorys.data ? categorys.data : [];
   const categoryDatas = [];
@@ -38,7 +41,11 @@ const ListEvents = (props) => {
         key: (i + 1),
         eventid: categorys[i].eventid,
         event_name: categorys[i].event_name,
-        end_date: categorys[i].end_date,
+        event_desc: categorys[i].event_desc,
+        end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+((categorys[i].end_date)?moment(categorys[i].end_date).format('YYYY-MM-DD')+' - ':''),
+        apply_date: ((categorys[i].apply_date)?moment(categorys[i].apply_date).format('YYYY-MM-DD'):''),
+        document_url: categorys[i].document_url,
+        tags: categorys[i].tags,
       });
     }
   }
@@ -75,11 +82,22 @@ const ListEvents = (props) => {
   };
   /* modal functions */
 
+  const deleteRec = (record) => {
+    axios.post('/events/api/deleteEvent', {data:{...record}}).then(function (res) {
+      message.success(`Record deleted successfully, Please refresh the page!`);
+      dispatch(getAllEvents());
+      navigate("/admin/events/list")
+    })
+    .catch(function (error) {
+      navigate("/admin/events/list")
+    });
+  };
+
   const columns = [
     {
       title: 'Event Name',
       dataIndex: 'event_name',
-      width: '40%',
+      width: '30%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'event_name'),
       render: (text, record) => {
         return (<>
@@ -90,8 +108,20 @@ const ListEvents = (props) => {
     {
       title: 'Event Date',
       dataIndex: 'end_date',
-      width: '40%',
+      width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
+    },
+    {
+      title: 'Last Date',
+      dataIndex: 'apply_date',
+      width: '10%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'apply_date'),
+    },
+    {
+      title: 'Tags',
+      dataIndex: 'tags',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'tags'),
     },
     {
       title: 'Action',
@@ -103,10 +133,10 @@ const ListEvents = (props) => {
             <Typography.Link title="Edit">
               <Link to={`/admin/events/new/${record.eventid}`}><EditOutlined /></Link>
             </Typography.Link>
-            <Popconfirm title="Sure to delete?">
+            <Popconfirm title="Sure to delete?" onConfirm={() => deleteRec(record)}>
               <a title="Delete" style={{ padding: "0px 10px" }}><DeleteOutlined /></a>
             </Popconfirm>
-            <SendNotification data={{categorys, record, studentsList}} />
+            <SendNotification data={{categorys, record, studentsList, formsData}} />
           </>
         );
       },
@@ -122,7 +152,7 @@ const ListEvents = (props) => {
       <div className="filters"></div>
     </div>
     <Divider style={{ margin: '20px 0' }} />
-    {categoryDatas.length > 0 ?
+    {!categoryDatas.loading ?
       <div className="_admin_body">
         <Row className="rowclass">
           <Col span={17}>

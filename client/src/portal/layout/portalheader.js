@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, navigate } from '@reach/router';
-import { Layout, Avatar, Menu, Row, Col } from 'antd';
-import { AppstoreOutlined, HomeOutlined, SettingOutlined } from '@ant-design/icons';
+import { Layout, Avatar, Menu, Row, Col, Dropdown } from 'antd';
+import { AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, AppstoreAddOutlined } from '@ant-design/icons';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
+import axios from 'axios';
 
 const { Header } = Layout;
 import logo from "../../assets/images/kiss.png";
+import { updateUser } from '../../ngo/store/actions';
 
 
 const PortalHeader = (props) => {
     const user = useSelector(state => state.user);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
+    const dispatch = useDispatch();
 
     //console.log({ auth, provider })
 
@@ -21,21 +24,20 @@ const PortalHeader = (props) => {
     const handleClick = e => {
         setState(e.key);
     };
+    const { SubMenu } = Menu;
 
-    const checkLogin = (auth) => {
-        if(auth.currentUser) {
-            navigate('/profile')
-        }
-        else {
-            //navigate('/login')
-            navigate('/profile')
-        }
+    const logout = () =>{
+        axios.get(`/api/logout`).then(res => {
+            dispatch(updateUser());
+            navigate("/login")
+        });
     }
+
     return <>
-        <div className="" style={{background: '#fff'}}>
+        <div className="header_cont" style={{ background: '#fff' }}>
             <div className="main-content">
                 <Row align="middle" justify="space-between">
-                    <Col span={12}>
+                    <Col span={4}>
                         <Header className="layout_header">
                             <div className="_left">
                                 <div className="portal_logo">
@@ -44,36 +46,61 @@ const PortalHeader = (props) => {
                             </div>
                         </Header>
                     </Col>
-                    <Col span={12}>
-                        <Menu mode="horizontal" style={{ float: "right"}}>
-                            <Menu.Item icon={<SettingOutlined />} onClick={() => checkLogin(auth)}>My Profile</Menu.Item>
-                            <Menu.Item>
-                                <Avatar.Group size="large">
-                                    <Avatar size="large" src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
-                                    <div className="userinfo"><span className="username">{user.name}</span></div>
-                                </Avatar.Group>
+                    <Col span={15} offset={1}>
+                        <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
+                            <Menu.Item key="mail" onClick={() => navigate('/home')} >
+                                <a rel="noopener noreferrer" >Home</a>
+                            </Menu.Item>
+                            <Menu.Item key="alipay" onClick={() => navigate('/event')}>
+                                <a rel="noopener noreferrer" >Events List</a>
                             </Menu.Item>
                         </Menu>
+                    </Col>
+                    <Col span={4}>
+                        <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
+                            <SubMenu key="SubMenu" title=
+                                {<Avatar.Group >
+                                    <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
+                                    <div className="userinfo"><span className="username">{user.firstname} {user.lastname} </span></div>
+                                </Avatar.Group>}>
+                                {user.email?
+                                    <>
+                                    <Menu.Item key="setting:1" onClick={() => navigate((user.status=='active')?'/profile':'/login')}>Profile</Menu.Item>
+                                    <Menu.Item key="setting:2" onClick={() => logout()}>Logout</Menu.Item>
+                                    </> :
+                                    <Menu.Item key="setting:1" onClick={() => navigate('/login')}>Login</Menu.Item>
+                                }
+                            </SubMenu>
+                        </Menu>
+
                     </Col>
                 </Row>
             </div>
         </div>
-        <div className="menu_placeholder">
+        <div className="banner_placeholder">
             <div className="main-content">
-                <Menu theme="dark" onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
-                    <Menu.Item key="mail" icon={<HomeOutlined />}>
-                        <a href="/" rel="noopener noreferrer">
-                            Home
-                        </a>
-                    </Menu.Item>
-                    <Menu.Item key="alipay">
-                        <a href="/event" rel="noopener noreferrer">
-                            Events List
-                        </a>
-                    </Menu.Item>
-                </Menu>
+                <Row gutter={[24, 24]} align="stretch" justify="space-between" >
+                    <Col span={6} className="statistics">
+                        <div className="icon"><UserOutlined /> </div>
+                        <div className="text"> 4000 Students</div>
+                    </Col>
+                    <Col span={6} className="statistics">
+                        <div className="icon"><AppstoreOutlined /> </div>
+                        <div className="text">75 Events</div>
+                    </Col>
+                    <Col span={6} className="statistics">
+                        <div className="icon"><AppstoreAddOutlined /> </div>
+                        <div className="text"> 50 Jobs</div>
+                    </Col>
+                </Row>
             </div>
         </div>
+
     </>
 }
 export default PortalHeader;
+
+
+/*
+
+*/
