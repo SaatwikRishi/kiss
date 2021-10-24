@@ -54,6 +54,53 @@ var lib = {
         return el.toLowerCase().indexOf(query.toLowerCase()) !== -1
       })
     }, 
+    calculate_age:(dob1) => {
+      var today = new Date();
+      var birthDate = new Date(dob1);
+      var age_now = today.getFullYear() - birthDate.getFullYear();
+      var m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) 
+      {
+          age_now--;
+      }
+      return age_now;
+    },  
+    districts:() => {      
+      return {districts: [
+        "Angul",
+        "Balangir",
+        "Balasore",
+        "Bargarh",
+        "Bhadrak",
+        "Boudh",
+        "Cuttack",
+        "Deogarh",
+        "Dhenkanal",
+        "Gajapati",
+        "Ganjam",
+        "J-R",
+        "Jagatsinghapur",
+        "Jajpur",
+        "Jharsuguda",
+        "Kalahandi",
+        "Kandhamal",
+        "Kendrapara",
+        "Kendujhar (Keonjhar)",
+        "Khordha",
+        "Koraput",
+        "Malkangiri",
+        "Mayurbhanj",
+        "Nabarangpur",
+        "Nayagarh",
+        "Nuapada",
+        "Puri",
+        "Rayagada",
+        "S-Z",
+        "Sambalpur",
+        "Sonepur",
+        "Sundargarh"
+      ]};
+    },
 }
 
 
