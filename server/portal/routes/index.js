@@ -7,6 +7,8 @@ const { exec } = require("child_process");
 router.post('/api/login', portalController.login)
 router.get('/api/logout', portalController.logout)
 router.get('/api/getUser', portalController.getUser)
+router.get('/api/getComments/:id', portalController.getComments)
+router.post('/api/addComments', portalController.addComments)
 
 
 
