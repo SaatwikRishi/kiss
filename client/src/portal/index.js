@@ -109,8 +109,7 @@ const GetChatBot = () => {
                 { value: 1, label: 'Number 1', trigger: '3' },
                 { value: 2, label: 'Number 2', trigger: '2' },
                 { value: 3, label: 'Number 3', trigger: '2' },
-            ],
-            trigger: 3,
+            ]            
         }
     ]
 
