@@ -51,7 +51,7 @@ const ListEvents = (props) => {
         event_name: categorys[i].event_name,
         category_name: eventcatRec.name,
         event_desc: categorys[i].event_desc,
-        end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+((categorys[i].end_date)?moment(categorys[i].end_date).format('YYYY-MM-DD')+'':''),
+        end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+((categorys[i].end_date)?moment(categorys[i].end_date).format('YYYY-MM-DD'):''),
         apply_date: ((categorys[i].apply_date)?moment(categorys[i].apply_date).format('YYYY-MM-DD'):''),
         document_url: categorys[i].document_url,
         tags: categorys[i].tags,
