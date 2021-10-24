@@ -117,10 +117,10 @@ const ListCategory = (props) => {
                 
                 </Col>
                 <Col span={6}>
-                <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
+                <Search size='large' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/admin/category/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/admin/category/new/`}><Button size='large' type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>
                 </Col>
                 <Col span={24}>
                 <Table 
