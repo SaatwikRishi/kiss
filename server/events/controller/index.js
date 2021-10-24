@@ -210,9 +210,9 @@ var eventsController = {
       {
         /* mail function start */
         var from = process.env.user;
-        var subject = process.env.subject.replace('<name>',data.firstname);
-        var message = process.env.message.replace('<name>',data.firstname);
-        message = process.env.message.replace('<user>',data.email);
+        var subject = process.env.subject.replace('<name>',data.firstname+' '+data.lastname);
+        var message = process.env.message.replace('<name>',data.firstname+' '+data.lastname);
+        message = process.env.message.replace('<email>',data.email);
         message = process.env.message.replace('<pass>',data.password);
         message += (data.type)?process.env.activate:"";
         var to = data.email;
@@ -510,6 +510,45 @@ var eventsController = {
     try {
       let { status } = req.query;
       let result = await req.db.query(`SELECT * FROM tbl_student_forms ORDER BY created_date DESC`, 'getAllStudentForms');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  getAllComments: async (req, res) => {
+    try {
+      let result = await req.db.query('SELECT * FROM tbl_comments ORDER BY com_date DESC', 'getAllComments');
+      //console.log(result);    
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  changeCommentStatus: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        category: `UPDATE tbl_comments SET status = '${data.status}' WHERE id='${data.id}'`,
+      }
+      let result = await req.db.query(queries.category, 'changeCommentStatus');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteComment: async (req, res) => {
+    try {
+      let { data } = req.body;
+      let queries = {
+        delete:((data.id)?`DELETE FROM tbl_comments WHERE id='${data.id}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteComment');
       console.log(result);
       res.json({ result })
     }

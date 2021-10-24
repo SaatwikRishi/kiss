@@ -1,7 +1,7 @@
 
 import React, { useEffect, memo, useState, useRef }  from 'react'
 import { useDispatch, useSelector, connect } from 'react-redux';
-import { Row, Col, Table, Button, Form, Input, Layout, Modal, Space, Divider,Dropdown, Select, Typography, notification} from 'antd';
+import { Row, Col, Table, Button, Form, Input, Layout, Modal, Space, Divider,Dropdown, Select, Typography, notification, Slider } from 'antd';
 import { DownloadOutlined, CalendarFilled, SendOutlined, ApartmentOutlined } from '@ant-design/icons'
 import { Link, navigate } from '@reach/router';
 import moment from 'moment-timezone'
@@ -25,8 +25,14 @@ const Notification = (props) => {
     const { categorys, record, studentsList, formsData } = props.data;
     const [NotificationData, setNotificationData] = useState('');
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [NotificationClass, setNotificationClass] = useState('clickBtn');
     const [loading, setloading] = useState(false);
+    const districtData = lib.districts();
+
+    
+    const [showStudent, setshowStudent] = useState('none');    
+    const [showAgerange, setshowAgerange] = useState('none');    
+    const [showDistrict, setshowDistrict] = useState('none');
+
     let forms = formsData.list ? formsData.list : [];
     let allstudents = studentsList.list;
     allstudents = Object.keys(_.groupBy(allstudents, 'email'));
@@ -44,7 +50,22 @@ const Notification = (props) => {
     }
 
     const setStudents = (value) => {
-        setStudentsEmails(((value=="Registered Students")?regstudents:allstudents));
+        if(value!='Age' && value!='District') {
+            setStudentsEmails(((value=="Registered Students")?regstudents:allstudents))
+            setshowStudent('block')
+            setshowAgerange('none')
+            setshowDistrict('none')
+        } else if(value=='Age') {
+            setStudentsEmails(allstudents)
+            setshowStudent('none')
+            setshowAgerange('block')
+            setshowDistrict('none')
+        } else if(value=='District') {
+            setStudentsEmails(allstudents)
+            setshowStudent('none')
+            setshowAgerange('none')
+            setshowDistrict('block')
+        }
     };
 
     const clickRowData = () => {
@@ -56,14 +77,21 @@ const Notification = (props) => {
     };
 
     const onFinish = (e, categorys, record, studentsList ) => {
-        console.log(e);
+        console.log(studentsList.list);
         let formData = {
             title: e.title,
             message: EditorVal,
             eventid: record.eventid
         };
         setloading(true);
-        let mailstudents = _(studentsList.list).filter(val => StudentsEmails.indexOf((val.email).toString())>-1 ).value();
+        let mailstudents = [];
+        if(e.type!='Age' && e.type!='District') {
+            mailstudents = _(studentsList.list).filter(val => StudentsEmails.indexOf((val.email).toString())>-1 ).value();
+        } else if(e.type=='Age' && e.agerange) {
+            mailstudents = _(studentsList.list).filter(val => val.dob && ( lib.calculate_age(moment(val.dob).format('YYYY-MM-DD')) >= e.agerange[0] && lib.calculate_age(moment(val.dob).format('YYYY-MM-DD')) <= e.agerange[1] ) ).value();
+        } else if(e.type=='District' && e.district) {
+            mailstudents = _(studentsList.list).filter(val => val.district && e.district.indexOf((val.district).toString())>-1 ).value();
+        }
         let getEvent = {};
         var eventTags = [];
         var stdEmails = [];
@@ -71,7 +99,7 @@ const Notification = (props) => {
         {    
             if(e.emails) { 
                 stdEmails = e.emails;
-            } else {
+            } else {                
                 getEvent = categorys.filter(function(item) {
                     return (item.eventid==record.eventid);
                 });
@@ -93,16 +121,16 @@ const Notification = (props) => {
                 }
             }
         } 
-        console.log(stdEmails);
         axios.post(`/events/api/sendNotification`, { data: formData, stdEmails: stdEmails }).then(res => {
-            setIsModalVisible(false);
+            handleCancel()
             navigate("/admin/events/list")
             notification.success({
                 message: 'Success',
                 description: `Notification sent successfully!`
             });
         }).finally(() => {
-            setIsModalVisible(false);
+            setloading(false)
+            handleCancel()
         })
         console.log(stdEmails);
     };
@@ -123,7 +151,7 @@ const Notification = (props) => {
                 width={800}
                 onCancel={handleCancel}
             >
-                <div className="category_creation" style={{ minHeight: '60vh'}}>
+                <div className="category_creation" style={{ minHeight: '70vh'}}>
                     <Form className="initial_form" layout="vertical"
                         form={form}
                         onFinish={(e) => onFinish(e, categorys, record, studentsList )}
@@ -146,21 +174,35 @@ const Notification = (props) => {
                                 </Form.Item>
                             </div>
                             <div className="category_item" style={{ margin: '60px 0 20px 0' }}>
-                                <Form.Item hasFeedback={true} name={'type'} label="Student Type" rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <Select name={'type'} placeholder="-Student Type-" 
+                                <Form.Item hasFeedback={true} name={'type'} label="Notification Type" rules={[{ required: true, message: 'Please fill!' }]}>
+                                    <Select name={'type'} placeholder="-Notification Type-" 
                                         onChange={(value) => {
                                             setStudents(value)
                                         }} 
                                     >
                                         <Option value="All Students">All Students</Option>
-                                        {(stdObj.length>0)?<Option value="Registered Students">Registered Students</Option>:''}                                        
+                                        {(stdObj.length>0)?<Option value="Registered Students">Registered Students</Option>:''} 
+                                        <Option value="Age">Age</Option> 
+                                        <Option value="District">District</Option>                                       
                                     </Select>
                                 </Form.Item>
                             </div>
-                            <div className="category_item">
+                            <div className="category_item" style={{ display: showStudent }}>
                                 <Form.Item hasFeedback={true} name={'emails'} label="Students" rules={[{ required: false, message: 'Please fill!' }]}>
                                     <Select mode="tags" size="middle" onChange={(e) => {  }} >
                                         {StudentsEmails && StudentsEmails.map(val => <Option value={val}>{val}</Option>)}
+                                    </Select>
+                                </Form.Item>
+                            </div>
+                            <div className="category_item" style={{ display: showAgerange }}>
+                                <Form.Item hasFeedback={true} name={'agerange'} label="Age Range" rules={[{ required: false, message: 'Please fill!' }]}>
+                                    <Slider range defaultValue={[18, 60]} />
+                                </Form.Item>
+                            </div>
+                            <div className="category_item" style={{ display: showDistrict }}>
+                                <Form.Item hasFeedback={true} name={'district'} label="District" rules={[{ required: false, message: 'Please fill!' }]}>
+                                    <Select mode="tags" size="middle" onChange={(e) => {  }} >
+                                        {districtData.districts.map(val=> <Option value={val}>{val}</Option> )}
                                     </Select>
                                 </Form.Item>
                             </div>
