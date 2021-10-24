@@ -1,18 +1,19 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link , navigate } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message } from 'antd';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Drawer, InputNumber, Popconfirm, message } from 'antd';
 import {
   SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
-  FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined
+  FileSearchOutlined, EditOutlined, SaveOutlined, TeamOutlined
 } from '@ant-design/icons';
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
-import { getAllEvents, getAllStudents, getAllStudentForms } from '../../store/actions';
+import { getAllEvents, getAllStudents, getAllStudentForms, getAllCategories } from '../../store/actions';
 import loading from '../../../assets/images/loading.gif'
 let lib = require('../../libs/index')
 import SendNotification from './sendnotification';
+import StudentInfo from './studentinfo';
 moment.tz.setDefault('Asia/Kolkata')
 
 const { Option, OptGroup } = Select;
@@ -25,22 +26,30 @@ const ListEvents = (props) => {
 
   useEffect(() => {
     dispatch(getAllEvents());
+    dispatch(getAllCategories());
     dispatch(getAllStudents(1));
     dispatch(getAllStudentForms());
   }, []);
 
+  const eventCatData = useSelector(state => state.category);
   const categoryData = useSelector(state => state.events);
   const studentsList = useSelector(state => state.students);
   const formsData = useSelector(state => state.forms);
+  let forms = formsData.list ? formsData.list : [];
   let categorys = categoryData.eventList ? categoryData.eventList : {};
   categorys = categorys.data ? categorys.data : [];
   const categoryDatas = [];
   if (categorys != undefined) {
     for (let i = 0; i < categorys.length; i++) {
+      let eventcategory = eventCatData.list ? eventCatData.list : {};
+      let eventcatRec = _(eventcategory).filter(val => val.catid == categorys[i].catid ).value();
+      eventcatRec = eventcatRec.length ? eventcatRec[0] : {};
+
       categoryDatas.push({
         key: (i + 1),
         eventid: categorys[i].eventid,
         event_name: categorys[i].event_name,
+        category_name: eventcatRec.name,
         event_desc: categorys[i].event_desc,
         end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+((categorys[i].end_date)?moment(categorys[i].end_date).format('YYYY-MM-DD')+' - ':''),
         apply_date: ((categorys[i].apply_date)?moment(categorys[i].apply_date).format('YYYY-MM-DD'):''),
@@ -91,7 +100,9 @@ const ListEvents = (props) => {
     .catch(function (error) {
       navigate("/admin/events/list")
     });
-  };
+  };  
+  
+  const [openDrawer, setopenDrawer] = useState(false);
 
   const columns = [
     {
@@ -106,9 +117,15 @@ const ListEvents = (props) => {
       }
     },
     {
+      title: 'Category Name',
+      dataIndex: 'category_name',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'category_name'),
+    },
+    {
       title: 'Event Date',
       dataIndex: 'end_date',
-      width: '20%',
+      width: '10%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
     },
     {
@@ -126,7 +143,7 @@ const ListEvents = (props) => {
     {
       title: 'Action',
       dataIndex: 'action',
-      width: '20%',
+      width: '10%',
       render: (_, record) => {
         return (
           <>
@@ -137,6 +154,7 @@ const ListEvents = (props) => {
               <a title="Delete" style={{ padding: "0px 10px" }}><DeleteOutlined /></a>
             </Popconfirm>
             <SendNotification data={{categorys, record, studentsList, formsData}} />
+            <StudentInfo data={{record, studentsList, formsData}} />   
           </>
         );
       },
