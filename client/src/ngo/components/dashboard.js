@@ -164,8 +164,7 @@ const AdmDashboard = (props) => {
             <div className="filters"></div>
         </div>
         <ReactHighcharts config={config} />
-        <Divider style={{ margin: '20px 0' }} />
-        <ReactHighcharts config={config} />
+        <Divider style={{ margin: '20px 20px' }} />
   </>
 };
 
