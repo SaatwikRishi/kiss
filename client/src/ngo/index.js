@@ -113,7 +113,7 @@ const LayoutSidebar = (props) =>{
                 </li>
                 <li className={url == '/admin/events/eventforms' ? 'active' : ''} onClick={() => navigateTo('/admin/events/eventforms')}>
                     <FormOutlined />
-                    <div className="_title">Submitted Forms</div>
+                    <div className="_title">Registered Forms</div>
                 </li>
                 <li className={url == '/admin/events/listtags' ? 'active' : ''} onClick={() => navigateTo('/admin/events/listtags')}>
                     <TagOutlined />
