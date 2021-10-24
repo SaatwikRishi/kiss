@@ -5,7 +5,7 @@ import { AppstoreOutlined, HomeOutlined, SettingOutlined } from '@ant-design/ico
 
 const { Header, Footer } = Layout;
 import logo from "../../assets/images/kiss.png";
-
+import { InlineFollowButtons } from 'sharethis-reactjs';
 
 const PortalFooter = (props) => { 
     return <>
@@ -31,6 +31,61 @@ const PortalFooter = (props) => {
                     <div className="footer_contact_title">Address</div>
                     <div className="footer_contact_addrs">
                         <p>Write to:  KISS Bhubaneswar,<br /> Odisha,<br />  India,<br />PIN: 751024</p>
+                    </div>
+                </div>
+                <div className="footer_box">
+                    <div className="footer_contact_share">
+                        <InlineFollowButtons
+
+                            config={{
+
+                                action: 'Follow us:', // call to action (STRING)
+
+                                action_enable: true,  // show/hide call to action (true, false)
+
+                                action_pos: 'bottom', // position of call to action (left, top, right)
+
+                                alignment: 'center',  // alignment of buttons (left, center, right)
+
+                                color: 'white',       // set the color of buttons (social, white)
+
+                                enabled: true,        // show/hide buttons (true, false)
+
+                                networks: [           // which networks to include (see FOLLOW NETWORKS)
+
+                                    'twitter',
+
+                                    'facebook',
+
+                                    'instagram',
+
+                                    'youtube'
+
+                                ],
+
+                                padding: 8,           // padding within buttons (INTEGER)
+
+                                profiles: {           // social profile links for buttons
+
+                                    twitter: 'sharethis',
+
+                                    facebook: 'sharethis',
+
+                                    instagram: 'sharethis',
+
+                                    youtube: '/channel/UCbM93niCmdc2RD9RZbLMP6A?view_as=subscriber'
+
+                                },
+
+                                radius: 9,            // the corner radius on each button (INTEGER)
+
+                                size: 48,             // the size of each button (INTEGER)
+
+                                spacing: 8            // the spacing between buttons (INTEGER)
+
+                            }}
+
+                        />
                     </div>
                 </div>
             </div>
