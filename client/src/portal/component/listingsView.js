@@ -2,14 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';
-import { Tabs, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
+import { Avatar, List, Card, Layout, Select, Tag, Row, Col, Input, Divider, Space, message, Button, Modal, notification, Form } from 'antd';
 const { Content } = Layout;
-import { ReconciliationOutlined, FormOutlined, CheckOutlined } from '@ant-design/icons';
+import { ReconciliationOutlined, FormOutlined, CheckOutlined, WhatsAppOutlined, RobotOutlined } from '@ant-design/icons';
 import { InlineReactionButtons } from 'sharethis-reactjs';
 import { InlineShareButtons } from 'sharethis-reactjs';
 import { StickyShareButtons } from 'sharethis-reactjs';
 import { InlineFollowButtons } from 'sharethis-reactjs';
-import ChatBot from 'react-simple-chatbot';
+
 import moment from 'moment-timezone';
 moment.tz.setDefault('Asia/Kolkata');
 import axios from 'axios';
@@ -26,16 +26,18 @@ const ListingView = (props) => {
     const location = useLocation();
     const eventsStore = useSelector(state => state.events);
     const [state, setState] = useState({ isLoading: true, search: null, searchResult: [] })
-    const student = useSelector(state => state.user); 
+    const student = useSelector(state => state.user);
     const [isModalVisible, setIsModalVisible] = useState(false);
     /** 
      * Scroll to Top
      */
-    useEffect(() => {
-        dispatch(getUser());
-        dispatch(getAllEvents());
-        dispatch(getCategoryListforEvents());
-    }, []);
+    /*     useEffect(() => {
+            if(eventsStore.eventList.loading){
+                dispatch(getUser());
+                dispatch(getAllEvents());
+                dispatch(getCategoryListforEvents());
+            }
+        }, []); */
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
@@ -90,7 +92,9 @@ const ListingView = (props) => {
             return { categoryName: name, data: val }
         }).value() */
 
-    let categoryList = _(eventsData.categoryList.data).map((rec) => { return { name: rec.name, id: rec.catid } }).value()
+    let categoryList = _(eventsData.categoryList.data).map((rec) => {
+        return { name: rec && rec.name, id: rec && rec.catid }
+    }).value()
     let eventsList = _(eventsData.eventList.data).map((rec) => { return { ...rec, category: _.find(categoryList, { "id": rec.catid }) } }).value()
     let eventDetails = _.find(eventsList, { "eventid": ListingViewId })
     let desc = eventDetails && eventDetails.event_desc
@@ -98,25 +102,30 @@ const ListingView = (props) => {
     const [loading, setloading] = useState(false);
     const applyForEvent = (eventid, student, eventDetails) => {
         console.log(student);
-        if(!student.studentid) {
+        if (!student.studentid) {
             navigate('/login');
-        } else if(!student.isProfileUpdate) {
+        } else if (!student.isProfileUpdate) {
             navigate('/profile');
         }
-        else if(eventDetails.event_json=='' || eventDetails.event_json==null) {
+        else if (eventDetails.event_json == '' || eventDetails.event_json == null) {
             setloading(true);
-            axios.post(`/events/api/saveStudentEventForm`, { data: { 
-                form_json: '', 
-                eventid: eventDetails.eventid, 
-                created_date: moment().format('YYYY-MM-DD'),
-                studentid: student.studentid,
-            }}).then(res => {
-                notification.success({
+            axios.post(`/events/api/saveStudentEventForm`, {
+                data: {
+                    form_json: '',
+                    eventid: eventDetails.eventid,
+                    created_date: moment().format('YYYY-MM-DD'),
+                    studentid: student.studentid,
+                }
+            }).then((res) => {           
+                setIsModalVisible(false);
+                //handleCancel()    
+              /*   notification.success({
                     message: 'Success',
                     description: `Application submitted successfully!`
-                });
+                }); */
             }).finally(() => {
                 setloading(false);
+             
             })
         } else {
             showModal();
@@ -132,45 +141,14 @@ const ListingView = (props) => {
     };
 
     let event_json = null;
-    try {        
+    try {
         event_json = JSON.parse(eventDetails.event_json);
         event_json = event_json ? event_json : []
     } catch (error) {
-        
+
     }
 
-    const steps = [
-        {
-            id: '1',
-            message: 'What is your name?',
-            trigger: '2',
-        },
-        {
-            id: '2',
-            user: true,
-            trigger: '3',
-        },
-        {
-            id: '3',
-            message: 'Hi {previousValue}, nice to meet you!',
-            trigger: '4',
-        },
-        {
-            id: '4',
-            message: 'How may i help you today?',
-            trigger: '5',
-        },
-        {
-            id: '5',
-            user: true,
-            trigger: '5',
-        },
-        {
-            id: '6',
-            message: 'Let me see for {previousValue}, just a moment',
-            end:true
-        },
-    ]
+
     return <>
         <Content style={{ padding: 20 }} className="listingView">
             {!state.isLoading && eventDetails.eventid ?
@@ -186,23 +164,19 @@ const ListingView = (props) => {
                                 </Card>
 
                             </Col>
-                            <Col span={6} className="categories" >                                
-                                <Button type="primary" block size="large" loading={loading} disabled={loading} htmlType="submit" style={{marginBottom: 10}} onClick={()=>applyForEvent(ListingViewId, student, eventDetails)}>Apply / Register</Button>
+                            <Col span={6} className="categories" >
+                                <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" style={{ marginBottom: 20 }} onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>Apply / Register</Button>
                                 <Modal
                                     title={'Please fill the form'}
-                                    visible={isModalVisible} 
-                                    footer={null} 
+                                    visible={isModalVisible}
+                                    footer={null}
                                     width={800}
                                     onCancel={handleCancel}
                                 >
-                                    {event_json && <EventDetailsForm {...{ formFields: event_json, eventId: ListingViewId, studentId: student.studentid }}/>}
+                                    {event_json && <EventDetailsForm {...{ formFields: event_json, eventId: ListingViewId, studentId: student.studentid }} />}
                                 </Modal>
                                 <Card title="Similar Events" >
-                                    <ul>
-                                        <li>CAT A</li>
-                                        <li>CAT B</li>
-                                        <li>CAT C</li>
-                                    </ul>
+                                    <GetSimmilar eventsData={eventsData} />
                                 </Card>
                                 <Card title="Share" >
                                     <InlineShareButtons
@@ -226,13 +200,13 @@ const ListingView = (props) => {
                                             size: 40,             // the size of each button (INTEGER)
 
                                             // OPTIONAL PARAMETERS
-                                            url: 'https://localhost:8000/', // (defaults to current url)
-                                            image: 'https://bit.ly/2CMhCMC',  // (defaults to og:image or twitter:image)
-                                            description: 'custom text',       // (defaults to og:description or twitter:description)
-                                            title: 'custom title',            // (defaults to og:title or twitter:title)
-                                            message: 'custom email text',     // (only for email sharing)
-                                            subject: 'custom email subject',  // (only for email sharing)
-                                            username: 'custom twitter handle' // (only for twitter sharing)
+                                            url: window.location.href, // (defaults to current url)
+                                            image: eventDetails.gallery,  // (defaults to og:image or twitter:image)
+                                            description: eventDetails.event_desc,       // (defaults to og:description or twitter:description)
+                                            title: eventDetails.event_name,          // (defaults to og:title or twitter:title)
+                                            message: eventDetails.event_desc,     // (only for email sharing)
+                                            subject: "KISS -"+ eventDetails.event_name,   // (only for email sharing)
+                                            username: 'kalinga.institute' // (only for twitter sharing)
                                         }}
                                     />
                                     <Divider />
@@ -256,7 +230,7 @@ const ListingView = (props) => {
                                             spacing: 8,           // the spacing between buttons (INTEGER)
 
                                             // OPTIONAL PARAMETERS
-                                            url: 'https://localhost:8000/' // (defaults to current url)
+                                            url: window.location.href // (defaults to current url)
                                         }}
                                     />
                                     <Divider />
@@ -282,12 +256,11 @@ const ListingView = (props) => {
                                                 youtube: '/channel/UCbM93niCmdc2RD9RZbLMP6A?view_as=subscriber'
                                             },
                                             radius: 9,            // the corner radius on each button (INTEGER)
-                                            size: 32,             // the size of each button (INTEGER)
+                                            size: 48,             // the size of each button (INTEGER)
                                             spacing: 8            // the spacing between buttons (INTEGER)
                                         }}
                                     />
                                 </Card>
-                                <ChatBot steps={steps} />
 
 
                             </Col>
@@ -304,7 +277,26 @@ const ListingView = (props) => {
 }
 export default ListingView;
 
-const EventDetailsForm = (props) =>{
+
+const GetSimmilar = ({ eventsData }) => {
+    const dataSource=_.take(eventsData.eventList.data,10)
+    return (
+        <List
+            itemLayout="horizontal"
+            dataSource={dataSource}
+            renderItem={item => (
+                <List.Item>
+                    <List.Item.Meta
+                        avatar={<Avatar src={item.gallery} />}
+                        title={<Link to={`/listing/${item.eventid}`} title={item.event_name}>{item.event_name}</Link>}                       
+                    />
+                </List.Item>
+            )}
+        />
+    )
+}
+
+const EventDetailsForm = (props) => {
     const [form] = Form.useForm();
     const { formFields, eventId, studentId } = props;
 
@@ -317,15 +309,17 @@ const EventDetailsForm = (props) =>{
     const fUpdateTrigger = () => { setfValue(fValue + 1) }
 
     const [loading, setloading] = useState(false);
-    const onFinish = (e) =>{
+    const onFinish = (e) => {
         let formData = _(e).pickBy(val => val).value();
         setloading(true);
-        axios.post(`/events/api/saveStudentEventForm`, { data: { 
-            form_json: formData, 
-            eventid: eventId, 
-            created_date: moment().format('YYYY-MM-DD'),
-            studentid: studentId,
-        }}).then(res => {
+        axios.post(`/events/api/saveStudentEventForm`, {
+            data: {
+                form_json: formData,
+                eventid: eventId,
+                created_date: moment().format('YYYY-MM-DD'),
+                studentid: studentId,
+            }
+        }).then(res => {
             form.resetFields();
             notification.success({
                 message: 'Success',
@@ -351,7 +345,7 @@ const EventDetailsForm = (props) =>{
                     {formFields.map(val => {
                         let keyName = val.name.replaceAll(/[ ]/g, '_');
                         let template = '';
-                        
+
                         if (val.input_type == 'text') {
                             template = <div className="category_item">
                                 <Form.Item hasFeedback={true} name={keyName} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>

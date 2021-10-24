@@ -10,7 +10,7 @@
     "webpack": "webpack --progress -p",
     "watch": "webpack -d --watch --progress -p",
     "build": "set NODE_ENV=production && sudo rm -rf dist/ && webpack --progress -p --info-verbosity",
-    "mount": "sudo git pull && npm install && npm run build && pm2 reload kiss"
+    "mount": "sudo git pull && yarn install && npm run build && pm2 reload all"
   },
   "dependencies": {
     "@fullcalendar/daygrid": "^5.10.0",

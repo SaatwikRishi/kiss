@@ -33,11 +33,11 @@ const Index = (props) => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
 
-    useEffect(() => {
-        dispatch(updateUser());
+/*     if(eventsStore.eventList.loading){
+        dispatch(getUser());
         dispatch(getAllEvents());
         dispatch(getCategoryListforEvents());
-    }, []);
+    } */
 
 
     /**

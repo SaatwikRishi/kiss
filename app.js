@@ -15,8 +15,8 @@ var app = express();
 const mysqlConfig={
   host: process.env.dbhost,
   user: process.env.dbuser,
-  password:  process.env.dbpass,
-  database: 'kiss',
+  password:  process.env.dbpassword,
+  database:'kiss',
   connectTimeout:48800,
   waitForConnections: true,
   connectionLimit: 100,
