@@ -1,16 +1,15 @@
 import React, { useEffect, memo, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, navigate } from '@reach/router';
-import { Breadcrumb, Table, Input, Space, Form, Select, Button, DatePicker, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message  } from 'antd';
-import { SafetyCertificateTwoTone, DeleteOutlined, PlusOutlined,
-    FileSearchOutlined, EditOutlined, SaveOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Breadcrumb, Table, Input, Space, Form, Select, Button, Card, Modal, Typography, Row, Col, Divider, Alert, InputNumber, Popconfirm, message  } from 'antd';
+import { SafetyCertificateTwoTone, ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined, FundOutlined } from '@ant-design/icons';
 import _ from 'lodash'
 import axios from 'axios';
 import moment from 'moment-timezone'
 import loading from '../../assets/images/loading.gif'
 let lib = require('../../ngo/libs/index')
 import ReactHighcharts from 'react-highcharts';
-import { getAllEvents, getAllStudentForms } from '../store/actions';
+import { getAllEvents, getAllStudents, getAllTags, getAllComments, getAllStudentForms } from '../store/actions';
 
 const gridStyle = {
   width: '20%',
@@ -21,11 +20,16 @@ const AdmDashboard = (props) => {
 
   const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(getAllEvents());
+    dispatch(getAllStudents());
+    dispatch(getAllTags());
+    dispatch(getAllComments());
     dispatch(getAllStudentForms());
   },[]);
-
   
   const eventsData = useSelector(state => state.events);
+  const studentsList = useSelector(state => state.students);
+  console.log(studentsList);
   useEffect(() => {
     if (!eventsData.eventsList) {
         dispatch(getAllEvents());
@@ -154,6 +158,21 @@ const AdmDashboard = (props) => {
         return config
     }
     let config = ReportType(data, eventsAllData)
+   
+    const gridStyle = {
+      width: '20%',
+      textAlign: 'center',
+    };
+    const commentsData = useSelector(state => state.comments);
+    const tagData = useSelector(state => state.tags);
+
+    
+    console.log(tagData);
+  let eventslength = (eventsAllData.eventList)?eventsAllData.eventList.eventList.data.length:0;
+  let studentslength = (studentsList.loading)?studentsList.list.length:0;
+  let formslength = (data)?data.length:0;
+  let commentslength = (commentsData.loading)?commentsData.list.length:0;
+  let tagslength = (tagData.list)?tagData.list.length:0;
   
   return <>
         <div className="_apifilter_subheader">
@@ -163,8 +182,58 @@ const AdmDashboard = (props) => {
             </div>
             <div className="filters"></div>
         </div>
-        <ReactHighcharts config={config} />
-        <Divider style={{ margin: '20px 20px' }} />
+        <div className="_admin_body">
+          <Divider style={{ margin: '20px 0px' }} />
+          <Row className="rowclass">
+            <Col span={24}>
+              <h2>Recent Events vs Students Registration</h2>
+              <ReactHighcharts config={config} />
+            </Col>
+          </Row>
+          <Divider style={{ margin: '20px 0px' }} />
+          <Row className="rowclass">
+            <Col span={24}>
+                <Card>
+                  <Card.Grid style={gridStyle}>
+                    <Link to='/admin/category/list'>
+                      <Card title="Events" extra={<ProfileOutlined />} className="_linkClass">
+                        {eventslength}
+                      </Card>
+                    </Link>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <Link to='/admin/students/list'>
+                      <Card title="Students" extra={<TeamOutlined />} className="_linkClass">
+                      {studentslength}
+                      </Card>
+                    </Link>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <Link to='/admin/events/eventforms'>
+                      <Card title="Registered Forms" extra={<FormOutlined />} className="_linkClass">
+                      {formslength}
+                      </Card>
+                    </Link>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <Link to='/admin/events/listtags'>
+                      <Card title="Tags" extra={<TagOutlined />} className="_linkClass">
+                      {tagslength}
+                      </Card>
+                    </Link>
+                  </Card.Grid>
+                  <Card.Grid style={gridStyle}>
+                    <Link to='/admin/events/comments'>
+                      <Card title="CommentOutlined" extra={<CommentOutlined />} className="_linkClass">
+                      {commentslength}
+                      </Card>
+                    </Link>
+                  </Card.Grid>                  
+                </Card>            
+            </Col>
+          </Row>          
+          <Divider style={{ margin: '20px 0px 50px 0px' }} />
+        </div>
   </>
 };
 
