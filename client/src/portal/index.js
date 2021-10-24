@@ -58,7 +58,7 @@ const KISSHomePage = (props) => {
     return <>
         <Layout className="layout_portal">
             <GetChatBot />
-            <Layout>
+            <Layout style={{ background: '#fff'}}>
                 <PortalHeader />
                 {/* <PortalBanner /> */}
                 <section className="main-content">
