@@ -264,13 +264,17 @@ const CreateEvent = (props) => {
                             
                             <div className="category_item">
                                 <Form.Item hasFeedback={true} name={'end_date'} label="event date" rules={[{ required: false, message: 'Please fill!' }]}>
-                                    <RangePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={val => moment(val).isBefore(moment.now())} />
+                                    <RangePicker format={dateFormat} size="middle" style={{ width: '100%' }} 
+                                        // disabledDate={val => moment(val).isBefore(moment.now())} 
+                                    />
                                 </Form.Item>
                             </div>
                         
                             <div className="category_item">
                                 <Form.Item hasFeedback={true} name={'apply_date'} label="last apply date" rules={[{ required: false, message: 'Please fill!' }]}>
-                                    <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isBefore(moment.now())} />
+                                    <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} 
+                                        // disabledDate={date => moment(date).isBefore(moment.now())} 
+                                    />
                                 </Form.Item>
                             </div>
                             <div className="category_item">
@@ -290,7 +294,7 @@ const CreateEvent = (props) => {
 
                     <div className="category_dynamic_fields_header">
                         <div className="category_dynamic_title">
-                            Dynamic Form fields
+                            Add Form fields
                         </div>
                         <div className="category_dynamic_button">
                             <p style={{ color: '#1890ff', marginBottom: 0, fontSize: '1.1em', cursor: 'pointer' }} onClick={() => {
@@ -383,7 +387,9 @@ const CategoryForm = (props) =>{
                 if (val.input_type == 'datepicker'){
                     template = <div className="category_item">
                         <Form.Item hasFeedback={true} name={['category_json',0,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-                            <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                            <DatePicker format={dateFormat} size="middle" style={{ width: '100%' }} 
+                            // disabledDate={date => moment(date).isAfter(moment.now())} 
+                            />
                         </Form.Item>
                     </div>
                 }

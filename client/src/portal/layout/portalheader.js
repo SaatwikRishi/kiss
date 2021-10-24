@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, navigate } from '@reach/router';
 import { Layout, Avatar, Menu, Row, Col, Dropdown } from 'antd';
 import {
-    AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, LogoutOutlined, LikeOutlined,
+    AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, LogoutOutlined, LikeOutlined, FileDoneOutlined,
     AppstoreAddOutlined, MenuOutlined, ContainerOutlined } from '@ant-design/icons';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
@@ -43,7 +43,10 @@ const PortalHeader = (props) => {
                 <a rel="noopener noreferrer" >Home</a>
             </Menu.Item>
             <Menu.Item icon={<ContainerOutlined />} key="alipay" onClick={() => navigate('/event')}>
-                <a rel="noopener noreferrer" >Events List</a>
+                <a rel="noopener noreferrer" >Calender View</a>
+            </Menu.Item>
+            <Menu.Item icon={<FileDoneOutlined />} key="MyEvents" onClick={() => navigate('/myEvents')}>
+                <a rel="noopener noreferrer" >My Events</a>
             </Menu.Item>
             <Menu.Divider />
             {user.email ?
@@ -72,11 +75,14 @@ const PortalHeader = (props) => {
                         </div>
                         <div className="menu">
                             <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
-                                <Menu.Item key="mail" onClick={() => navigate('/home')} >
-                                    <a rel="noopener noreferrer" >Home</a>
+                                <Menu.Item key="MyEvents" onClick={() => navigate('/myEvents')}>
+                                    <a rel="noopener noreferrer" >My Events</a>
                                 </Menu.Item>
                                 <Menu.Item key="alipay" onClick={() => navigate('/event')}>
-                                    <a rel="noopener noreferrer" >Events List</a>
+                                    <a rel="noopener noreferrer" >Calender View</a>
+                                </Menu.Item>
+                                <Menu.Item key="mail" onClick={() => navigate('/home')} >
+                                    <a rel="noopener noreferrer" >Home</a>
                                 </Menu.Item>
                             </Menu>
                         </div>
@@ -87,7 +93,9 @@ const PortalHeader = (props) => {
                                 <SubMenu key="SubMenu" title=
                                     {<Avatar.Group >
                                         <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
-                                        <div className="userinfo"><span className="username">{user.firstname} {user.lastname} </span></div>
+                                        <div className="userinfo"><span className="username">
+                                            {user.firstname} {user.lastname} 
+                                        </span></div>
                                     </Avatar.Group>}>
                                     {user.email ?
                                         <>
