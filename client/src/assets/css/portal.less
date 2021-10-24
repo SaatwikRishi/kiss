@@ -542,9 +542,11 @@
         font-size: 1.2em;
         font-weight: 300;
         text-transform: capitalize;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        word-break: break-all;
+        
+        // overflow: hidden;
+        // text-overflow: ellipsis;
+        // white-space: nowrap;
       }
     }
   }
@@ -886,7 +888,7 @@
   margin: auto;
 
   @media (max-width: 500px) {
-    width: 300px;
+    width: 100%;
   }
 }
 

@@ -51,7 +51,7 @@ const ListEvents = (props) => {
         event_name: categorys[i].event_name,
         category_name: eventcatRec.name,
         event_desc: categorys[i].event_desc,
-        end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+((categorys[i].end_date)?moment(categorys[i].end_date).format('YYYY-MM-DD')+' - ':''),
+        end_date: ((categorys[i].start_date)?moment(categorys[i].start_date).format('YYYY-MM-DD')+' - ':'')+''+((categorys[i].end_date)?moment(categorys[i].end_date).format('YYYY-MM-DD')+'':''),
         apply_date: ((categorys[i].apply_date)?moment(categorys[i].apply_date).format('YYYY-MM-DD'):''),
         document_url: categorys[i].document_url,
         tags: categorys[i].tags,
@@ -127,6 +127,11 @@ const ListEvents = (props) => {
       dataIndex: 'end_date',
       width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
+      render: (text, record) => {
+        return (<>
+          <span style={{ whiteSpace: 'nowrap'}}>{text}</span>
+        </>)
+      }
     },
     {
       title: 'Last Date',
@@ -177,14 +182,15 @@ const ListEvents = (props) => {
 
           </Col>
           <Col span={6}>
-            <Search size='middle' placeholder="Search" allowClear onSearch={(e) => search(e)} enterButton style={{ float: 'right', margin: '5px 25px' }} />
+            <Search size='large' placeholder="Search" allowClear onSearch={(e) => search(e)} enterButton style={{ float: 'right', margin: '5px 25px' }} />
           </Col>
           <Col span={1}>
-            <Link to={`/admin/events/new/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>
+            <Link to={`/admin/events/new/`}><Button size="large" type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>
           </Col>
           <Col span={24}>
             <Table
               bordered
+              size="middle"
               dataSource={tableDatas}
               columns={columns}
             />
