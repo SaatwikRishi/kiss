@@ -103,7 +103,7 @@ const EventDetails = (props) => {
                         initialView="dayGridMonth"
                         events={events} eventClick={(e)=>{
                             // console.log(e.event.id)
-                            navigate("/event/" + e.event.id)
+                            navigate("/listing/" + e.event.id)
                         }}
                         /* events={[{}]} */
                     />

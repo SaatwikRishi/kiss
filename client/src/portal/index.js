@@ -12,7 +12,6 @@ import ProfilePage from "./component/profile";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import EventDetails from "./component/events/eventDetails";
-import EventDetailsPage from "./component/events/eventDetailsPage";
 
 import EventsList from "./component/eventslist";
 import ListingView from "./component/listingsView";
@@ -71,9 +70,8 @@ const KISSHomePage = (props) => {
                                 <LoginPage path="/" />
                                 <LoginPage path="/login" />
                                 <ProfilePage path="/profile" />
-                                <EventsList path="/eventslist" />
                                 <EventDetails path="/event" />
-                                <EventDetailsPage path="/event/:eventId" />
+                                <EventsList path="/eventslist" />
                                 <ListingView path="/listing/:id" />
                             </Router>
                         </Content>
