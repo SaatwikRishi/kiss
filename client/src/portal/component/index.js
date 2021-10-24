@@ -107,7 +107,7 @@ const Index = (props) => {
                         <Link to={`/listing/${item.eventid}`}>
                             <Card Bordered>
                                 <div className="EventImg">
-                                    <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
+                                    <div className={`img ${item.gallery == null? 'blankImg': ''}`} style={{ backgroundImage: `url(${item.gallery})` }}></div>
                                     <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
                                 </div>
                                 <div className="details">
@@ -117,7 +117,13 @@ const Index = (props) => {
                                     <Divider />
                                     <div className="info">
                                         <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
-                                        <p className="value"> {moment(item.start_date).format('lll')} - {moment(item.end_date).format('lll')} </p>
+                                        {
+                                            moment(item.start_date, true).isValid() ? <>
+                                                <p className="value">
+                                                    {moment(item.start_date).format('lll')} - {moment(item.end_date).format('lll')}
+                                                </p>
+                                            </> : <p className="value">Yet to announced</p>
+                                        }
                                     </div>
                                 </div>
                             </Card>
@@ -161,7 +167,7 @@ const Index = (props) => {
                                     <Link to={`/listing/${item.eventid}`}>
                                         <Card Bordered>
                                             <div className="EventImg">
-                                                <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
+                                                <div className={`img ${item.gallery == null? 'blankImg': ''}`} style={{ backgroundImage: `url(${item.gallery})` }}></div>
                                                 <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
                                             </div>
                                             <div className="details">
@@ -171,7 +177,13 @@ const Index = (props) => {
                                                 <Divider />
                                                 <div className="info">
                                                     <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
-                                                    <p className="value"> {moment(item.start_date).format('lll')} - {moment(item.end_date).format('lll')} </p>
+                                                    {
+                                                        moment(item.start_date, true).isValid() ? <>
+                                                            <p className="value">
+                                                                {moment(item.start_date).format('lll')} - {moment(item.end_date).format('lll')}
+                                                            </p>
+                                                        </> : <p className="value">Yet to announced</p>
+                                                    }
                                                 </div>
                                             </div>
                                         </Card>

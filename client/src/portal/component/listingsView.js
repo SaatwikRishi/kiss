@@ -206,7 +206,9 @@ const ListingView = (props) => {
                         <Row gutter={[16, 16]}>
                             <Col sm={24} md={18}>
                                 <Card bordered className="details" >
-                                    <div className="img" style={{ backgroundImage: `url(${eventDetails.gallery})` }}></div>
+                                    <div className="EventImg">
+                                        <div className={`img ${eventDetails.gallery == null ? 'blankImg' : ''}`} style={{ backgroundImage: `url(${eventDetails.gallery})` }}></div>
+                                    </div>
                                     <Divider />
                                     <h1>{eventDetails.event_name}</h1>
                                     <Fragment><div className="description" dangerouslySetInnerHTML={{ __html: desc }} /></Fragment>
