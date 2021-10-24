@@ -9,10 +9,10 @@ import moment from 'moment-timezone'
 import loading from '../../assets/images/loading.gif'
 let lib = require('../../ngo/libs/index')
 import ReactHighcharts from 'react-highcharts';
-import { getAllEvents, getAllStudents, getAllTags, getAllComments, getAllStudentForms } from '../store/actions';
+import { getAllEvents, getAllStudents, getAllComments, getAllStudentForms } from '../store/actions';
 
 const gridStyle = {
-  width: '20%',
+  width: '25%',
   textAlign: 'center',
 };
 
@@ -22,7 +22,6 @@ const AdmDashboard = (props) => {
   useEffect(() => {
     dispatch(getAllEvents());
     dispatch(getAllStudents());
-    dispatch(getAllTags());
     dispatch(getAllComments());
     dispatch(getAllStudentForms());
   },[]);
@@ -160,19 +159,15 @@ const AdmDashboard = (props) => {
     let config = ReportType(data, eventsAllData)
    
     const gridStyle = {
-      width: '20%',
+      width: '25%',
       textAlign: 'center',
     };
     const commentsData = useSelector(state => state.comments);
-    const tagData = useSelector(state => state.tags);
 
-    
-    console.log(tagData);
   let eventslength = (eventsAllData.eventList)?eventsAllData.eventList.eventList.data.length:0;
   let studentslength = (studentsList.loading)?studentsList.list.length:0;
   let formslength = (data)?data.length:0;
   let commentslength = (commentsData.loading)?commentsData.list.length:0;
-  let tagslength = (tagData.list)?tagData.list.length:0;
   
   return <>
         <div className="_apifilter_subheader">
@@ -212,13 +207,6 @@ const AdmDashboard = (props) => {
                     <Link to='/admin/events/eventforms'>
                       <Card title="Registered Forms" extra={<FormOutlined />} className="_linkClass">
                       {formslength}
-                      </Card>
-                    </Link>
-                  </Card.Grid>
-                  <Card.Grid style={gridStyle}>
-                    <Link to='/admin/events/listtags'>
-                      <Card title="Tags" extra={<TagOutlined />} className="_linkClass">
-                      {tagslength}
                       </Card>
                     </Link>
                   </Card.Grid>
