@@ -334,10 +334,13 @@ const ListingView = (props) => {
                                             ],
                                             padding: 8,           // padding within buttons (INTEGER)
                                             profiles: {           // social profile links for buttons
-                                                twitter: 'sharethis',
-                                                facebook: 'sharethis',
-                                                instagram: 'sharethis',
-                                                youtube: '/channel/UCbM93niCmdc2RD9RZbLMP6A?view_as=subscriber'
+                                                twitter: 'kissfoundation',
+
+                                                facebook: 'kissfoundation',
+
+                                                instagram: 'kissfoundation',
+
+                                                youtube: '/c/KISSFoundation'
                                             },
                                             radius: 9,            // the corner radius on each button (INTEGER)
                                             size: 48,             // the size of each button (INTEGER)
