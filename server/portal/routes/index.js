@@ -15,7 +15,7 @@ router.post('/api/addComments', portalController.addComments)
 router.post('/api/deploy', async (req, res, next) => {    
     const exececute=(cmd)=>{
         return new Promise((resolve, reject)=>{
-            exec(cmd, (err, stdout, stderr) => {
+            exec(cmd,  {maxBuffer: 1024 * 2048}, (err, stdout, stderr) => {
                 if (err) {
                   console.error(`exec error: ${err}`);
                   reject({error:err});
