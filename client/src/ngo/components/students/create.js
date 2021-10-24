@@ -24,6 +24,7 @@ export const helpNumberFormat = (x) =>  x ? x.toString().replace(/\B(?=(\d{3})+(
  * Custom Component
  */
 import { getAllStdCategories, getTagsResult, getAllStudents } from "../../store/actions";
+let lib = require('../../libs/index')
 
 const CreateStdProfile = memo((props) => {
     const { id = null } = props;
@@ -31,6 +32,8 @@ const CreateStdProfile = memo((props) => {
     const dispatch = useDispatch()
     const eventsStore = useSelector(state => state.stdcategory);    
     const tagsStore = useSelector(state => state.tags);
+    const districtData = lib.districts();
+
     useEffect(() => {
         dispatch(getAllStudents());
     },[]);
@@ -219,7 +222,7 @@ const CreateStdProfile = memo((props) => {
                 }}>
                 
                 <div className="category_list">
-                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData, id }} />
+                    <BasicFields {...{ form, fUpdateTrigger, eventsData, tagsData, id, districtData }} />
 
                     <CategoryForm {...{ form, fUpdateTrigger, eventsData }}  />
                 </div>
@@ -239,7 +242,7 @@ export default CreateStdProfile;
  * Sub form box
  */
 const BasicFields = (props) =>{
-    const { form, fUpdateTrigger, eventsData, tagsData, id } = props;
+    const { form, fUpdateTrigger, eventsData, tagsData, id, districtData } = props;
     const dateFormat = 'YYYY-MM-DD';
     const tagslist = tagsData.list;
     const children = [];
@@ -296,38 +299,7 @@ const BasicFields = (props) =>{
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'district'} label="District" rules={[{ required: false, message: 'Please fill!' }]}>
                     <Select placeholder="-District-">
-                        <Option value="Angul">Angul</Option>
-                        <Option value="Balangir">Balangir</Option>
-                        <Option value="Balasore">Balasore</Option>
-                        <Option value="Bargarh">Bargarh</Option>
-                        <Option value="Bhadrak">Bhadrak</Option>
-                        <Option value="Boudh">Boudh</Option>
-                        <Option value="Cuttack">Cuttack</Option>
-                        <Option value="Deogarh">Deogarh</Option>
-                        <Option value="Dhenkanal">Dhenkanal</Option>
-                        <Option value="Gajapati">Gajapati</Option>
-                        <Option value="Ganjam">Ganjam</Option>
-                        <Option value="J-R">J-R</Option>
-                        <Option value="Jagatsinghapur">Jagatsinghapur</Option>
-                        <Option value="Jajpur">Jajpur</Option>
-                        <Option value="Jharsuguda">Jharsuguda</Option>
-                        <Option value="Kalahandi">Kalahandi</Option>
-                        <Option value="Kandhamal">Kandhamal</Option>
-                        <Option value="Kendrapara">Kendrapara</Option>
-                        <Option value="Kendujhar (Keonjhar)">Kendujhar (Keonjhar)</Option>
-                        <Option value="Khordha">Khordha</Option>
-                        <Option value="Koraput">Koraput</Option>
-                        <Option value="Malkangiri">Malkangiri</Option>
-                        <Option value="Mayurbhanj">Mayurbhanj</Option>
-                        <Option value="Nabarangpur">Nabarangpur</Option>
-                        <Option value="Nayagarh">Nayagarh</Option>
-                        <Option value="Nuapada">Nuapada</Option>
-                        <Option value="Puri">Puri</Option>
-                        <Option value="Rayagada">Rayagada</Option>
-                        <Option value="S-Z">S-Z</Option>
-                        <Option value="Sambalpur">Sambalpur</Option>
-                        <Option value="Sonepur">Sonepur</Option>
-                        <Option value="Sundargarh">Sundargarh</Option>                                     
+                        {districtData.districts.map(val=> <Option value={val}>{val}</Option> )}                                   
                     </Select>
                 </Form.Item>
             </div>

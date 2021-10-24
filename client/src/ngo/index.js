@@ -6,7 +6,7 @@ import '../assets/css/style.less';
 
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
-import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined } from '@ant-design/icons';
+import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined } from '@ant-design/icons';
 import { getUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
@@ -21,6 +21,7 @@ import CreateStdCategory from "./components/students/createstdcategory";
 import ListStdCategory from "./components/students/liststdcategory";
 import CreateStdProfile from "./components/students/create";
 import ListStudents from "./components/students/list";
+import ListComments from "./components/events/listcomments";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
@@ -68,6 +69,7 @@ const Index = (props)=>{
                                     <CreateStdProfile path="/students/create"/>
                                     <CreateStdProfile path="/students/create/:id"/>
                                     <ListStudents path="/students/list"/>
+                                    <ListComments path="/events/listcomments"/>
                                 </Router>
                             </Content>
                         </Layout>
@@ -118,6 +120,10 @@ const LayoutSidebar = (props) =>{
                 <li className={url == '/admin/events/listtags' ? 'active' : ''} onClick={() => navigateTo('/admin/events/listtags')}>
                     <TagOutlined />
                     <div className="_title">Tags</div>
+                </li>
+                <li className={url == '/admin/events/listcomments' ? 'active' : ''} onClick={() => navigateTo('/admin/events/listcomments')}>
+                    <CommentOutlined />
+                    <div className="_title">Comments</div>
                 </li>
             </ul>
         </div>

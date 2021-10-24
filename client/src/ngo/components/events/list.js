@@ -108,7 +108,7 @@ const ListEvents = (props) => {
     {
       title: 'Event Name',
       dataIndex: 'event_name',
-      width: '30%',
+      width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'event_name'),
       render: (text, record) => {
         return (<>
@@ -125,7 +125,7 @@ const ListEvents = (props) => {
     {
       title: 'Event Date',
       dataIndex: 'end_date',
-      width: '10%',
+      width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'end_date'),
       render: (text, record) => {
         return (<>
