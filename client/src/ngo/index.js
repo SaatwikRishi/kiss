@@ -6,7 +6,7 @@ import '../assets/css/style.less';
 
 import { Layout, Spin } from 'antd';
 const { Content } = Layout;
-import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined } from '@ant-design/icons';
+import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined, FundOutlined } from '@ant-design/icons';
 import { getUser } from './store/actions';
 
 import LayoutHeader from "./layout/layoutHeader";
@@ -22,6 +22,7 @@ import ListStdCategory from "./components/students/liststdcategory";
 import CreateStdProfile from "./components/students/create";
 import ListStudents from "./components/students/list";
 import ListComments from "./components/events/listcomments";
+import AdmDashboard from "./components/dashboard";
 
 const Index = (props)=>{
     const dispatch = useDispatch();
@@ -59,7 +60,6 @@ const Index = (props)=>{
                                     <CreateTag path="/events/createtag" />
                                     <CreateTag path="/events/createtag/:id" />
                                     <ListTags path="/events/listtags" />
-                                    <CreateCategory path="/"/>
                                     <CreateCategory path="/category/new"/>
                                     <CreateCategory path="/category/new/:catId" />
                                     <ListCategory path="/category/list"/>
@@ -70,6 +70,7 @@ const Index = (props)=>{
                                     <CreateStdProfile path="/students/create/:id"/>
                                     <ListStudents path="/students/list"/>
                                     <ListComments path="/events/listcomments"/>
+                                    <AdmDashboard path="/"/>
                                 </Router>
                             </Content>
                         </Layout>
@@ -97,13 +98,17 @@ const LayoutSidebar = (props) =>{
     return <>
         <div className={`main_sidebar ${expand? 'expand': ''}`} onMouseEnter={() => setexpand(true)} onMouseLeave={() => setexpand(false)}>
             <ul>
-                <li className={url == '/admin/events/list' ? 'active' : ''} onClick={() => navigateTo('/admin/events/list')}>
-                    <ProfileOutlined />
-                    <div className="_title">Events</div>
+                <li className={url == '/admin/' ? 'active' : ''} onClick={() => navigateTo('/admin/')}>
+                    <FundOutlined />
+                    <div className="_title">Dashboard</div>
                 </li>
                 <li className={url == '/admin/category/list' ? 'active' : ''} onClick={() => navigateTo('/admin/category/list')}>
                     <ContainerOutlined />
-                    <div className="_title">Category</div>
+                    <div className="_title">Event Category</div>
+                </li>
+                <li className={url == '/admin/events/list' ? 'active' : ''} onClick={() => navigateTo('/admin/events/list')}>
+                    <ProfileOutlined />
+                    <div className="_title">Events</div>
                 </li>
                 <li className={url == '/admin/students/list' ? 'active' : ''} onClick={() => navigateTo('/admin/students/list')}>
                     <TeamOutlined />
@@ -111,7 +116,7 @@ const LayoutSidebar = (props) =>{
                 </li>
                 <li className={url == '/admin/students/liststdcategory' ? 'active' : ''} onClick={() => navigateTo('/admin/students/liststdcategory')}>
                     <SolutionOutlined />
-                    <div className="_title">Students Fields</div>
+                    <div className="_title">Student Dynamic Fields</div>
                 </li>
                 <li className={url == '/admin/events/eventforms' ? 'active' : ''} onClick={() => navigateTo('/admin/events/eventforms')}>
                     <FormOutlined />
