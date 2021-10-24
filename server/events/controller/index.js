@@ -210,9 +210,9 @@ var eventsController = {
       {
         /* mail function start */
         var from = process.env.user;
-        var subject = process.env.subject.replace('<name>',data.firstname);
-        var message = process.env.message.replace('<name>',data.firstname);
-        message = process.env.message.replace('<user>',data.email);
+        var subject = process.env.subject.replace('<name>',data.firstname+' '+data.lastname);
+        var message = process.env.message.replace('<name>',data.firstname+' '+data.lastname);
+        message = process.env.message.replace('<email>',data.email);
         message = process.env.message.replace('<pass>',data.password);
         message += (data.type)?process.env.activate:"";
         var to = data.email;
