@@ -57,7 +57,9 @@ const LoginPage = (props) => {
         let formData = _(values).pickBy(val => val).value();
         axios.post(`/events/api/saveStudentProfile`, { data: { 
             ...formData,             
-            type: 'user', 
+            type: 'user',
+            student_json: [],
+            status: '0', 
         }}).then(res => {
             console.log(res);
             if(!res.data.result.error) {                

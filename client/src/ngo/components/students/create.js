@@ -282,14 +282,53 @@ const BasicFields = (props) =>{
             </div>
 
             <div className="category_item">
+                <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
+                    <Input size="middle" />
+                </Form.Item>
+            </div>
+
+            <div className="category_item">
                 <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
                     <Input size="middle" />
                 </Form.Item>
             </div>
 
             <div className="category_item">
-                <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
-                    <Input size="middle" />
+                <Form.Item hasFeedback={true} name={'district'} label="District" rules={[{ required: false, message: 'Please fill!' }]}>
+                    <Select placeholder="-District-">
+                        <Option value="Angul">Angul</Option>
+                        <Option value="Balangir">Balangir</Option>
+                        <Option value="Balasore">Balasore</Option>
+                        <Option value="Bargarh">Bargarh</Option>
+                        <Option value="Bhadrak">Bhadrak</Option>
+                        <Option value="Boudh">Boudh</Option>
+                        <Option value="Cuttack">Cuttack</Option>
+                        <Option value="Deogarh">Deogarh</Option>
+                        <Option value="Dhenkanal">Dhenkanal</Option>
+                        <Option value="Gajapati">Gajapati</Option>
+                        <Option value="Ganjam">Ganjam</Option>
+                        <Option value="J-R">J-R</Option>
+                        <Option value="Jagatsinghapur">Jagatsinghapur</Option>
+                        <Option value="Jajpur">Jajpur</Option>
+                        <Option value="Jharsuguda">Jharsuguda</Option>
+                        <Option value="Kalahandi">Kalahandi</Option>
+                        <Option value="Kandhamal">Kandhamal</Option>
+                        <Option value="Kendrapara">Kendrapara</Option>
+                        <Option value="Kendujhar (Keonjhar)">Kendujhar (Keonjhar)</Option>
+                        <Option value="Khordha">Khordha</Option>
+                        <Option value="Koraput">Koraput</Option>
+                        <Option value="Malkangiri">Malkangiri</Option>
+                        <Option value="Mayurbhanj">Mayurbhanj</Option>
+                        <Option value="Nabarangpur">Nabarangpur</Option>
+                        <Option value="Nayagarh">Nayagarh</Option>
+                        <Option value="Nuapada">Nuapada</Option>
+                        <Option value="Puri">Puri</Option>
+                        <Option value="Rayagada">Rayagada</Option>
+                        <Option value="S-Z">S-Z</Option>
+                        <Option value="Sambalpur">Sambalpur</Option>
+                        <Option value="Sonepur">Sonepur</Option>
+                        <Option value="Sundargarh">Sundargarh</Option>                                     
+                    </Select>
                 </Form.Item>
             </div>
 
