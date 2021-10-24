@@ -517,6 +517,45 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  getAllComments: async (req, res) => {
+    try {
+      let result = await req.db.query('SELECT * FROM tbl_comments ORDER BY com_date DESC', 'getAllComments');
+      //console.log(result);    
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  changeCommentStatus: async (req, res) => {
+    try {
+      let { data } = req.body;
+      console.log(data);
+      let queries = {
+        category: `UPDATE tbl_comments SET status = '${data.status}' WHERE id='${data.id}'`,
+      }
+      let result = await req.db.query(queries.category, 'changeCommentStatus');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteComment: async (req, res) => {
+    try {
+      let { data } = req.body;
+      let queries = {
+        delete:((data.id)?`DELETE FROM tbl_comments WHERE id='${data.id}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteComment');
+      console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
   sleep: async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
