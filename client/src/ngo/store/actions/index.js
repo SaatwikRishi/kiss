@@ -196,3 +196,15 @@ export const getAllStudentForms = async () => {
     payload: response.data.result
   };
 }
+
+/**
+ * Get all Comments
+ */
+ export const getAllComments = async () => {
+  let response = await axios.get('/events/api/getAllComments')
+
+  return {
+    type: 'COMMENTS_LIST',
+    payload: response.data.result
+  };
+}
