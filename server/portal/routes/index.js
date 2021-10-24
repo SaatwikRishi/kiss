@@ -31,8 +31,7 @@ router.post('/api/deploy', async (req, res, next) => {
         let result={
             cmd1:await exececute('cd /var/www/nodeapps/Team-1/'),
             cmd2:await exececute('ls -l -a'),
-            cmd3:await exececute('git checkout ./'),
-            cmd4:await exececute('npm run mount')
+            cmd4:await exececute('npm run mount & /dev/null')
         }
         res.json({result})
         

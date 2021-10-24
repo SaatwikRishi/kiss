@@ -42,7 +42,7 @@ var eventsController = {
             }
         });
       let result = {}
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -61,7 +61,7 @@ var eventsController = {
         category: ((data.catid) ? `UPDATE tbl_categories SET ${updateField} WHERE catid='${data.catid}'` : `INSERT INTO tbl_categories SET ${updateField}`),
       }
       let result = await req.db.query(queries.category, 'saveCategory');
-      console.log(queries.category);
+      //console.log(queries.category);
       res.json({ result })
     }
     catch (ex) {
@@ -71,7 +71,7 @@ var eventsController = {
   getAllCategories: async (req, res) => {
     try {
       let result = await req.db.query('SELECT * FROM tbl_categories ORDER BY name ASC', 'getAllCategories');
-      //console.log(result);    
+      ////console.log(result);    
       res.json({ result })
     }
     catch (ex) {
@@ -81,7 +81,7 @@ var eventsController = {
   saveEvents: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
 
       let updateField = '';
       Object.keys(data).forEach(key => {
@@ -105,9 +105,9 @@ var eventsController = {
       let queries = {
         category: ((data.eventid) ? `UPDATE tbl_events SET ${updateField} WHERE eventid='${data.eventid}'` : `INSERT INTO tbl_events SET ${updateField}`),
       }
-      console.log(queries.category);
+      //console.log(queries.category);
       let result = await req.db.query(queries.category, 'saveEvents');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -119,7 +119,7 @@ var eventsController = {
       let { status } = req.query;
       let where = (status)?` WHERE status = '${status}' `:'';
       let result = await req.db.query(`SELECT * FROM tbl_events ${where} ORDER BY end_date DESC`, 'getAllEvents');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -130,7 +130,7 @@ var eventsController = {
     try {
       let { catid } = req.body;
       let result = await req.db.query(`SELECT * FROM tbl_categories WHERE catid = '${catid}'`, 'getCategory');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -141,7 +141,7 @@ var eventsController = {
     try {
       let { data } = req.body;
       let result = await req.db.query(`SELECT * FROM tbl_events WHERE eventid = '${data}'`, 'getEvent');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -160,7 +160,7 @@ var eventsController = {
         category: ((data.stdcatid) ? `UPDATE tbl_student_categories SET ${updateField}  WHERE stdcatid='${data.stdcatid}'` : `INSERT INTO tbl_student_categories SET ${updateField}`),
       }
       let result = await req.db.query(queries.category, 'saveStudentCategory');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -172,7 +172,7 @@ var eventsController = {
 
     try {
       let result = await req.db.query('SELECT * FROM tbl_student_categories ORDER BY name ASC', 'getAllStdCategories');
-      //console.log(result);    
+      ////console.log(result);    
       res.json({ result })
     }
     catch (ex) {
@@ -182,7 +182,7 @@ var eventsController = {
   saveStudentProfile: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(process.env.name);
+      ////console.log(process.env.name);
 
       let updateField = '';
       Object.keys(data).forEach(key => {
@@ -204,7 +204,7 @@ var eventsController = {
         category: ((data.studentid) ? `UPDATE tbl_students SET ${updateField} WHERE studentid='${data.studentid}'` : `INSERT INTO tbl_students SET ${updateField}`),
       }
       let result = await req.db.query(queries.category, 'saveStudentProfile');
-      console.log(queries.category);
+      ////console.log(queries.category);
 
       if(!data.studentid)
       {
@@ -271,7 +271,7 @@ var eventsController = {
       let updateField = '';
       if (!data.tagid) {
         data.tag.forEach(val => {
-          console.log(val.name);
+          ////console.log(val.name);
           if (val.name) {
             updateField += ` ('${val.name}'), `
           }
@@ -286,7 +286,7 @@ var eventsController = {
         tags: ((data.tagid) ? `UPDATE tbl_tags SET ${updateField} WHERE tagid='${data.tagid}'` : `INSERT INTO tbl_tags (tag) VALUES ${updateField}`),
       }
       let result = await req.db.query(queries.tags, 'saveTag');
-      console.log(queries.tags);
+      ////console.log(queries.tags);
       res.json({ result })
     }
     catch (ex) {
@@ -296,7 +296,7 @@ var eventsController = {
   getAllTags: async (req, res) => {
     try {
       let result = await req.db.query('SELECT * FROM tbl_tags', 'getAllTags');
-      //console.log(result);    
+      ////console.log(result);    
       res.json({ result })
     }
     catch (ex) {
@@ -306,9 +306,9 @@ var eventsController = {
   getStudentByTag: async (req, res) => {
     try {
       let { tags } = req.body;
-      console.log(tags);
+      ////console.log(tags);
       let result = await req.db.query(`SELECT email FROM tbl_students WHERE tag = '${tags}'`, 'getEvent');
-      console.log(result);
+      ////console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -322,7 +322,7 @@ var eventsController = {
       if (stdEmails.length > 0) {
         stdEmails.forEach(val => {
           if (val) {
-            console.log(val);
+            ////console.log(val);
             /* mail function start */
             var from = process.env.user;
             var subject = data.title;
@@ -368,13 +368,13 @@ var eventsController = {
   saveStudentEventForm: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      ////console.log(data);
       let updateField = `eventid = '${data.eventid}', studentid = '${data.studentid}', created_date = '${(data.created_date) ? moment(data.created_date).format('YYYY-MM_DD') : ''}', form_json = '${(data.form_json) ? JSON.stringify(data.form_json) : ''}' `
       let queries = {
         category: `INSERT INTO tbl_student_forms SET ${updateField}`,
       }
       let result = await req.db.query(queries.category, 'saveStudentEventForm');
-      console.log(result);
+      ////console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -384,7 +384,7 @@ var eventsController = {
   changeStudentStatus: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      ////console.log(data);
       let queries = {
         category: `UPDATE tbl_students SET status = '${data.status}' WHERE studentid='${data.studentid}'`,
       }
@@ -424,7 +424,7 @@ var eventsController = {
       });
       /* active deactive mail */
 
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -434,12 +434,12 @@ var eventsController = {
   deleteTag: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
       let queries = {
         delete:((data.tagid)?`DELETE FROM tbl_tags WHERE tagid='${data.tagid}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteTag');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -449,12 +449,12 @@ var eventsController = {
   deleteCategory: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
       let queries = {
         delete:((data.catid)?`DELETE FROM tbl_categories WHERE catid='${data.catid}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteCategory');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -464,12 +464,12 @@ var eventsController = {
   deleteEvent: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
       let queries = {
         delete:((data.eventid)?`DELETE FROM tbl_events WHERE eventid='${data.eventid}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteEvent');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -479,12 +479,12 @@ var eventsController = {
   deleteStdCategory: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
       let queries = {
         delete:((data.stdcatid)?`DELETE FROM tbl_student_categories WHERE stdcatid='${data.stdcatid}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteStdCategory');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -494,12 +494,12 @@ var eventsController = {
   deleteStudent: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
       let queries = {
         delete:((data.studentid)?`DELETE FROM tbl_students WHERE studentid='${data.studentid}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteStudent');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -510,7 +510,7 @@ var eventsController = {
     try {
       let { status } = req.query;
       let result = await req.db.query(`SELECT * FROM tbl_student_forms ORDER BY created_date DESC`, 'getAllStudentForms');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -520,7 +520,7 @@ var eventsController = {
   getAllComments: async (req, res) => {
     try {
       let result = await req.db.query('SELECT * FROM tbl_comments ORDER BY com_date DESC', 'getAllComments');
-      //console.log(result);    
+      ////console.log(result);    
       res.json({ result })
     }
     catch (ex) {
@@ -530,12 +530,12 @@ var eventsController = {
   changeCommentStatus: async (req, res) => {
     try {
       let { data } = req.body;
-      console.log(data);
+      //console.log(data);
       let queries = {
         category: `UPDATE tbl_comments SET status = '${data.status}' WHERE id='${data.id}'`,
       }
       let result = await req.db.query(queries.category, 'changeCommentStatus');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
@@ -549,7 +549,7 @@ var eventsController = {
         delete:((data.id)?`DELETE FROM tbl_comments WHERE id='${data.id}'`:``),
       }
       let result = await req.db.query(queries.delete, 'deleteComment');
-      console.log(result);
+      //console.log(result);
       res.json({ result })
     }
     catch (ex) {
