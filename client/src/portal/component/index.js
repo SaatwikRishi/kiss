@@ -9,20 +9,16 @@ import moment from 'moment-timezone'
 /**
  * Actions
  */
-import { getUser, getAllEvents, getCategoryListforEvents, getSiteNotificationResult } from '../../ngo/store/actions';
+import { getUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
 
 const Index = (props) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const eventsStore = useSelector(state => state.events);
-    const notification = useSelector(state => state.notification);
     const [state, setState] = useState({ isLoading: true, search: null, searchResult: [] })
     /** 
      * Scroll to Top
      */
-    useEffect(() => {
-        dispatch(getSiteNotificationResult());
-    },[])
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
@@ -144,12 +140,6 @@ const Index = (props) => {
     // console.log({ categoryList, eventsList })
     return <>
         <Content className="homePage">
-
-                <section className="">
-                    <marquee style={{fontWeight: 'bold'}}>
-                        {notification.list && notification.list.map(val => <span style={{marginRight: 20}}>{val.notifictions}</span>) }
-                    </marquee>
-                </section>
 
                 <section style={{ marginTop: 20 }}>
                     <h1>Our Events and Jobs Listings</h1>
