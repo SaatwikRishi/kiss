@@ -137,7 +137,8 @@ const PortalHeader = (props) => {
                                     {user.email ?
                                         <>
                                             <Menu.Item key="setting:1" onClick={() => navigate((user.status == 'active') ? '/profile' : '/login')}>Profile</Menu.Item>
-                                            <Menu.Item key="setting:2" onClick={() => logout()}>Logout</Menu.Item>
+                                            <Menu.Item key="setting:2" onClick={() => navigate((user.status == 'active') ? '/changepassword' : '/login')}>Change Password</Menu.Item>
+                                            <Menu.Item key="setting:3" onClick={() => logout()}>Logout</Menu.Item>
                                         </> :
                                         <Menu.Item key="setting:1" onClick={() => navigate('/login')}>Login</Menu.Item>
                                     }
