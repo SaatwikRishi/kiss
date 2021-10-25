@@ -1,6 +1,7 @@
 /node_modules
 /package-lock.json
 dist/
+build/
 server/mock/
 /mock/
 yarn-error.log
@@ -15,3 +16,7 @@ nlp/corpus/*
 model.nlp
 nodered/
 .env
+.readmes/
+assets/
+.vscode/
+img/

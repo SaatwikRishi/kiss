@@ -19,7 +19,7 @@ module.exports = {
   },
   output: {
     //path: path.resolve("dist")
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build'),
     publicPath: '/'
   },
   module: {

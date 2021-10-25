@@ -2,10 +2,10 @@
   "name": "socialapps",
   "version": "1.4.0",
   "private": true,
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js --node-args='--max_old_space_size=8192'",
-    "dev": "set NODE_OPTIONS=--max-old-space-size=8192 && nodemon server.js --ignore dist/ --ignore client/ --ignore server/mock/* --ignore mock/* --max-old-space-size=8192",
+    "start": "node index.js --node-args='--max_old_space_size=8192'",
+    "dev": "set NODE_OPTIONS=--max-old-space-size=8192 && nodemon index.js --ignore dist/ --ignore client/ --ignore server/mock/* --ignore mock/* --max-old-space-size=8192",
     "devins": "nodemon --inspect server.js",
     "webpack": "webpack --progress -p",
     "watch": "webpack -d --watch --progress -p",
