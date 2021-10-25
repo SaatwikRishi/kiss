@@ -115,7 +115,7 @@ const LoginPage = (props) => {
     }; 
 
     const tagslist = tagsData.list;
-    console.log(tagslist);
+    // console.log(tagslist);
     const children = [];
     for (let i = 0; i < tagslist.length; i++) {
         children.push(<Option key={tagslist[i].tag}>{tagslist[i].tag}</Option>);

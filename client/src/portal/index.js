@@ -43,18 +43,6 @@ const KISSHomePage = (props) => {
             dispatch(getCategoryListforEvents());
         }
     }, []);
-    /*     useEffect(() => {
-            if (user && user.email) {
-                if (!user.isProfileUpdate) {
-                    navigate("/profile")
-                } else {
-                    navigate("/home")
-                }
-            } else {
-                navigate("/login")
-            }
-        }, [user]); */
-
 
 
     return <>
@@ -62,7 +50,6 @@ const KISSHomePage = (props) => {
             <GetChatBot />
             <Layout style={{ background: '#fff'}}>
                 <PortalHeader />
-                {/* <PortalBanner /> */}
                 <section className="main-content">
                     <Layout className="layout_contentWrapper">
                         <Content>
