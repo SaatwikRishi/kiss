@@ -17,14 +17,23 @@ export const helpNumberFormat = (x) => {
     return x ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : x;
 }
 
+/**
+ * Actions
+ */
+import { getSiteNotificationResult } from '../../ngo/store/actions';
+
 const PortalHeader = (props) => {
     const user = useSelector(state => state.user);
+    const notification = useSelector(state => state.notification);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const dispatch = useDispatch();
     const windowSize = useWindowSize();
 
     //console.log({ auth, provider })
+    useEffect(() => {
+        dispatch(getSiteNotificationResult());
+    }, [])
 
     const [state, setState] = useState()
     const handleClick = e => {
@@ -166,6 +175,9 @@ const PortalHeader = (props) => {
                         <div className="text">{helpNumberFormat(50)} </div>
                     </div>
                 </div>
+                <marquee style={{ fontWeight: 400, color: '#333' }} onmouseover="stop()" >
+                    {notification.list && notification.list.map(val => <span style={{ marginRight: 20 }}>{val.notifictions}</span>)}
+                </marquee>
             </div>
         </div>
 
