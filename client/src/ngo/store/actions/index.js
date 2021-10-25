@@ -188,8 +188,8 @@ export const getAllEvents = async (status='') => {
   };
 }
 
-export const getAllStudentForms = async () => {
-  let response = await axios.get(`/events/api/getAllStudentForms`)
+export const getAllStudentForms = async (eventid='', studentid='') => {
+  let response = await axios.get(`/events/api/getAllStudentForms?eventid=${eventid}&studentid=${studentid}`)
 
   return {
     type: 'STUDENT_EVENTFORM',
