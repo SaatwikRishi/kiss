@@ -303,6 +303,16 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  getSiteNotification: async (req, res) => {
+    try {
+      let result = await req.db.query('SELECT * FROM tbl_sitescroll', 'getSiteNotification');
+      ////console.log(result);    
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
   getStudentByTag: async (req, res) => {
     try {
       let { tags } = req.body;

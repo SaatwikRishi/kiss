@@ -8,6 +8,8 @@ import categoryReducer from "./categoryReducer";
 import stdcategoryReducer from "./stdcategoryReducer";
 import studentReducer from "./studentReducer";
 import tagReducer from "./tagReducer";
+import siteNotificationReducer from "./siteNotificationReducer";
+
 import studentFormReducer from "./studentFormReducer";
 import commentsReducer from "./commentsReducer";
 
@@ -20,6 +22,7 @@ const rootReducer = combineReducers({
     stdcategory:stdcategoryReducer,
     students:studentReducer,
     tags:tagReducer,
+    notification: siteNotificationReducer,
     forms:studentFormReducer,
     comments:commentsReducer,
 });

@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { Link, navigate } from '@reach/router';
 import { Layout, Avatar, Menu, Row, Col, Dropdown } from 'antd';
 import {
-    AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, LogoutOutlined, LikeOutlined, FileDoneOutlined,
+    AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, 
+    LogoutOutlined, LikeOutlined, FileDoneOutlined, SyncOutlined,
     AppstoreAddOutlined, MenuOutlined, ContainerOutlined } from '@ant-design/icons';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
@@ -37,6 +38,32 @@ const PortalHeader = (props) => {
             navigate("/login")
         });
     }
+
+
+    /**
+     * getForm data  from Store
+     */
+    const eventsStore = useSelector(state => state.events);
+    const getEventStoreData = () => {
+        let mainObj = eventsStore ? eventsStore : {}
+        let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
+
+        let eventList = mainObj.eventList ? mainObj.eventList : {};
+
+        return {
+            categoryList: {
+                loading: true,
+                data: [],
+                ...categoryList
+            },
+            eventList: {
+                loading: true,
+                data: [],
+                ...eventList
+            }
+        }
+    }
+    let eventsData = getEventStoreData();
 
     const menu = (
         <Menu className="userMenu">
@@ -126,11 +153,13 @@ const PortalHeader = (props) => {
                 <div className="banner_subheader_statisti">
                     <div className="banner_subheader_box" style={{ background: 'rgb(62 167 66)', opacity: 0.8, color: '#fff'}}>
                         <div className="icon"><UserOutlined /> <span className="ti">Students</span> </div>
-                        <div className="text">{helpNumberFormat(4000)} </div>
+                        <div className="text">{helpNumberFormat(30000)}+ </div>
                     </div>
                     <div className="banner_subheader_box" style={{ background: '#005993', opacity: 0.8, color: '#fff'}}>
                         <div className="icon"><ContainerOutlined /> <span className="ti">Events</span> </div>
-                        <div className="text">{helpNumberFormat(75)} </div>
+                        <div className="text">
+                            {eventsData.eventList.loading ? <SyncOutlined spin /> : helpNumberFormat(eventsData.eventList.data.length) }
+                        </div>
                     </div>
                     <div className="banner_subheader_box" style={{ background: '#ff9800', opacity: 0.8, color: '#fff'}}>
                         <div className="icon"><LikeOutlined /> <span className="ti">Jobs</span> </div>

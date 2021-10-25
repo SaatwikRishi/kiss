@@ -16,6 +16,8 @@ router.post('/api/saveStudentProfile',eventsController.saveStudentProfile)
 router.get('/api/getAllStudents',eventsController.getAllStudents)
 router.post('/api/saveTag',eventsController.saveTag)
 router.get('/api/getAllTags',eventsController.getAllTags)
+router.get('/api/getSiteNotification',eventsController.getSiteNotification)
+
 router.post('/api/sendNotification',eventsController.sendNotification)
 router.post('/api/saveStudentEventForm',eventsController.saveStudentEventForm)
 router.post('/api/changeStudentStatus',eventsController.changeStudentStatus)
