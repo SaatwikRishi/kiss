@@ -256,7 +256,7 @@ const CreateEvent = (props) => {
 
                             <div className="category_item">
                                 <Form.Item hasFeedback={true} name={'tags'} label="select Tags" rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <Select mode="tags" size="middle" onChange={(e) => {  }} >
+                                    <Select mode="multiple" size="middle" onChange={(e) => {  }} >
                                         {eventsData.tagList && eventsData.tagList.data.map(val => <Option value={val.tag}>{val.tag}</Option>)}
                                     </Select>
                                 </Form.Item>
