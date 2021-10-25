@@ -14,7 +14,7 @@ import axios from 'axios';
 
 
 const LoginPage = (props) => {
-
+    const [form] = Form.useForm();
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const dispatch = useDispatch();
@@ -60,15 +60,15 @@ const LoginPage = (props) => {
             type: 'user',
             student_json: [],
             status: '0', 
-        }}).then(res => {
-            console.log(res);
-            if(!res.data.result.error) {                
+        }}).then(res => {  
+            onReset();      
+            navigate("/login")         
+            if(!res.data.result.error) {  
                 showModal();
             }
             else {
                 message.error(`Registartion failed, please try after sometime!`);
-            }            
-            onReset();
+            }         
         })
     };
     const onSignupFinishFailed = (errorInfo) => {
@@ -148,8 +148,8 @@ const LoginPage = (props) => {
 
                                 </Form>
                             </TabPane>
-                            <TabPane tab="SignUp" key="2">
-                                <Form name="basic" layout="vertical" initialValues={{ remember: true }} onFinish={onSignupFinish} onFinishFailed={onSignupFinishFailed} autoComplete="off">
+                            <TabPane tab="Sign Up" key="2">
+                                <Form name="basic" form={form} layout="vertical" initialValues={{ remember: true }} onFinish={onSignupFinish} onFinishFailed={onSignupFinishFailed} autoComplete="off">
                                     <div className="category_box_basic">
                                         <div className="category_item">
                                             <Form.Item hasFeedback={true} name={'firstname'} label="First name" rules={[{ required: true, message: 'Please fill!' }]}>
@@ -164,7 +164,11 @@ const LoginPage = (props) => {
                                         </div>
 
                                         <div className="category_item">
-                                            <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={[{ required: true, message: 'Please fill!' }]}>
+                                            <Form.Item hasFeedback={true} name={'email'} label="Email address" rules={
+                                                [
+                                                { type: 'email', message: 'The input is not valid E-mail!' },
+                                                { required: true, message: 'Please fill!' }
+                                                ]}>
                                                 <Input size="middle" />
                                             </Form.Item>
                                         </div>
@@ -176,12 +180,6 @@ const LoginPage = (props) => {
                                         </div>
 
                                         <div className="category_item">
-                                            <Form.Item hasFeedback={true} name={'regno'} label="Registration number" rules={[{ required: false, message: 'Please fill!' }]}>
-                                                <Input size="middle" />
-                                            </Form.Item>
-                                        </div>
-
-                                        <div className="category_item">
                                             <Form.Item hasFeedback={true} name={'phoneno'} label="Phone number" rules={[{ required: true, message: 'Please fill!' }]}>
                                                 <Input size="middle" />
                                             </Form.Item>
@@ -189,7 +187,7 @@ const LoginPage = (props) => {
 
                                         <div className="category_item">
                                             <Form.Item>
-                                                <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>SignUp</Button>
+                                                <Button type="primary" size="large" htmlType="submit" style={{ marginRight: 10 }}>Sign Up</Button>
                                             </Form.Item>
                                         </div>
 
