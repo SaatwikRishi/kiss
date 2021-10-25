@@ -9,16 +9,20 @@ import moment from 'moment-timezone'
 /**
  * Actions
  */
-import { getUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
+import { getUser, getAllEvents, getCategoryListforEvents, getSiteNotificationResult } from '../../ngo/store/actions';
 
 const Index = (props) => {
     const dispatch = useDispatch();
     const location = useLocation();
     const eventsStore = useSelector(state => state.events);
+    const notification = useSelector(state => state.notification);
     const [state, setState] = useState({ isLoading: true, search: null, searchResult: [] })
     /** 
      * Scroll to Top
      */
+    useEffect(() => {
+        dispatch(getSiteNotificationResult());
+    },[])
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
@@ -102,8 +106,10 @@ const Index = (props) => {
                 className="ant_listing_box"
                 dataSource={dataSource}
                 pagination={{ pageSize: 9, showQuickJumper: true }}
-                renderItem={item => (
-                    <div className="listing">
+                renderItem={item => {
+                    let htmlString = item.event_desc || '';
+                    var stripedHtml = htmlString.replace(/<[^>]+>/g, '');
+                    return <div className="listing">
                         <Link to={`/listing/${item.eventid}`}>
                             <Card Bordered>
                                 <div className="EventImg">
@@ -112,8 +118,7 @@ const Index = (props) => {
                                 </div>
                                 <div className="details">
                                     <p className="title">{item.event_name}</p>
-                                    <p className="desc">{item.event_desc}</p>
-                                    {/* <p dangerouslySetInnerHTML={{__html:item.event_desc}} className="desc"/> */}
+                                    <p dangerouslySetInnerHTML={{ __html: stripedHtml}} className="desc"/>
                                     <Divider />
                                     <div className="info">
                                         <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
@@ -129,16 +134,23 @@ const Index = (props) => {
                             </Card>
                         </Link>
                     </div>
-                )}
+    }}
             />
         </>
     }
 
     const { TabPane } = Tabs;
     const { Search } = Input;
-    console.log({ categoryList, eventsList })
+    // console.log({ categoryList, eventsList })
     return <>
         <Content className="homePage">
+
+                <section className="">
+                    <marquee style={{fontWeight: 'bold'}}>
+                        {notification.list && notification.list.map(val => <span style={{marginRight: 20}}>{val.notifictions}</span>) }
+                    </marquee>
+                </section>
+
                 <section style={{ marginTop: 20 }}>
                     <h1>Our Events and Jobs Listings</h1>
                 </section>
@@ -162,18 +174,19 @@ const Index = (props) => {
                 <div className="mobile_home_view">
                     {!state.isLoading ?
                         <div className="event_list_card">
-                            {eventsList.map(item => <div className="event_list_box">
-                                <div className="listing">
+                            {eventsList.map(item => {
+                                let htmlString = item.event_desc || '';
+                                var stripedHtml = htmlString.replace(/<[^>]+>/g, '');
+                                return <div className="listing">
                                     <Link to={`/listing/${item.eventid}`}>
                                         <Card Bordered>
                                             <div className="EventImg">
-                                                <div className={`img ${item.gallery == null? 'blankImg': ''}`} style={{ backgroundImage: `url(${item.gallery})` }}></div>
+                                                <div className={`img ${item.gallery == null ? 'blankImg' : ''}`} style={{ backgroundImage: `url(${item.gallery})` }}></div>
                                                 <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
                                             </div>
                                             <div className="details">
                                                 <p className="title">{item.event_name}</p>
-                                                <p className="desc">{item.event_desc}</p>
-                                                {/* <p dangerouslySetInnerHTML={{__html: item.event_desc}} className="desc"/> */}
+                                                <p dangerouslySetInnerHTML={{ __html: stripedHtml }} className="desc" />
                                                 <Divider />
                                                 <div className="info">
                                                     <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
@@ -189,7 +202,8 @@ const Index = (props) => {
                                         </Card>
                                     </Link>
                                 </div>
-                            </div>)}
+                            }
+                            )}
                         </div>
 
                         : null

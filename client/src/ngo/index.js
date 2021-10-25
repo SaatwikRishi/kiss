@@ -16,6 +16,8 @@ import CreateEvent from "./components/events/new";
 import ListEvents from "./components/events/list";
 import CreateTag from "./components/events/createtag";
 import ListTags from "./components/events/listtags";
+import ListScrollMsg from "./components/events/listScrollmsg";
+
 import ListCategory from "./components/category/list";
 import CreateStdCategory from "./components/students/createstdcategory";
 import ListStdCategory from "./components/students/liststdcategory";
@@ -60,6 +62,8 @@ const Index = (props)=>{
                                     <CreateTag path="/events/createtag" />
                                     <CreateTag path="/events/createtag/:id" />
                                     <ListTags path="/events/listtags" />
+                                    <ListScrollMsg path="/events/scrollmsg" />
+
                                     <CreateCategory path="/category/new"/>
                                     <CreateCategory path="/category/new/:catId" />
                                     <ListCategory path="/category/list"/>

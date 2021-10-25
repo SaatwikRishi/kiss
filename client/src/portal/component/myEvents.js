@@ -91,7 +91,7 @@ const MyEvents = (props) => {
             setState({ ...state, search: null, searchResult: [] })
         }
     }
-    console.log({ categoryList, eventsList })
+    // console.log({ categoryList, eventsList })
     return <>
         <Content className="homePage">
                 <section style={{ marginTop: 20 }}>
@@ -100,18 +100,19 @@ const MyEvents = (props) => {
                 
                 {!state.isLoading ?
                     <div className="event_list_card">
-                        {eventsList.map(item => <div className="event_list_box">
-                            <div className="listing">
+                        {eventsList.map(item => {
+                            let htmlString = item.event_desc || '';
+                            var stripedHtml = htmlString.replace(/<[^>]+>/g, '');
+                            return <div className="listing">
                                 <Link to={`/listing/${item.eventid}`}>
                                     <Card Bordered>
                                         <div className="EventImg">
-                                            <div className="img" style={{ backgroundImage: `url(${item.gallery})` }}></div>
+                                            <div className={`img ${item.gallery == null ? 'blankImg' : ''}`} style={{ backgroundImage: `url(${item.gallery})` }}></div>
                                             <p className="category"><Tag icon={<FormOutlined />} color="#55acee">{item.category.name}</Tag></p>
                                         </div>
                                         <div className="details">
                                             <p className="title">{item.event_name}</p>
-                                            <p className="desc">{item.event_desc}</p>
-                                            {/* <p dangerouslySetInnerHTML={{__html: item.event_desc}} className="desc"/> */}
+                                            <p dangerouslySetInnerHTML={{ __html: stripedHtml }} className="desc" />
                                             <Divider />
                                             <div className="info">
                                                 <p className="key"><ClockCircleOutlined /> <strong>Event Date</strong></p>
@@ -127,7 +128,8 @@ const MyEvents = (props) => {
                                     </Card>
                                 </Link>
                             </div>
-                        </div>)}
+                        }
+                        )}
                     </div>
 
                     : null

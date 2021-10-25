@@ -2,14 +2,30 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Router } from '@reach/router'
 import loading from './src/assets/images/loading.gif'
+import logo from './src/assets/images/favicon.png'
 import 'antd/dist/antd.less';
 import './src/assets/css/main.less';
+import { Spin } from 'antd';
 const KISS = React.lazy(() => import('./src/index'))
 import { initializeApp } from '@firebase/app';
 const firebaseConfig = { "apiKey": "AIzaSyDkS8NyQjohdwDH5PqWuVVYQfzDCwK3MnE", "authDomain": "raspberrypi-a43ed.firebaseapp.com", "projectId": "raspberrypi-a43ed", "storageBucket": "raspberrypi-a43ed.appspot.com", "messagingSenderId": "335172368391", "appId": "1:335172368391:web:fcc97e92c2957b415c92a2" }
 initializeApp(firebaseConfig)
 ReactDOM.render(
-    <React.Suspense fallback={<div style={{ margin: '200px 100px', textAlign: 'center' }}> <img src={loading} style={{ width: 800, height: 600, border: 'solid 2px #ccc', borderRadius: 10 }} /> </div>}>
+    <React.Suspense fallback={
+        
+        // <div className="loading_wrapper">
+        //     <div className="custom_loader">
+        //         <img src={logo} />
+        //         <div className="custom_loading">
+        //             <Spin size="large" />
+        //         </div>
+        //     </div>
+        // </div>
+        
+        <div style={{ margin: '200px 100px', textAlign: 'center' }}> 
+            <img src={loading} style={{ width: 800, height: 600, border: 'solid 2px #ccc', borderRadius: 10 }} /> 
+        </div>
+    }>
         <Router basepath="/">
             <KISS path="/*" />
         </Router>

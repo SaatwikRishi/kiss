@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
 import { Link, navigate } from '@reach/router';
 import { Layout, Avatar, Menu, Row, Col, Dropdown } from 'antd';
 import {
-    AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, LogoutOutlined, LikeOutlined, FileDoneOutlined,
+    AppstoreOutlined, HomeOutlined, SettingOutlined, UserOutlined, 
+    LogoutOutlined, LikeOutlined, FileDoneOutlined, SyncOutlined,
     AppstoreAddOutlined, MenuOutlined, ContainerOutlined } from '@ant-design/icons';
 import { initializeApp } from '@firebase/app';
 import { getAuth, signInWithPopup, GoogleAuthProvider, } from "firebase/auth";
@@ -21,6 +22,7 @@ const PortalHeader = (props) => {
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const dispatch = useDispatch();
+    const windowSize = useWindowSize();
 
     //console.log({ auth, provider })
 
@@ -37,6 +39,32 @@ const PortalHeader = (props) => {
         });
     }
 
+
+    /**
+     * getForm data  from Store
+     */
+    const eventsStore = useSelector(state => state.events);
+    const getEventStoreData = () => {
+        let mainObj = eventsStore ? eventsStore : {}
+        let categoryList = mainObj.categoryList ? mainObj.categoryList : {};
+
+        let eventList = mainObj.eventList ? mainObj.eventList : {};
+
+        return {
+            categoryList: {
+                loading: true,
+                data: [],
+                ...categoryList
+            },
+            eventList: {
+                loading: true,
+                data: [],
+                ...eventList
+            }
+        }
+    }
+    let eventsData = getEventStoreData();
+
     const menu = (
         <Menu className="userMenu">
             <Menu.Item icon={<HomeOutlined />} key="mail" onClick={() => navigate('/home')} >
@@ -51,7 +79,7 @@ const PortalHeader = (props) => {
             <Menu.Divider />
             {user.email ?
                 <>
-                    <Menu.Item key="setting:0">
+                    <Menu.Item key="setting:0" style={{minWidth: '150px'}}>
                         <Avatar.Group >
                             <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
                             <div className="userinfo"><span className="username">{user.firstname} {user.lastname} </span></div>
@@ -82,13 +110,13 @@ const PortalHeader = (props) => {
                                     <a rel="noopener noreferrer" >Calender View</a>
                                 </Menu.Item>
                                 <Menu.Item key="mail" onClick={() => navigate('/home')} >
-                                    <a rel="noopener noreferrer" >Home</a>
+                                    <a rel="noopener noreferrer" >Home </a>
                                 </Menu.Item>
                             </Menu>
                         </div>
                     </div>
                     <div className="layout_right">
-                        <div className="user_menu">
+                       {windowSize > 900 && <div className="user_menu">
                             <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
                                 <SubMenu key="SubMenu" title=
                                     {<Avatar.Group >
@@ -106,7 +134,7 @@ const PortalHeader = (props) => {
                                     }
                                 </SubMenu>
                             </Menu>
-                        </div>
+                        </div>}
                         <div className="mobile_menu">
                             <Dropdown overlay={menu} trigger={['click']} placement="bottomRight" arrow>
                                 <MenuOutlined />
@@ -125,11 +153,13 @@ const PortalHeader = (props) => {
                 <div className="banner_subheader_statisti">
                     <div className="banner_subheader_box" style={{ background: 'rgb(62 167 66)', opacity: 0.8, color: '#fff'}}>
                         <div className="icon"><UserOutlined /> <span className="ti">Students</span> </div>
-                        <div className="text">{helpNumberFormat(4000)} </div>
+                        <div className="text">{helpNumberFormat(30000)}+ </div>
                     </div>
                     <div className="banner_subheader_box" style={{ background: '#005993', opacity: 0.8, color: '#fff'}}>
                         <div className="icon"><ContainerOutlined /> <span className="ti">Events</span> </div>
-                        <div className="text">{helpNumberFormat(75)} </div>
+                        <div className="text">
+                            {eventsData.eventList.loading ? <SyncOutlined spin /> : helpNumberFormat(eventsData.eventList.data.length) }
+                        </div>
                     </div>
                     <div className="banner_subheader_box" style={{ background: '#ff9800', opacity: 0.8, color: '#fff'}}>
                         <div className="icon"><LikeOutlined /> <span className="ti">Jobs</span> </div>
@@ -143,7 +173,16 @@ const PortalHeader = (props) => {
 }
 export default PortalHeader;
 
+function useWindowSize() {
+    const [windowSize, setWindowSize] = useState(window.innerWidth);
+    useEffect(() => {
+        function handleResize() {
+            setWindowSize(window.innerWidth);
+        }
+        window.addEventListener("resize", handleResize);
+        handleResize();
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+    return windowSize;
+}
 
-/*
-
-*/
