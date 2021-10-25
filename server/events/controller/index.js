@@ -582,6 +582,49 @@ var eventsController = {
       res.json({ error: ex.toString() })
     }
   },
+  saveNotification: async (req, res) => {
+    try {
+      let { data } = req.body;
+      let updateField = '';
+      if (!data.id) {
+        data.notifictions.forEach(val => {
+          ////console.log(val.name);
+          if (val.name) {
+            updateField += ` ('${val.name}'), `
+          }
+        });
+      }
+      else
+      {
+        updateField += ` notifictions = '${data.notifictions}', `
+      }
+      updateField = updateField.substr(0, updateField.length - 2);
+      let queries = {
+        notifictions: ((data.id) ? `UPDATE tbl_sitescroll SET ${updateField} WHERE id='${data.id}'` : `INSERT INTO tbl_sitescroll (notifictions) VALUES ${updateField}`),
+      }
+      let result = await req.db.query(queries.notifictions, 'saveNotification');
+      console.log(queries.notifictions);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteNotification: async (req, res) => {
+    try {
+      let { data } = req.body;
+      //console.log(data);
+      let queries = {
+        delete:((data.id)?`DELETE FROM tbl_sitescroll WHERE id='${data.id}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteNotification');
+      //console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
   sleep: async (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
   },
