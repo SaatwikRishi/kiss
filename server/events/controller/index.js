@@ -508,8 +508,24 @@ var eventsController = {
   },
   getAllStudentForms: async (req, res) => {
     try {
-      let { status } = req.query;
-      let result = await req.db.query(`SELECT * FROM tbl_student_forms ORDER BY created_date DESC`, 'getAllStudentForms');
+      let { eventid, studentid } = req.query;
+      let where = (eventid && studentid)?` WHERE eventid = '${eventid}' AND studentid = '${studentid}' `:``;
+      let result = await req.db.query(`SELECT * FROM tbl_student_forms ${where} ORDER BY created_date DESC`, 'getAllStudentForms');
+      //console.log(result);
+      res.json({ result })
+    }
+    catch (ex) {
+      res.json({ error: ex.toString() })
+    }
+  },
+  deleteEventForms: async (req, res) => {
+    try {
+      let { data } = req.body;
+      //console.log(data);
+      let queries = {
+        delete:((data.eventid && data.studentid)?`DELETE FROM tbl_student_forms WHERE eventid='${data.eventid}' AND studentid='${data.studentid}'`:``),
+      }
+      let result = await req.db.query(queries.delete, 'deleteEventForms');
       //console.log(result);
       res.json({ result })
     }
