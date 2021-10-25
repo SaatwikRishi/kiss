@@ -23,8 +23,8 @@ export const helpNumberFormat = (x) => {
 import { getSiteNotificationResult } from '../../ngo/store/actions';
 
 const PortalHeader = (props) => {
-    const user = useSelector(state => state.user);
     const notification = useSelector(state => state.notification);
+    const user = useSelector(state => state.user);
     const auth = getAuth();
     const provider = new GoogleAuthProvider();
     const dispatch = useDispatch();
@@ -43,7 +43,7 @@ const PortalHeader = (props) => {
 
     const logout = () =>{
         axios.get(`/api/logout`).then(res => {
-            dispatch(updateUser());
+            dispatch(updateUser(null));
             navigate("/login")
         });
     }
@@ -85,6 +85,11 @@ const PortalHeader = (props) => {
             <Menu.Item icon={<FileDoneOutlined />} key="MyEvents" onClick={() => navigate('/myEvents')}>
                 <a rel="noopener noreferrer" >My Events</a>
             </Menu.Item>
+            {user && user.is_admin && user.is_admin == '1' && <>
+                <Menu.Item icon={<FileDoneOutlined />} key="admin" onClick={() => navigate('/admin/')}>
+                    <a rel="noopener noreferrer" >Admin</a>
+                </Menu.Item>
+            </>}
             <Menu.Divider />
             {user.email ?
                 <>
@@ -112,6 +117,11 @@ const PortalHeader = (props) => {
                         </div>
                         <div className="menu">
                             <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
+                                {user && user.is_admin && user.is_admin == '1' && <>
+                                    <Menu.Item key="admin" onClick={() => navigate('/admin/')}>
+                                        <a rel="noopener noreferrer" >Admin</a>
+                                    </Menu.Item>
+                                </>}
                                 <Menu.Item key="MyEvents" onClick={() => navigate('/myEvents')}>
                                     <a rel="noopener noreferrer" >My Events</a>
                                 </Menu.Item>
@@ -129,9 +139,9 @@ const PortalHeader = (props) => {
                             <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">
                                 <SubMenu key="SubMenu" title=
                                     {<Avatar.Group >
-                                        <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
+                                    <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name && user.name}</span></Avatar>
                                         <div className="userinfo"><span className="username">
-                                            {user.firstname} {user.lastname} 
+                                        {user.firstname && user.firstname} {user.lastname && user.lastname}
                                         </span></div>
                                     </Avatar.Group>}>
                                     {user.email ?

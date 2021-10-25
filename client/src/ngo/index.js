@@ -4,7 +4,7 @@ import { Router, Link, navigate, useLocation } from '@reach/router';
 import _ from 'lodash';  
 import '../assets/css/style.less';
 
-import { Layout, Spin } from 'antd';
+import { Layout, Spin, message } from 'antd';
 const { Content } = Layout;
 import { ContainerOutlined, FormOutlined, TagOutlined, TeamOutlined, SolutionOutlined, ProfileOutlined, CommentOutlined, FundOutlined } from '@ant-design/icons';
 import { getUser } from './store/actions';
@@ -29,6 +29,7 @@ import AdmDashboard from "./components/dashboard";
 const Index = (props)=>{
     const dispatch = useDispatch();
     const location = useLocation();
+    const  user = useSelector(state => state.user);
 
     /**
      * Scroll Top on Each Routing
@@ -43,8 +44,27 @@ const Index = (props)=>{
         dispatch(getUser());
     },[]);
 
+
+    /**
+     * is Admin verification
+     */
+    const getUserinfo = () =>{
+        return {
+            loading: true,
+            is_admin: '0',
+            ...user
+        }
+    }
+    let userVerify = getUserinfo();
+
+    if (userVerify.loading == false && userVerify.is_admin != '1'){
+        navigate('/login');
+        message.error("Please login as admin!");
+    }
+
+
     return <>
-            <Layout className="layout_main layout_alex">
+        {userVerify.loading == false && userVerify.is_admin == '1' ? <Layout className="layout_main layout_alex">
                 {loading && <div class="progress">
                     <div class="color"></div>
                 </div>}
@@ -75,12 +95,13 @@ const Index = (props)=>{
                                     <ListStudents path="/students/list"/>
                                     <ListComments path="/events/listcomments"/>
                                     <AdmDashboard path="/"/>
+                                    <AdmDashboard path="*"/>
                                 </Router>
                             </Content>
                         </Layout>
                     </section>
                 </Layout>
-            </Layout>
+            </Layout>: 'loading . . .'}
             
         </>
 }
