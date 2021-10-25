@@ -20,7 +20,7 @@ import ListingView from "./component/listingsView";
 import ChatBot from 'react-simple-chatbot';
 import '../assets/css/portal.less'
 import chatBot from '../assets/images/chat-bot.png'
-
+import { ThemeProvider } from 'styled-components';
 const KISSHomePage = (props) => {
     const dispatch = useDispatch();
     const location = useLocation();
@@ -48,8 +48,8 @@ const KISSHomePage = (props) => {
 
     return <>
         <Layout className="layout_portal">
-            <GetChatBot />
-            <Layout style={{ background: '#fff'}}>
+            <GetChatBot loading={eventsStore.eventList.loading} events={eventsStore.eventList.data} />
+            <Layout style={{ background: '#fff' }}>
                 <PortalHeader />
                 <section className="main-content">
                     <Layout className="layout_contentWrapper">
@@ -63,7 +63,7 @@ const KISSHomePage = (props) => {
                                 <EventDetails path="/event" />
                                 <EventsList path="/eventslist" />
                                 <MyEvents path="/myEvents" />
-                                
+
                                 <ListingView path="/listing/:id" />
                             </Router>
                         </Content>
@@ -78,37 +78,53 @@ const KISSHomePage = (props) => {
 export default KISSHomePage;
 
 
-const GetChatBot = () => {
+const GetChatBot = (props) => {
+    console.log({ ...props })
+    const { loading, events } = props
+    const results = _(events).map((rec) => {
+        return { value: rec.eventid, label: rec.event_name, trigger: 'response', onClick: (e) => console.log(e) }
+    }).value()
     const steps = [
         {
-            id: 1,
+            id: "welcome",
             message: `Hello, How may I help you ?`,
-            trigger: 2,
+            trigger: "getInput",
         },
         {
-            id: 2,
+            id: "getInput",
             user: true,
-            trigger: 3,
+            trigger: "response",
         },
         {
-            id: 3,
+            id: "response",
             message: 'Let me see for {previousValue}, just a moment',
-            trigger: 4
+            trigger: "result",
         },
         {
-            id: 4,
-            options: [
-                { value: 1, label: 'Number 1', trigger: '3' },
-                { value: 2, label: 'Number 2', trigger: '2' },
-                { value: 3, label: 'Number 3', trigger: '2' },
-            ]            
+            id: "result",
+            options: results
         }
     ]
-
-    return (
-        <ChatBot st headerTitle="Chat with KISS Bot" steps={steps} floating={true} floatingIcon={<img src={chatBot} height={80} />} />
-
-    )
+    const theme = {
+        background: '#f5f8fb',
+        fontFamily: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+        headerBgColor: '#3ea742',
+        headerFontColor: '#fff',
+        headerFontSize: '15px',
+        botBubbleColor: '#005993',
+        botFontColor: '#fff',
+        userBubbleColor: '#fff',
+        userFontColor: '#4a4a4a',
+    };
+    if (!loading) {
+        return (
+            <ThemeProvider theme={theme}>
+                <ChatBot headerTitle="Chat with KISS Bot" steps={steps} floating={true} floatingIcon={<img src={chatBot} height={80} />} />
+            </ThemeProvider>
+        )
+    } else {
+        return (<></>)
+    }
 
 }
 
