@@ -131,6 +131,18 @@ export const getAllTags = async () => {
 }
 
 /**
+ * Get all Site Notification
+ */
+ export const getSiteNotificationResult = async () => {
+  let response = await axios.get('/events/api/getSiteNotification')
+
+  return {
+    type: 'SITE_NOTIFICATION_LIST',
+    payload: response.data.result
+  };
+}
+
+/**
  * Get DashboardData
  */
 export const getDashboardData = async (date, country) => {

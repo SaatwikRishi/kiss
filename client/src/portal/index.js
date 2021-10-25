@@ -93,7 +93,7 @@ const GetChatBot = () => {
     const steps = [
         {
             id: 1,
-            message: `Hi, How may i help you`,
+            message: `Hello, How may I help you ?`,
             trigger: 2,
         },
         {
