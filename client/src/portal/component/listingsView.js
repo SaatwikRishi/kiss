@@ -19,7 +19,7 @@ const { Option } = Select;
 /**
  * Actions
  */
-import { getUser, getAllEvents, getCategoryListforEvents } from '../../ngo/store/actions';
+import { getUser, getAllStudentForms, getCategoryListforEvents } from '../../ngo/store/actions';
 
 const ListingView = (props) => {
     const ListingViewId = parseInt(props.id)
@@ -34,13 +34,15 @@ const ListingView = (props) => {
     /** 
      * Scroll to Top
      */
-    /*     useEffect(() => {
-            if(eventsStore.eventList.loading){
-                dispatch(getUser());
-                dispatch(getAllEvents());
-                dispatch(getCategoryListforEvents());
-            }
-        }, []); */
+    useEffect(() => {
+        if(student.studentid)
+        {
+            dispatch(getAllStudentForms(ListingViewId, student.studentid));            
+        }
+    }, [student]);
+    const formsData = useSelector(state => state.forms);
+    let forms = formsData.list ? formsData.list : [];
+    console.log(forms);
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
         getComments(ListingViewId).then((res) => {
@@ -107,6 +109,20 @@ const ListingView = (props) => {
     let desc = eventDetails && eventDetails.event_desc
     //console.log({ categoryList, eventsList, eventDetails, ListingViewId })
     const [loading, setloading] = useState(false);
+
+    const unregisterEvent = (eventid, studentid) => {
+        setloading(true);
+        axios.post('/events/api/deleteEventForms', {data:{eventid, studentid}}).then(function (res) {
+            message.success(`Event unregistered successfully!`);
+            dispatch(getAllStudentForms(eventid, studentid));
+            setloading(false);
+            navigate("/listing/"+eventid)
+        })
+        .catch(function (error) {
+            navigate("/listing/3"+eventid)
+        });
+    };
+
     const applyForEvent = (eventid, student, eventDetails) => {
         console.log(student);
         if (!student.studentid) {
@@ -124,15 +140,13 @@ const ListingView = (props) => {
                     studentid: student.studentid,
                 }
             }).then((res) => {
-                setIsModalVisible(false);
-                //handleCancel()    
+                navigate("/listing/"+eventid)
                 notification.success({
                       message: 'Success',
                       description: `Application submitted successfully!`
                 });
-            }).finally(() => {
-                setloading(false);
-
+                dispatch(getAllStudentForms(eventid, student.studentid));
+                setIsModalVisible(false);
             })
         } else {
             showModal();
@@ -244,12 +258,24 @@ const ListingView = (props) => {
 
                             </Col>
                             <Col sm={24} md={6} className="categories" >
-                                <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" 
-                                    style={{
-                                        background: '#a10d05;', fontSize: 18, borderRadius: '10px 0px 10px 0px', padding: '2px 20px', fontWeight: 700, height: 60, fontSize: '2em', fontWeight: 300,textTransform: 'uppercase'}}
-                                        onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>
-                                    Apply / Register
-                                </Button>
+                                {forms.length>0 ?
+                                    <>
+                                    <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" 
+                                        style={{
+                                            background: '#a10d05;', fontSize: 18, borderRadius: '10px 0px 10px 0px', padding: '2px 20px', fontWeight: 700, height: 60, fontSize: '2em', fontWeight: 300,textTransform: 'uppercase'}}
+                                            onClick={() => unregisterEvent(ListingViewId, student.studentid)}>
+                                        UnRegister
+                                    </Button>
+                                    </> : 
+                                    <>
+                                    <Button type="primary" danger block size="large" loading={loading} disabled={loading} htmlType="submit" 
+                                        style={{
+                                            background: '#a10d05;', fontSize: 18, borderRadius: '10px 0px 10px 0px', padding: '2px 20px', fontWeight: 700, height: 60, fontSize: '2em', fontWeight: 300,textTransform: 'uppercase'}}
+                                            onClick={() => applyForEvent(ListingViewId, student, eventDetails)}>
+                                        Apply / Register
+                                    </Button>
+                                    </>
+                                }                                
                                 <Modal
                                     title={'Please fill the form'}
                                     visible={isModalVisible}
@@ -392,6 +418,7 @@ const getComments = async (id) => {
 const EventDetailsForm = (props) => {
     const [form] = Form.useForm();
     const { formFields, eventId, studentId } = props;
+    const dispatch = useDispatch();
 
     /**
      * state Variables
@@ -418,6 +445,9 @@ const EventDetailsForm = (props) => {
                 message: 'Success',
                 description: `Application submitted successfully!`
             });
+            dispatch(getAllStudentForms(eventId, studentId));
+            setloading(false);
+            navigate("/listing/"+eventId)
         }).finally(() => {
             setloading(false);
         })
