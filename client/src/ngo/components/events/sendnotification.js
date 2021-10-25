@@ -189,7 +189,7 @@ const Notification = (props) => {
                             </div>
                             <div className="category_item" style={{ display: showStudent }}>
                                 <Form.Item hasFeedback={true} name={'emails'} label="Students" rules={[{ required: false, message: 'Please fill!' }]}>
-                                    <Select mode="tags" size="middle" onChange={(e) => {  }} >
+                                    <Select mode="multiple" size="middle" onChange={(e) => {  }} >
                                         {StudentsEmails && StudentsEmails.map(val => <Option value={val}>{val}</Option>)}
                                     </Select>
                                 </Form.Item>
@@ -201,7 +201,7 @@ const Notification = (props) => {
                             </div>
                             <div className="category_item" style={{ display: showDistrict }}>
                                 <Form.Item hasFeedback={true} name={'district'} label="District" rules={[{ required: false, message: 'Please fill!' }]}>
-                                    <Select mode="tags" size="middle" onChange={(e) => {  }} >
+                                    <Select mode="multiple" size="middle" onChange={(e) => {  }} >
                                         {districtData.districts.map(val=> <Option value={val}>{val}</Option> )}
                                     </Select>
                                 </Form.Item>

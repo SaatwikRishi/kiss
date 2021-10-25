@@ -249,6 +249,8 @@ const BasicFields = (props) =>{
     for (let i = 0; i < tagslist.length; i++) {
         children.push(<Option key={tagslist[i].tag}>{tagslist[i].tag}</Option>);
     }
+
+    const dobFormat = 'DD-MM-YYYY';
     
     return <>
         <div className="category_box_basic">
@@ -280,7 +282,7 @@ const BasicFields = (props) =>{
 
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'dob'} label="Date of Birth" rules={[{ required: true, message: 'Please fill!' }]}>
-                    <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                    <DatePicker size="middle" format={dobFormat} style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
                 </Form.Item>
             </div>
 
@@ -306,7 +308,7 @@ const BasicFields = (props) =>{
 
             <div className="category_item">
                 <Form.Item hasFeedback={true} name={'tags'} label="skills/interests" rules={[{ required: false, message: 'Please fill!' }]}>
-                    <Select mode="tags" style={{ width: '100%' }} placeholder="skills/interests">
+                    <Select mode="multiple" style={{ width: '100%' }} placeholder="skills/interests">
                         {children}
                     </Select>
                 </Form.Item>
