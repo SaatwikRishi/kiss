@@ -71,7 +71,7 @@ const PortalHeader = (props) => {
                 <div className="header_bar">
                     <div className="layout_left">
                         <div className="logo">
-                            <img src={logo} onClick={() => { navigate('/') }} style={{cursor: 'pointer'}} />
+                            <img src={logo} onClick={() => { navigate('/home') }} style={{cursor: 'pointer'}} />
                         </div>
                         <div className="menu">
                             <Menu onClick={(e) => handleClick(e)} selectedKeys={state} mode="horizontal">

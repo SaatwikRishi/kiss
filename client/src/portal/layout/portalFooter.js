@@ -67,13 +67,13 @@ const PortalFooter = (props) => {
 
                                 profiles: {           // social profile links for buttons
 
-                                    twitter: 'sharethis',
+                                    twitter: 'kissfoundation',
 
-                                    facebook: 'sharethis',
+                                    facebook: 'kissfoundation',
 
-                                    instagram: 'sharethis',
+                                    instagram: 'kissfoundation',
 
-                                    youtube: '/channel/UCbM93niCmdc2RD9RZbLMP6A?view_as=subscriber'
+                                    youtube: '/c/KISSFoundation'
 
                                 },
 
