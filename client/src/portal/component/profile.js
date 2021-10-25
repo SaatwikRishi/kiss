@@ -157,7 +157,8 @@ const ProfilePage = (props) => {
     }
 
     const removeCategoryList = (val) => categoryList.length >1 && setcategoryList(_(categoryList).filter(value => value != val).value() );
- 
+
+    const dobFormat = 'DD-MM-YYYY'; 
 
     return <>
         <Content>
@@ -198,7 +199,7 @@ const ProfilePage = (props) => {
 
                             <div className="category_item">
                                 <Form.Item hasFeedback={true} name={'dob'} label="Date of Birth" rules={[{ required: true, message: 'Please fill!' }]}>
-                                    <DatePicker size="middle" style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
+                                    <DatePicker size="middle" format={dobFormat} style={{ width: '100%' }} disabledDate={date => moment(date).isAfter(moment.now())} />
                                 </Form.Item>
                             </div>
 

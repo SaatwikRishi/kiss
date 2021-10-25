@@ -36,6 +36,7 @@ const ListStudents = (props) => {
         email: categorys[i].email,
         regno: categorys[i].regno,
         status: categorys[i].status,
+        stdstatus: (categorys[i].status=='1')?'Active':'In Active',
       });
     }
   }
@@ -68,6 +69,7 @@ const ListStudents = (props) => {
   };
   
   const search=(value)=>{
+    console.log(value);
       let searchRec = categoryDatas.filter(o =>
           Object.keys(o).some(k =>
               String(o[k])
@@ -113,15 +115,10 @@ const ListStudents = (props) => {
     }, 
     {
       title: 'Status',
-      dataIndex: 'status',
+      dataIndex: 'stdstatus',
       width: '10%',
       editable: true,
-      sorter: (a, b) => lib.NumberStringSort(a, b, 'status'),
-      render: (text, record) => {
-        return (<>          
-          {(text=='1')?'Active':'In Active'}
-        </>)
-      }
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'stdstatus'),
     },
     {
       title: 'Action',
