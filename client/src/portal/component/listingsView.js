@@ -126,10 +126,10 @@ const ListingView = (props) => {
             }).then((res) => {
                 setIsModalVisible(false);
                 //handleCancel()    
-                /*   notification.success({
+                notification.success({
                       message: 'Success',
                       description: `Application submitted successfully!`
-                  }); */
+                });
             }).finally(() => {
                 setloading(false);
 
@@ -262,10 +262,10 @@ const ListingView = (props) => {
 
                                 <EventInfo {...{ info: eventDetails}} />
 
-                                <Card title={<div className="catd_title_right">Similar Events</div>} >
+                                <Card title={<div className="catd_title_right"><b>Similar Events</b></div>} >
                                     <GetSimmilar eventsData={eventsData} />
                                 </Card>
-                                <Card title={<div className="catd_title_right">Share</div>} >
+                                <Card title={<div className="catd_title_right"><b>Share</b></div>} >
                                     <InlineShareButtons
                                         config={{
                                             alignment: 'center',  // alignment of buttons (left, center, right)
@@ -524,7 +524,7 @@ const EventInfo = (props) => {
                 {categoryInfo.map(val => {
                     return Object.keys(val).map(key => <>
                         <div className="event_otherInfo_box" style={{padding: 0}}>
-                            <div className="otherInfo_title">{key}</div>
+                            <div className="otherInfo_title"><b>{key}</b></div>
                             <div className="otherInfo_des">
                                 <Paragraph ellipsis={true ? { rows: 3, expandable: true, symbol: 'more' } : false}>
                                     {val[key] ? getHtml(val[key]) : ''}
