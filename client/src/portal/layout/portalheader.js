@@ -95,8 +95,8 @@ const PortalHeader = (props) => {
                 <>
                     <Menu.Item key="setting:0" style={{minWidth: '150px'}}>
                         <Avatar.Group >
-                            <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name}</span></Avatar>
-                            <div className="userinfo"><span className="username">{user.firstname} {user.lastname} </span></div>
+                            <Avatar style={{ marginTop: 10 }} src={`https://bridgeimages.paypalcorp.com/images/120120/${user.qid}.jpg?q=1608221763557`}><span>{user.name && user.name}</span></Avatar>
+                            <div className="userinfo"><span className="username">{user.firstname && user.firstname} {user.lastname && user.lastname} </span></div>
                         </Avatar.Group>
                     </Menu.Item>
                     <Menu.Item icon={<UserOutlined />} key="setting:1" onClick={() => navigate((user.status == 'active') ? '/profile' : '/login')}>Profile</Menu.Item>
