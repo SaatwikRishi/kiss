@@ -9,6 +9,7 @@ import { getUser, getAllEvents, getCategoryListforEvents, getAllTags } from '../
 import IndexPage from "./component/index";
 import LoginPage from "./component/login";
 import ProfilePage from "./component/profile";
+import ChangePassword from "./component/changepassword";
 import PortalHeader from "./layout/portalheader";
 import PortalFooter from "./layout/portalFooter";
 import EventDetails from "./component/events/eventDetails";
@@ -58,6 +59,7 @@ const KISSHomePage = (props) => {
                                 <LoginPage path="/" />
                                 <LoginPage path="/login" />
                                 <ProfilePage path="/profile" />
+                                <ChangePassword path="/changepassword" />
                                 <EventDetails path="/event" />
                                 <EventsList path="/eventslist" />
                                 <MyEvents path="/myEvents" />
