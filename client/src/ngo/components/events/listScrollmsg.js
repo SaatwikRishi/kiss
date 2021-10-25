@@ -94,7 +94,7 @@ const ListScrollMsg = (props) => {
 
   const edit = (record) => {
     form.setFieldsValue({
-      tag: '',
+      notifictions: '',
       ...record,
     });
     setEditingKey(record.key);
@@ -105,13 +105,13 @@ const ListScrollMsg = (props) => {
   };
 
   const deleteRec = (record) => {
-    axios.post('/events/api/deleteTag', {data:{...record}}).then(function (res) {
+    axios.post('/events/api/deleteNotification', {data:{...record}}).then(function (res) {
       message.success(`Record deleted successfully, Please refresh the page!`);
       dispatch(getSiteNotificationResult());
-      navigate("/admin/events/listtags")
+      navigate("/admin/events/scrollmsg")
     })
     .catch(function (error) {
-      navigate("/admin/events/listtags")
+      navigate("/admin/events/scrollmsg")
     });
   };
 
@@ -132,13 +132,13 @@ const ListScrollMsg = (props) => {
         setEditingKey('');
       } 
       const updateditem = newData[index];       
-      axios.post('/events/api/saveTag', {data:{...updateditem}}).then(function (res) {
+      axios.post('/events/api/saveNotification', {data:{...updateditem}}).then(function (res) {
         message.success(`Record updated successfully, Please refresh the page!`);
         dispatch(getSiteNotificationResult());
-        navigate("/admin/events/listtags")
+        navigate("/admin/events/scrollmsg")
       })
       .catch(function (error) {
-        navigate("/admin/events/listtags")
+        navigate("/admin/events/scrollmsg")
       });
     } catch (errInfo) {
       console.log('Validate Failed:', errInfo);
@@ -155,7 +155,6 @@ const ListScrollMsg = (props) => {
       render: (text, record) => {
         return (<>
           {text}
-          {/* <Link to={`/admin/events/createtag/${record.id}`}>{text}</Link> */}
         </>)
       }
     },
@@ -230,7 +229,7 @@ const ListScrollMsg = (props) => {
                 <Search size='middle' placeholder="Search" allowClear onSearch={(e)=>search(e)} enterButton  style={{ float: 'right', margin: '5px 25px' }}/>
                 </Col>
                 <Col span={1}>
-                <Link to={`/admin/events/createtag/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
+                <Link to={`/admin/events/createnotice/`}><Button type="primary" style={{ float: 'right', margin: '5px' }}>Add New</Button></Link>              
                 </Col>
                 <Col span={24}>
                   <Form form={form} component={false}>

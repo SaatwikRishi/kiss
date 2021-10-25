@@ -184,20 +184,44 @@ export default Eventforms;
 
 const ExpandedRowRender = ({ data }) => {    
   return <>
-      <div style={{ width:'25%'}}>
+      <div style={{ width:'100%'}}>
           {Array.isArray(Object.keys(data)) && Object.keys(data).map((ikey)=> {
+                if(ikey!='key') {
+                  if(ikey=='created_date') {
+                    var keyname = 'date'
+                    var jsonitem = data[ikey]
+                  } else if(ikey=='form_json') {
+                    var keyname = 'form values'
+                    var jsonitem = (data[ikey]).split(',');
+                    console.log(jsonitem);
+                    jsonitem = jsonitem.map((jkey)=> {
+                        var jsonarr = (jkey).split(' : ');
+                        return <>
+                                <Row style={{ border: "1px solid #666", padding: "5px"}}>
+                                    <Col span={12} style={{ cursor:"pointer", borderRight:"1px solid #eee", padding: "5px"}}>{jsonarr[0]}</Col>
+                                    <Col span={12} style={{ cursor:"pointer", padding: "5px"}}>{jsonarr[1]}</Col>
+                                </Row>
+                            </>
+                    })
+                  } else {
+                    var keyname = ((ikey.indexOf('id'))?ikey.replace('id', ' name'):'')
+                    var jsonitem = data[ikey]
+                  }
                 return <>
                     <Row style={{ border: "1px solid #666", padding: "5px"}}>
                         <Col 
                         span={12} 
                         style={{ cursor:"pointer", fontWeight:'bold', borderRight:"1px solid #666", padding: "5px"}}
-                        >{ikey}</Col>
+                        >{keyname}</Col>
                         <Col 
                         span={12} 
                         style={{ cursor:"pointer", padding: "5px"}}
-                        >{data[ikey]}</Col>
+                        >
+                          {jsonitem} 
+                        </Col>
                     </Row>
                 </>
+                }
           })}                            
       </div>                    
   </>
