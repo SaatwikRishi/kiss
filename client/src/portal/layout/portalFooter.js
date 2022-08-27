@@ -21,16 +21,15 @@ const PortalFooter = (props) => {
                     <div className="footer_contact_title">Contact US</div>
                     <div className="footer_contact_link"> 
                         <ul>
-                            <li>dwiti.vikramaditya@gmail.com</li>
-                            <li>ceo@kiss.ac.in</li>
-                            <li>info@kiss.ac.in</li>
+                            <li>apratim.tiwari@kiss.ac.in</li>
+                            <li>shweta.kochatta@kiit.ac.in</li>
                         </ul>
                     </div>
                 </div>
                 <div className="footer_box">
                     <div className="footer_contact_title">Address</div>
                     <div className="footer_contact_addrs">
-                        <p>Write to:  KISS Bhubaneswar,<br /> Odisha,<br />  India,<br />PIN: 751024</p>
+                        <p>Write to:<br /> KISS Campus-3,<br /> Bhubaneswar, Odisha, India,<br />PIN: 751024</p>
                     </div>
                 </div>
                 <div className="footer_box">

@@ -19,9 +19,10 @@ var portalRoutes = require('./server/portal/routes/index');
 var app = express();
 const mysqlConfig = {
   host: process.env.dbhost,
+  port: process.env.dbport,
   user: process.env.dbuser,
   password: process.env.dbpassword,
-  database: 'kiss',
+  database: process.env.dbname,
   connectTimeout: 48800,
   waitForConnections: true,
   connectionLimit: 100,
@@ -50,6 +51,15 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(DataSource);
+//app.use(cors({origin: "*"}))
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+
+
+})
 
 app.use(cookieParser('f3452adfc5'));
 app.use(cookieSession({
@@ -91,6 +101,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+  console.log('Error:', err.message);
   // render the error page
   res.status(err.status || 500);
   res.render('error');
@@ -99,7 +110,7 @@ app.use(function(err, req, res, next) {
 
 app.listen(8080, () => {
     console.log(
-      'Hello! The container started successfully and is listening for HTTP requests on $PORT'
+      'Hello! The container started successfully and is listening for HTTP requests on ' + PORT
     );
     console.log('Press Ctrl+C to quit.');
 });

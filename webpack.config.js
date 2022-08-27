@@ -1,27 +1,34 @@
 /*
     ./webpack.config.js
 */
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
-  template: "./views/index.html",
-  favicon: "./views/favicon.ico",
-  filename: "index.html",
-  inject: "body"
+  template: path.resolve(__dirname, 'views/index.html'),
+  favicon: path.resolve(__dirname, 'views/favicon.ico'),
+  filename: 'index.html',
+  inject: 'body',
 });
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: {
-    main: "./client/index.js"
+    main: path.resolve(__dirname, 'client/index.js'),
   },
   output: {
     //path: path.resolve("dist")
     path: path.resolve(__dirname, 'build'),
-    publicPath: '/'
+    publicPath: '/',
   },
+
+  devServer: {
+    port: 3000,
+    compress: false,
+    historyApiFallback: true,
+  },
+
   module: {
     rules: [
       {
@@ -37,57 +44,58 @@ module.exports = {
             loader: 'less-loader',
             options: {
               lessOptions: {
-                javascriptEnabled: true
+                javascriptEnabled: true,
               },
             },
           },
         ],
-      }, 
+      },
       {
         parser: {
-          amd: false
-        }
+          amd: false,
+        },
       },
       {
         test: /\.css$/,
         use: [
-          { loader: "style-loader" },
-          { loader: "css-loader" },
+          {loader: 'style-loader'},
+          {loader: 'css-loader'},
           {
-            loader: "postcss-loader",
+            loader: 'postcss-loader',
             options: {
-              plugins: () => [require("autoprefixer")]
-            }
-          }
-        ]        
+              plugins: () => [require('autoprefixer')],
+            },
+          },
+        ],
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ['@babel/react']
-          }
-        }
-      }, {
+            presets: ['@babel/react'],
+          },
+        },
+      },
+      {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ['@babel/react']
-          }
-        }
+            presets: ['@babel/react'],
+          },
+        },
       },
       {
         test: /\.(js|jsx)$/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ['@babel/react']
-          }
-        }
+            presets: ['@babel/react'],
+          },
+        },
       },
       {
         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
@@ -97,27 +105,25 @@ module.exports = {
             options: {
               esModule: false,
               name: '[name].[ext]',
-              outputPath: 'assets/fonts/'
-            }
-          }
-        ]
+              outputPath: 'assets/fonts/',
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif|svg)$/,
-        loader: "url-loader",
+        loader: 'url-loader',
         query: {
-          name: "assets/img/[name].[ext]",
-          limit: 0
-        }
+          name: 'assets/img/[name].[ext]',
+          limit: 0,
+        },
       },
       {
         exclude: /node_modules/,
         test: /\.js/,
-        use: [
-          { loader: 'babel-loader' }
-        ]
-      }
-    ]
+        use: [{loader: 'babel-loader'}],
+      },
+    ],
   },
   plugins: [HtmlWebpackPluginConfig],
   optimization: {
@@ -133,14 +139,14 @@ module.exports = {
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
-          priority: -10
+          priority: -10,
         },
         default: {
           minChunks: 2,
           priority: -20,
-          reuseExistingChunk: true
-        }
-      }
+          reuseExistingChunk: true,
+        },
+      },
     },
     minimizer: [
       new UglifyJsPlugin({
@@ -148,10 +154,10 @@ module.exports = {
         sourceMap: true,
         uglifyOptions: {
           mangle: false,
-          warnings: false, 
-          keep_fnames: false
+          warnings: false,
+          keep_fnames: false,
         },
-      })
-    ]
-  }
+      }),
+    ],
+  },
 };

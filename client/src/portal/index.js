@@ -34,19 +34,46 @@ const KISSHomePage = (props) => {
     useEffect(() => {
         setTimeout(() => { document.body.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50);
     }, [location.pathname])
+    // Added by Saatwik 
+    /**
+     * Added a load data function which one by one loads the data 
+     * and then updates the reducer at once. This should fix the 
+     * undefined name bug
+     */
 
-    const [loading, setloading] = useState(false);
+
+    const  loadData = async () => {
+        const user = await getUser();
+        const categories = await getCategoryListforEvents();
+        const tags = await getAllTags();
+        const events = await getAllEvents();
+        return {user, categories, tags, events};
+    }
+
+    
+
+    const [loading, setloading] = useState(true);
     useEffect(() => {
         if (eventsStore.eventList.loading) {
-            dispatch(getUser());
-            dispatch(getAllTags());
-            dispatch(getAllEvents());
-            dispatch(getCategoryListforEvents());
+            setloading(true);
+           
+           loadData().then(e => {
+            dispatch(e.user);
+            dispatch(e.categories);
+            dispatch(e.tags);
+            dispatch(e.events);
+           })
+            // dispatch(getUser());
+            // dispatch(getAllTags());
+            // dispatch(getAllEvents());
+            // dispatch(getCategoryListforEvents());
+            console.log(eventsStore.eventList);
+        setloading(false);
         }
     }, []);
 
 
-    return <>
+    return loading ? <>loading</>  : <>
         <Layout className="layout_portal">
             <GetChatBot loading={eventsStore.eventList.loading} events={eventsStore.eventList.data} />
             <Layout style={{ background: '#fff' }}>
