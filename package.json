@@ -71,7 +71,7 @@
     "redux-promise": "^0.6.0",
     "sharethis-reactjs": "^1.6.0",
     "style-loader": "^1.2.1",
-    "styled-components": "^5.3.3",
+    //"styled-components": "^5.3.3",
     "uglifyjs-webpack-plugin": "^1.2.4",
     "url-loader": "^4.1.0",
     "webpack-dev-server": "^4.10.0"
