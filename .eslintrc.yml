@@ -1,7 +1,7 @@
 ---
 extends:
-  - 'eslint:recommended'
-  - 'plugin:node/recommended'
+#  - 'eslint:recommended'
+#  - 'plugin:node/recommended'
   - prettier
 plugins:
   - node
