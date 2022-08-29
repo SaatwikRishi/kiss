@@ -1,3 +1,7 @@
+//"react-simple-chatbot": "^0.6.1",
+   
+//"styled-components": "^5.3.3",
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
