@@ -54,22 +54,25 @@ const KISSHomePage = (props) => {
 
     const [loading, setloading] = useState(true);
     useEffect(() => {
+
         if (eventsStore.eventList.loading) {
             setloading(true);
            
            loadData().then(e => {
-            dispatch(e.user);
+            dispatch(e.user)
             dispatch(e.categories);
             dispatch(e.tags);
             dispatch(e.events);
+            console.log("here");
            })
             // dispatch(getUser());
             // dispatch(getAllTags());
             // dispatch(getAllEvents());
             // dispatch(getCategoryListforEvents());
-            console.log(eventsStore.eventList);
-        setloading(false);
+       //     console.log(eventsStore.eventList);
         }
+        setloading(false);
+
     }, []);
 
 
