@@ -1,7 +1,7 @@
-/node_modules
+node_modules
 /package-lock.json
 dist/
-build/
+#build/
 server/mock/
 /mock/
 yarn-error.log
