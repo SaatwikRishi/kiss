@@ -9,7 +9,7 @@
     "devins": "nodemon --inspect server.js",
     "webpack": "webpack --progress -p",
     "watch": "webpack -d --watch --progress -p",
-    "build": "set NODE_ENV=production && webpack --progress --mode production",
+
     "mount": "sudo git pull && yarn install && npm run build && pm2 reload all"
   },
   "dependencies": {
