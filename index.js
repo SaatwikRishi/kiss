@@ -1,5 +1,6 @@
 //"react-simple-chatbot": "^0.6.1",
-   
+       // "build": "set NODE_ENV=production && webpack --progress --mode production",
+
 //"styled-components": "^5.3.3",
 
 var express = require('express');
