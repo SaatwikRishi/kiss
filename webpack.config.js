@@ -13,7 +13,7 @@ const HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   inject: 'body',
 });
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: {
     main: path.resolve(__dirname, 'client/index.js'),
   },

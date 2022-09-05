@@ -9,7 +9,6 @@
     "devins": "nodemon --inspect server.js",
     "webpack": "webpack --progress -p",
     "watch": "webpack -d --watch --progress -p",
-
     "mount": "sudo git pull && yarn install && npm run build && pm2 reload all"
   },
   "dependencies": {
@@ -67,6 +66,8 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "redux": "^4.0.5",
+    "react-simple-chatbot": "^0.6.1",
+    "styled-components": "^5.3.3",
     "redux-promise": "^0.6.0",
     "sharethis-reactjs": "^1.6.0",
     "style-loader": "^1.2.1",

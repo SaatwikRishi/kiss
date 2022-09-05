@@ -1,7 +1,8 @@
-//"react-simple-chatbot": "^0.6.1",
+// "react-simple-chatbot": "^0.6.1",
+// "styled-components": "^5.3.3",
+
        // "build": "set NODE_ENV=production && webpack --progress --mode production",
 
-//"styled-components": "^5.3.3",
 
 var express = require('express');
 var path = require('path');
@@ -33,7 +34,6 @@ const mysqlConfig = {
   queueLimit: 5000
 }
 
-
 const PoolConnection = mysql.createPool(mysqlConfig);
 let pool = PoolConnection.promise()
 var DataSource = async (req, res, next) => {
@@ -56,16 +56,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(DataSource);
 // app.use(cors({origin: "http://localhost:3000", credentials: true}))
-// app.use(function(req, res, next) {
-//   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//   res.header('Access-Control-Allow-Headers', 'Content-Type');
-//   next();
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
 
 
-// })
+})
 
-// app.use(cors({credentials: true}))
+app.use(cors({credentials: true}))
 
 app.use(cookieParser('f3452adfc5'));
 app.use(cookieSession({
