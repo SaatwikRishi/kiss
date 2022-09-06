@@ -10,6 +10,7 @@ import axios from 'axios';
  * Actions
  */
 import { updateUser } from '../../ngo/store/actions';
+import { navigate } from '@reach/router';
 const LayoutHeader = (props) => {
     const dispatch = useDispatch();
     const { Header } = Layout;
@@ -33,7 +34,7 @@ const LayoutHeader = (props) => {
             <div className="grid_two">
                 <div className="_left">
                     <div className="_logo">
-                        <img src={logo} /> 
+                        <img onClick={(e) =>{ navigate('/home')}} src={logo} /> 
                     </div>
                    
                 </div>
