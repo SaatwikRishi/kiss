@@ -70,8 +70,8 @@ app.use(cors({credentials: true}))
 app.use(cookieParser('f3452adfc5'));
 app.use(cookieSession({
   name: 'temp',
-  secret: process.env.salt,
-  keys: [process.env.salt],
+  secret: process.env.NODE_SALT,
+  keys: [process.env.NODE_SALT],
   resave: true,
   saveUninitialized: true,
   maxAge: 7 * 24 * 60 * 60 * 1000

@@ -84,7 +84,10 @@ const Eventforms = (props) => {
       });
       formDatas.push({
         key: (i + 1),
+        id: stdEditObj.studentid,
         eventid: eventEditObj.event_name,
+        email: stdEditObj.email,
+        phone: stdEditObj.phoneno,
         studentid: stdEditObj.firstname+' '+stdEditObj.lastname,
         created_date: ((forms[i].created_date)?moment(forms[i].created_date).format('YYYY-MM-DD'):''),
         form_json: form_json,
@@ -116,10 +119,24 @@ const Eventforms = (props) => {
       sorter: (a, b) => lib.NumberStringSort(a, b, 'eventid'),
     },
     {
+      render: (e, record) => {
+        return <Link to={"/admin/students/create/" + record.id} >{e}</Link>
+
+      },
       title: 'Student Name',
       dataIndex: 'studentid',
       width: '20%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'studentid'),
+    },{
+      title: 'Email',
+      dataIndex: 'email',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'form_json'),
+    }, {
+      title: 'Phone',
+      dataIndex: 'phone',
+      width: '20%',
+      sorter: (a, b) => lib.NumberStringSort(a, b, 'form_json'),
     },
     {
       title: 'Date',
@@ -137,7 +154,7 @@ const Eventforms = (props) => {
       dataIndex: 'form_json',
       width: '40%',
       sorter: (a, b) => lib.NumberStringSort(a, b, 'form_json'),
-    }
+    }, 
   ];
 
   return <>

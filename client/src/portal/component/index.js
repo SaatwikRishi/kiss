@@ -47,18 +47,6 @@ const Index = props => {
     searchResult: [],
   });
 
-  //   const htmlNode = (text) =>{
-  //     /**
-  //      *we are formating a data in the particular format so that
-  //      *we can use it along with squirrelly templating
-  //      */
-  //     const data  = {data : text}
-  //     /**
-  //      * In the below code we are ,merging the html string and data together
-  //     */
-  //     const __html = sqrl.Render(render, data || []);
-  //     return <div dangerouslySetInnerHTML={{__html}}/>
-  //   }
 
   /**
    * Scroll to Top
@@ -83,7 +71,6 @@ const Index = props => {
       title: 'Name',
       dataIndex: 'event_name',
       render: name => {
-        console.log(eventsList);
         return (
           <Link
             to={`/listing/${
@@ -241,6 +228,7 @@ const Index = props => {
     if (state.searchResult.length > 0) {
       dataSource = state.searchResult;
     }
+
     return (
       <>
         <div
@@ -251,14 +239,14 @@ const Index = props => {
             display: 'flex',
             justifyItems: 'end',
             alignItems: 'end',
-          }}
+        }}
         >
           {' '}
           <Switch
             style={{position: 'absolute', right: '0px', marginBottom: '20px'}}
-            checkedChildren="Table View"
-            unCheckedChildren="Box View"
-            title="Change View"
+            checkedChildren="Switch View"
+            unCheckedChildren="Switch View"
+            title="Switch View"
             onChange={e => {
               setTableView(e);
             }}
@@ -356,10 +344,10 @@ const Index = props => {
                 }
               >
                 <TabPane tab="All" key={0}>
-                  {getEvents('', tableView, setTableView)}
+                  {getEvents(undefined, tableView, setTableView)}
                 </TabPane>
                 {categoryList.map((rec, indx) => (
-                  <TabPane tab={rec.name} key={rec.id + 1}>
+                  <TabPane  tab={rec.name} key={rec.id + 1}>
                     {getEvents(rec.id, tableView, setTableView)}
                   </TabPane>
                 ))}
