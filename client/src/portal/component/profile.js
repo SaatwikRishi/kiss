@@ -31,7 +31,11 @@ const {TabPane} = Tabs;
 const {Option} = Select;
 const {TextArea} = Input;
 const {Content} = Layout;
-import {getTagsResult, getAllStdCategories} from '../../ngo/store/actions';
+import {
+  getTagsResult,
+  getAllStdCategories,
+  getUser,
+} from '../../ngo/store/actions';
 let lib = require('../../ngo/libs/index');
 import axios from 'axios';
 import moment from 'moment';
@@ -39,7 +43,6 @@ import moment from 'moment';
 const ProfilePage = props => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-
   const student = useSelector(state => state.user);
   const eventsStore = useSelector(state => state.stdcategory);
   const tagsStore = useSelector(state => state.tags);
@@ -102,20 +105,24 @@ const ProfilePage = props => {
       .pickBy(val => val)
       .value();
     setloading(true);
-    formData['fields'] = undefined;
-    const temp = formData['student_json'];
+    const temp = formData['studentcat_json'];
+    formData['studentcat_json'] = undefined;
+
     const obj = [];
     obj.push(temp);
     formData['student_json'] = obj;
     await axios
       .post(`/events/api/saveStudentProfile`, {data: formData})
-      .then(res => {
+      .then(async res => {
         if (res.data.result.error) {
           message.error(`Failed to update profile, please try again!`);
         } else {
+          getUser().then(e => {
+            dispatch(e);
+            navigate('/home');
+          });
           message.success(`profile added successfully!`);
         }
-        navigate('/home');
       })
       .finally(() => {
         setloading(false);
@@ -146,6 +153,8 @@ const ProfilePage = props => {
     eventEditObj = _(eventEditObj)
       .pickBy(val => val)
       .value();
+    console.log('Logging Event Edit Obj');
+    console.log(eventEditObj);
 
     let formInit = {
       ...eventEditObj,
@@ -191,7 +200,15 @@ const ProfilePage = props => {
     console.log('FORM INIT');
     console.log(formInit);
     console.log('Form no mo init');
-    formInit['student_json'] = formInit['fields'];
+    if (formInit['studentcat_json'])
+      Object.entries(formInit['studentcat_json']).map(([k, v]) => {
+        console.log(k, v);
+        const date = moment(v);
+        if (date.isValid()) {
+          formInit['studentcat_json'][k] = date;
+        }
+      });
+
     form.setFieldsValue(formInit);
   }, [student]);
 
@@ -370,133 +387,125 @@ const ProfilePage = props => {
 };
 
 const CategoryForm = props => {
-  const {form, fUpdateTrigger, eventsData} = props;
+const {form, fUpdateTrigger, eventsData} = props;
 
-  let catgoryJson = eventsData.list || [];
-  try {
-    //catgoryJson = _(catgoryJson).filter(val => val.stdcatid == form.getFieldValue('stdcatid')).value();
-    catgoryJson = catgoryJson.length ? catgoryJson[0] : {};
-    catgoryJson = JSON.parse(catgoryJson.studentcat_json);
-    catgoryJson = catgoryJson ? catgoryJson : [];
-  } catch (error) {
-    catgoryJson = [];
-  }
+let catgoryJson = eventsData.list || [];
+try {
+  //catgoryJson = _(catgoryJson).filter(val => val.stdcatid == form.getFieldValue('stdcatid')).value();
+  catgoryJson = catgoryJson.length ? catgoryJson[0] : {};
+  catgoryJson = JSON.parse(catgoryJson.studentcat_json);
+  catgoryJson = catgoryJson ? catgoryJson : [];
+} catch (error) {
+  catgoryJson = [];
+}
 
-  const dateFormat = 'YYYY-MM-DD';
-  console.log('LOGGING STUDETNCAT');
+const dateFormat = 'YYYY-MM-DD';
 
-  const parsed = JSON.parse(props.student.student_json);
-  return (
-    <>
-      <Divider style={{margin: '20px 0'}} />
-      <div
-        className="category_box_basic"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-          gridGap: 25,
-        }}
-      >
-        {catgoryJson.map(val => {
-          let template = '';
-          if (val.input_type == 'text') {
-            template = (
-              <div className="category_item">
-                <Form.Item
-                  hasFeedback={true}
-                  name={['student_json', val.name]}
-                  label={val.name}
-                  rules={[{required: true, message: 'Please fill!'}]}
+return (
+  <>
+    <Divider style={{margin: '20px 0'}} />
+    <div
+      className="category_box_basic"
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+        gridGap: 25,
+      }}
+    >
+      {catgoryJson.map(val => {
+        let template = '';
+        if (val.input_type == 'text') {
+          template = (
+            <div className="category_item">
+              <Form.Item
+                hasFeedback={true}
+                name={['studentcat_json', val.name]}
+                label={val.name}
+                rules={[{required: true, message: 'Please fill!'}]}
+              >
+                <Input size="middle" style={{width: '100%'}} />
+              </Form.Item>
+            </div>
+          );
+        }
+        if (val.input_type == 'dropdown') {
+          template = (
+            <div className="category_item">
+              <Form.Item
+                hasFeedback={true}
+                name={['studentcat_json', val.name]}
+                label={val.name}
+                rules={[{required: true, message: 'Please fill!'}]}
+              >
+                <Select
+                  size="middle"
+                  onChange={e => {}}
+                  style={{width: '100%'}}
                 >
-                  <Input size="middle" style={{width: '100%'}} />
-                </Form.Item>
-              </div>
-            );
-          }
-          if (val.input_type == 'dropdown') {
-            template = (
-              <div className="category_item">
-                <Form.Item
-                  hasFeedback={true}
-                  name={['student_json', val.name]}
-                  label={val.name}
-                  rules={[{required: true, message: 'Please fill!'}]}
+                  {val.dropdown.map(val => (
+                    <Option value={val}>{val}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+          );
+        }
+        if (val.input_type == 'tags') {
+          template = (
+            <div className="category_item">
+              <Form.Item
+                hasFeedback={true}
+                name={['studentcat_json', val.name]}
+                label={val.name}
+                rules={[{required: true, message: 'Please fill!'}]}
+              >
+                <Select
+                  mode="tags"
+                  size="middle"
+                  onChange={e => {}}
+                  style={{width: '100%'}}
                 >
-                  <Select
-                    size="middle"
-                    onChange={e => {}}
-                    style={{width: '100%'}}
-                  >
-                    {val.dropdown.map(val => (
-                      <Option value={val}>{val}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            );
-          }
-          if (val.input_type == 'tags') {
-            template = (
-              <div className="category_item">
-                <Form.Item
-                  hasFeedback={true}
-                  name={['student_json', val.name]}
-                  label={val.name}
-                  rules={[{required: true, message: 'Please fill!'}]}
-                >
-                  <Select
-                    mode="tags"
-                    size="middle"
-                    onChange={e => {}}
-                    style={{width: '100%'}}
-                  >
-                    {val.dropdown.map(val => (
-                      <Option value={val}>{val}</Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
-            );
-          }
-          if (val.input_type == 'datepicker') {
-            console.log('LOLOLOLOLOL');
-            if (parsed[val.name]) {
-              const n = val.name;
-              let obj = {};
-              obj[n] = moment(parsed[val.name]);
-              form.setFieldsValue({student_json: obj});
-            }
+                  {val.dropdown.map(val => (
+                    <Option value={val}>{val}</Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </div>
+          );
+        }
+        if (val.input_type == 'datepicker') {
+          
+          template = (
+            <div className="category_item">
+              <Form.Item
+                hasFeedback={true}
+                name={['studentcat_json', val.name]}
+                label={val.name}
+                rules={[{required: true, message: 'Please fill!'}]}
+              >
+                <DatePicker
+                  size="middle"
+                  style={{width: '100%'}}
+                  // defaultValue={value}
+                  //disabledDate={date => moment(date).isAfter(moment.now())
+                  //}
+                />
+              </Form.Item>
+            </div>
+          );
+        }
+        // if (val.input_type == 'upload'){
+        //     template = <div className="category_item">
+        //         <Form.Item hasFeedback={true} name={['student_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
 
-            template = (
-              <div className="category_item">
-                <Form.Item
-                  hasFeedback={true}
-                  name={['student_json', val.name]}
-                  label={val.name}
-                  rules={[{required: true, message: 'Please fill!'}]}
-                >
-                  <DatePicker
-                    size="middle"
-                    style={{width: '100%'}}
-                    // defaultValue={value}
-                    disabledDate={date => moment(date).isAfter(moment.now())}
-                  />
-                </Form.Item>
-              </div>
-            );
-          }
-          // if (val.input_type == 'upload'){
-          //     template = <div className="category_item">
-          //         <Form.Item hasFeedback={true} name={['student_json',val.name,val.name]} label={val.name} rules={[{ required: true, message: 'Please fill!' }]}>
-
-          //         </Form.Item>
-          //     </div>
-          // }
-          return template;
-        })}
-      </div>
-    </>
-  );
+        //         </Form.Item>
+        //     </div>
+        // }
+        return template;
+      })}
+    </div>
+  </>
+);
 };
 
 export default ProfilePage;
