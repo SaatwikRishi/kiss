@@ -117,14 +117,12 @@ const ProfilePage = props => {
         if (res.data.result.error) {
           message.error(`Failed to update profile, please try again!`);
         } else {
-          getUser().then(e => {
-            dispatch(e);
-            navigate('/home');
-          });
           message.success(`profile added successfully!`);
         }
+
       })
       .finally(() => {
+        navigate('/home')
         setloading(false);
       });
   };
