@@ -69,16 +69,14 @@ const Index = props => {
   };
   let userVerify = getUserinfo();
 
-//   if (userVerify.loading == false && userVerify.is_admin != '1') {
-//     navigate('/login');
-//     message.error('Please login as admin!');
-//   }
+  if (userVerify.loading == false && userVerify.is_admin != '1') {
+    navigate('/login');
+    message.error('Please login as admin!');
+  }
 
   return (
     <>
-      {
-      //userVerify.loading == false && userVerify.is_admin == '1'
-      true ? (
+      {userVerify.loading == false && userVerify.is_admin == '1' ? (
         <Layout className="layout_main layout_alex">
           {loading && (
             <div class="progress">

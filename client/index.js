@@ -31,7 +31,7 @@ const firebaseConfig = {
 
 // ADDED BY SAATWIK
 
-Axios.defaults.baseURL = "http://localhost:8080";
+//Axios.defaults.baseURL = "http://localhost:8080";
 
 initializeApp(firebaseConfig)
 

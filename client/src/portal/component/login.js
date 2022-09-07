@@ -62,7 +62,7 @@ const LoginPage = (props) => {
             status: '0', 
         }}).then(res => {  
             onReset();      
-            navigate("/login")         
+            navigate("/profile")         
             if(!res.data.result.error) {  
                 showModal();
             }

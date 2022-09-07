@@ -56,16 +56,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(DataSource);
 // app.use(cors({origin: "http://localhost:3000", credentials: true}))
-app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
+// app.use(function(req, res, next) {
+//   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type');
+//   next();
 
 
-})
+// })
 
-app.use(cors({credentials: true}))
+//app.use(cors({credentials: true}))
 
 app.use(cookieParser('f3452adfc5'));
 app.use(cookieSession({
